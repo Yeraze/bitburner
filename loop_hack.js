@@ -1,8 +1,11 @@
 /** @param {NS} ns */
 export async function main(ns) {
-  const target = ns.getHostname();
-  const maxMoney = ns.getServerMaxMoney(target);
-  const moneyThresh = maxMoney * 0.9;
+  var target = ns.getHostname();
+  if (ns.args.length > 0) {
+    target = ns.args[0]
+  }
+  var maxMoney = ns.getServerMaxMoney(target);
+  var moneyThresh = maxMoney * 0.9;
   while (true){
     const availMoney = ns.getServerMoneyAvailable(target);
     if (availMoney > moneyThresh) {

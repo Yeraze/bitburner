@@ -1,15 +1,8 @@
 /** @param {NS} ns */
+import {getServerList} from "reh.js"
 export async function main(ns) {
-  const serverList = [
-        "n00dles","foodnstuff","sigma-cosmetics", "CSEC",
-        "joesguns", "hong-fang-tea", "nectar-net", "zer0",
-        "harakiri-sushi", "max-hardware", "iron-gym","omega-net",
-        "phantasy", "avmnite-02h", "neo-net", "silver-helix",
-        "rothman-uni", "I.I.I.I", "summit-uni", "the-hub",
-        "zb-institute","catalyst", "netlink"];
-  const servers = serverList.concat(ns.getPurchasedServers())
-  
   ns.disableLog("getServerSecurityLevel")
+  ns.disableLog("scan")
   ns.disableLog("getServerMoneyAvailable")
   ns.disableLog("getServerGrowth")
   ns.disableLog("getServerMinSecurityLevel")
@@ -21,6 +14,7 @@ export async function main(ns) {
  //@ignore-infinite 
   while(true) {
     ns.printf("---------\n");
+    var servers = getServerList(ns)
     for (const server of servers) {
       let num = ns.getServerSecurityLevel(server);
       let s_min = ns.getServerMinSecurityLevel(server)
@@ -35,20 +29,25 @@ export async function main(ns) {
 
       if (!ns.hasRootAccess(server))
         continue;
+      var hacked = false
+      if (ns.scriptRunning("loop_hack.js", server))
+        hacked = true
+      if (ns.scriptRunning("simplehack.js", server))
+        hacked = true
       if (ns.args[0] == "flow") {
         // Flow mode... only show loop_hack
-        if (!ns.scriptRunning("loop_hack.js", server))
+        if (!hacked)
           continue
       } else {
         // Regular mode.. only show open for use
-        if (ns.scriptRunning("loop_hack.js", server))
+        if (hacked)
           continue
       }
       if (m_max > 0) {
-        ns.printf("%15s\tR:%3i%% S:%5.1f%%  M:%i%% ($%.2fM)\n", 
+        ns.printf("%18s\tR:%3i%% S:%5.1f%%  M:%i%% ($%.2fM)\n", 
             server, memCur / memMax * 100, s_perc, m_perc, m_max/(1000*1000));
       } else {
-        ns.printf("%15s\tR:%3i%% S:%5.1f%%  \n", 
+        ns.printf("%18s\tR:%3i%% S:%5.1f%%  \n", 
             server, memCur / memMax * 100, s_perc, m_perc)
 
       }

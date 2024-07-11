@@ -76,15 +76,16 @@ export async function main(ns) {
     }
     if (easyServer != "") {
       // We have an easy server to consider for hack
-      ns.printf("Establishing target %s", easyServer)
+      ns.printf("Establishing target %s [%i]", easyServer, easyServerLvl)
       if (ns.getServerRequiredHackingLevel(easyServer) > ns.getHackingLevel()) {
         ns.printf("-> Cannot hack,required level %i", 
             ns.getServerRequiredHackingLevel(easyServer))
       } else {
         hackInProgress = easyServer
-        if (easyServer == "n00dles") {
+        if (ns.getServerMaxRam(easyServer) < 8) {
           ns.scp("simplehack.js", easyServer)
-          ns.exec("simplehack.js", "n00dles", 1, "n00dles")
+          ns.exec("simplehack.js", easyServer, 1, easyServer)
+          ns.exec("continuous_hack.js", "home", 1, easyServer, "400") 
           hackInProgress = ""
         } else {
           ns.exec("takeover.js", "home", 1, hackInProgress)

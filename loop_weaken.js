@@ -1,7 +1,10 @@
 /** @param {NS} ns */
 export async function main(ns) {
-  const target = ns.getHostname();
-  const minSec= ns.getServerMinSecurityLevel(target);
+  var target = ns.getHostname();
+  if (ns.args.length > 0) {
+    target = ns.args[0]
+  }
+  var minSec= ns.getServerMinSecurityLevel(target);
   let Sec = ns.getServerSecurityLevel(target);
   while (true) {
     if (Sec > minSec){
