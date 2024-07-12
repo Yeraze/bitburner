@@ -12,9 +12,9 @@ export async function main(ns) {
     ns.tail()
     ns.printf("-> RAM override of %i G", ns.args[1])
     ram = ns.args[1]
-    ns.exec("loop_hack.js",   "home", Math.floor((ram / 2) * 0.10), target);
-    ns.exec("loop_weaken.js", "home", Math.floor((ram / 2) * 0.20), target)
-    ns.exec("loop_grow.js",   "home", Math.floor((ram / 2) * 0.70), target)
+    ns.exec("loop_hack.js",   "home", Math.floor((ram / 2) * 0.5), target);
+    ns.exec("loop_weaken.js", "home", Math.floor((ram / 2) * 0.10), target)
+    ns.exec("loop_grow.js",   "home", Math.floor((ram / 2) * 0.85), target)
   } else {
     // Each of these scripts takes 2G Ram
     // So mark 2G used for hacking
