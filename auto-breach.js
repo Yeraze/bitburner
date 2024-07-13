@@ -102,7 +102,7 @@ export async function main(ns) {
         if (ns.getServerMaxRam(easyServer) < 8) {
           ns.scp("simplehack.js", easyServer)
           ns.exec("simplehack.js", easyServer, 1, easyServer)
-          ns.exec("continuous_hack.js", "home", 1, easyServer, "400") 
+          ns.exec("continuous_hack.js", "home", 1, easyServer, "10") 
           hackInProgress = ""
         } else {
           ns.exec("takeover.js", "home", 1, hackInProgress)

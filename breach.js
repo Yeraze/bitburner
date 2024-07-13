@@ -3,6 +3,8 @@ export async function main(ns) {
   var target = ns.getHostname()
   if (ns.args.length > 0)
     target= ns.args[0]
+  
+  ns.tprintf("Breaching %s", target)
   const ramOfHack = 2.5;
   if (ns.fileExists("BruteSSH.exe", "home")) {
       ns.brutessh(target);
@@ -22,8 +24,8 @@ export async function main(ns) {
   ns.nuke(target);
   if (ns.args.length >1) {
     if (ns.args[1] == "backdoor") {
-      ns.scp("install-backdoor.js", target)
-      ns.exec("install-backdoor.js", target)
+      ns.tprintf("Installing backdoor on %s", target)
+      ns.exec("install-backdoor.js", "home", 1, target)
     }
   }
 }
