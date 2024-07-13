@@ -1,6 +1,8 @@
 /** @param {NS} ns */
 export async function main(ns) {
-  const target= ns.args[0]
+  var target = ns.getHostname()
+  if (ns.args.length > 0)
+    target= ns.args[0]
   const ramOfHack = 2.5;
   if (ns.fileExists("BruteSSH.exe", "home")) {
       ns.brutessh(target);
@@ -18,6 +20,10 @@ export async function main(ns) {
       ns.sqlinject(target)
   }
   ns.nuke(target);
-  ns.nuke(target);
-  ns.scp("breach.js", target)
+  if (ns.args.length >1) {
+    if (ns.args[1] == "backdoor") {
+      ns.scp("install-backdoor.js", target)
+      ns.exec("install-backdoor.js", target)
+    }
+  }
 }

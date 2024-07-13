@@ -12,6 +12,7 @@ export async function main(ns) {
   
   let hackInProgress = ""
   let serversKnown = 0
+  let backdoorServers=["CSEC", "avmnite-02h","I.I.I.I", "run4theh111z"]
   while(true) {
     let PortsAvail = 0;
     if (ns.fileExists("BruteSSH.exe", "home")) {
@@ -26,11 +27,11 @@ export async function main(ns) {
     if (ns.fileExists("HTTPWorm.exe", "home")) {
         PortsAvail = PortsAvail +1
     }
-    // First build up the list of servers
     if (ns.fileExists("SQLInject.exe", "home")) {
         PortsAvail = PortsAvail +1
     }
 
+    // First build up the list of servers
     var serverList = getServerList(ns);
     if (serverList.length != serversKnown) {
       ns.printf("%i servers known", serverList.length)
@@ -73,6 +74,20 @@ export async function main(ns) {
         srv.numOpenPortsRequired, ns.getServerRequiredHackingLevel(server))  
       ns.printf("Breaching %s", server)
       ns.exec("breach.js", "home", 1, server)
+    }
+    // Seeif any of the special game servers are ready for backdoor
+    for(var server of backdoorServers) {
+      var srv = ns.getServer(server)
+      if(!srv.hasRootAccess)
+        continue  // We needto have root first
+      if(srv.backdoorInstalled)
+        continue  // No sense doing it a 2nd time
+      if(srv.requiredHackingSkill > ns.getHackingLevel())
+        continue  // we need to be higher level
+      if(ns.scriptRunning("install-backdoor.js", server))
+        continue  // already underway
+      ns.killall(server)
+      ns.exec("breach.js", "home", 1, server, "backdoor")
     }
     if (easyServer != "") {
       // We have an easy server to consider for hack

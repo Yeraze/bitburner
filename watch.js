@@ -29,6 +29,7 @@ export async function main(ns) {
 
       if (!ns.hasRootAccess(server))
         continue;
+      
       var hacked = false
       if (ns.scriptRunning("loop_hack.js", server))
         hacked = true

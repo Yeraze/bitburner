@@ -13,7 +13,7 @@ export async function main(ns) {
   ns.disableLog("sleep")
   ns.disableLog("exec")
 
-  ns.tail()
+//  ns.tail()
   
   ns.printf("PHASE1: global-weaken of %s", target)
   if (ns.getServerMaxRam(target) > 0)
