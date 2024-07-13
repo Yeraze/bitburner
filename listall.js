@@ -1,9 +1,9 @@
 /** @param {NS} ns */
-import { getServerList } from "reh.js"
+import { getSortedServerList } from "reh.js"
 
 export async function main(ns) {
   ns.disableLog('ALL')
-  const serverList = getServerList(ns)
+  const serverList = getSortedServerList(ns)
   ns.tprintf("%20s| %1s | %1s | %10s | %5s | %6s | Status",
     "Server Name", "B", "N", "Money", "Avail", "RAM")
   for (const S of serverList) {
@@ -16,6 +16,8 @@ export async function main(ns) {
         status = "Remote Weaken"
       if (ns.scriptRunning("install-backdoor.js", S))
         status = "Installing Backdoor.."
+      if (ns.scriptRunning("simplehack.js", S))
+        status = "Hacking.."
       if (ns.scriptRunning("loop_hack.js", S))
         status = "Hacking.."
       ns.tprintf("%20s| %1s | %1s | $%9s | %4i%% | %6s | %s",

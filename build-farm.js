@@ -3,6 +3,8 @@ export async function main(ns) {
   // How much RAM each purchased server will have. In this case, it'll
   // be 8GB.
   var ram = 8;
+  if(ns.args.length > 0)
+    ram = ns.args[0]
   
   // Continuously try to purchase servers until we've reached the maximum
   // amount of servers
@@ -16,6 +18,9 @@ export async function main(ns) {
           //  4. Increment our iterator to indicate that we've bought a new server
           var hostname = ns.purchaseServer(
                 "pserv-" + ns.getPurchasedServers().length, ram);
+      } else {
+        await ns.sleep(30 * 1000);
       }
+
   }
 }

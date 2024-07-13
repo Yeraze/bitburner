@@ -9,6 +9,8 @@ export async function main(ns) {
   ns.disableLog("getServerMaxRam")
   ns.disableLog("sleep")
   ns.disableLog("scan")
+  ns.moveTail(850,0)
+  ns.resizeTail(620, 110)
   
   let hackInProgress = ""
   let serversKnown = 0

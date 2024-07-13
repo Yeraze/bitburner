@@ -25,3 +25,18 @@ export function getServerList(ns) {
 
   return serverList;
 }
+
+export function getSortedServerList(ns) {
+  var startingList = getServerList(ns)
+  var levelList= []
+  for (const S of startingList) {
+    levelList.push( { name: S, level: ns.getServerRequiredHackingLevel(S) })
+  }
+
+  levelList.sort(((a, b) => (a.level - b.level)))
+  var endingList = []
+  for (const S of levelList) {
+    endingList.push(S.name)
+  }
+  return endingList;
+}
