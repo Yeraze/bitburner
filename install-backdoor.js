@@ -1,6 +1,5 @@
 /** @param {NS} ns */
 export async function main(ns) {
-  ns.tail()
   var target = ns.args[0]
   // first build the connection graph
   var path = []

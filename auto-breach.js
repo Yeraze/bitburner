@@ -73,16 +73,21 @@ export async function main(ns) {
       ns.exec("breach.js", "home", 1, server)
     }
     // Seeif any of the special game servers are ready for backdoor
-    for(var server of backdoorServers) {
+    for(const server of backdoorServers) {
       var srv = ns.getServer(server)
-      if(!srv.hasRootAccess)
+      if(!ns.hasRootAccess(server)) {
         continue  // We needto have root first
-      if(srv.backdoorInstalled)
+      }
+      if(srv.backdoorInstalled) {
         continue  // No sense doing it a 2nd time
-      if(srv.requiredHackingSkill > ns.getHackingLevel())
+      }
+      if(srv.requiredHackingSkill > ns.getHackingLevel()) {
         continue  // we need to be higher level
-      if(ns.scriptRunning("install-backdoor.js", server))
+      }
+      if(ns.scriptRunning("breach.js", server)) {
         continue  // already underway
+      }
+      ns.printf("-> BACKDOOR of %s", server)
       ns.killall(server)
       ns.exec("breach.js", "home", 1, server, "backdoor")
     }

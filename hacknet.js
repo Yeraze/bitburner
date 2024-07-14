@@ -50,7 +50,7 @@ export async function main(ns) {
       }
       await ns.sleep(20);
     } else {
-      await ns.sleep(1000);
+      await ns.sleep(60000);
     }
   }
 
