@@ -3,12 +3,7 @@
 import {getServerList} from "reh.js"
 export async function main(ns) {
   ns.tail()
-  ns.disableLog("getHackingLevel")
-  ns.disableLog("getServerSecurityLevel")
-  ns.disableLog("getServerRequiredHackingLevel")
-  ns.disableLog("getServerMaxRam")
-  ns.disableLog("sleep")
-  ns.disableLog("scan")
+  ns.disableLog("ALL")
   ns.moveTail(850,0)
   ns.resizeTail(620, 110)
   
