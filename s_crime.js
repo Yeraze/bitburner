@@ -67,6 +67,6 @@ export async function main(ns) {
     if(crime == "") {
       crime = findBestCrime(ns)
     }
-    ns.singularity.commitCrime(bestCrime)
+    ns.singularity.commitCrime(crime)
   }
 }

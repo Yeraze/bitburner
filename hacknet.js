@@ -23,12 +23,16 @@ export async function main(ns) {
       upgrades.push( {node: -1,
               price: nodeCost,
               value: (16 - ns.hacknet.numNodes()) ,
-              q: 1,
+              q: ns.formulas.hacknetNodes.moneyGainRate(1, 1, 1),
               type: "NODE"} );
     }
 
     // Find our cheapest Level, Ram, and Core upgrade
     for(var index=0; index < ns.hacknet.numNodes(); index++) {
+      var nLevel = ns.hacknet.getNodeStats(index).level
+      var nCores = ns.hacknet.getNodeStats(index).cores
+      var nRam = ns.hacknet.getNodeStats(index).ram
+      var moneyRate = ns.formulas.hacknetNodes.moneyGainRate(nLevel, nRam, nCores)
       if (ns.hacknet.getCoreUpgradeCost(index) < cash) {
         var HowMany = 0
         var keepGoing = true
@@ -44,8 +48,8 @@ export async function main(ns) {
         HowMany--
         upgrades.push( {node: index, 
                     price: ns.hacknet.getCoreUpgradeCost(index, HowMany),
-                    value: HowMany * 10,
-                    q:HowMany,
+                    value: ns.formulas.hacknetNodes.moneyGainRate(nLevel, nRam, nCores + HowMany) - moneyRate,
+                    q: HowMany,
                     type: "CORE"} )
       }
       if (ns.hacknet.getRamUpgradeCost(index) < cash) {
@@ -63,7 +67,7 @@ export async function main(ns) {
         HowMany--
         upgrades.push( {node: index, 
                     price: ns.hacknet.getRamUpgradeCost(index, HowMany),
-                    value: HowMany * 5,
+                    value: ns.formulas.hacknetNodes.moneyGainRate(nLevel, nRam + HowMany, nCores) - moneyRate,
                     q:HowMany,
                     type: "RAM"} )
       }
@@ -83,7 +87,7 @@ export async function main(ns) {
         upgrades.push( {node: index, 
                     price: ns.hacknet.getLevelUpgradeCost(index, HowMany),
                     q: HowMany,
-                    value: HowMany,
+                    value: ns.formulas.hacknetNodes.moneyGainRate(nLevel + HowMany, nRam, nCores) - moneyRate,
                     type: "LEVEL"} )
       }
     }
@@ -91,31 +95,31 @@ export async function main(ns) {
     ns.printf("%i potential upgrades", upgrades.length)
     var upgrade = upgrades.pop()
     if (upgrade) {
-      if(upgrade.value < 10) {
-        ns.printf("-> Value too low (%i), waiting", upgrade.value)
+      if(upgrade.value < 1.0) {
+        ns.printf("-> Value too low (+$%.2f), waiting", upgrade.value)
       } else if (upgrade.type == "NODE") {
         ns.print("Purchasing a new node")
         ns.hacknet.purchaseNode()
       } else if (upgrade.type == "CORE") {
-        ns.printf("Upgrading CORES : Node %i Cores +%i",
+        ns.printf("Upgrading CORES : Node %i Cores +%i (+$%.2f)",
           upgrade.node, upgrade.q)
-        var ret = ns.hacknet.upgradeCore(upgrade.node, upgrade.q)
+        var ret = ns.hacknet.upgradeCore(upgrade.node, upgrade.q, upgrade.value)
         if(ret)
           ns.printf(" -> Success!")
         else
           ns.printf(" -> Fail!")
       } else if (upgrade.type == "LEVEL") {
-        ns.printf("Upgrading LEVELS : Node %i Level +%i",
+        ns.printf("Upgrading LEVELS : Node %i Level +%i (+$%.2f)",
           upgrade.node, upgrade.q)
-        var ret= ns.hacknet.upgradeLevel(upgrade.node, upgrade.q)
+        var ret= ns.hacknet.upgradeLevel(upgrade.node, upgrade.q, upgrade.value)
         if(ret)
           ns.printf(" -> Success!")
         else
           ns.printf(" -> Fail!")
       } else if (upgrade.type == "RAM") {
-        ns.printf("Upgrading RAM : Node %i RAM +%i",
+        ns.printf("Upgrading RAM : Node %i RAM +%i (+$%.2f)",
           upgrade.node, upgrade.q)
-        var ret = ns.hacknet.upgradeRam(upgrade.node, upgrade.q)
+        var ret = ns.hacknet.upgradeRam(upgrade.node, upgrade.q, upgrade.value)
         if(ret)
           ns.printf(" -> Success!")
         else
@@ -131,6 +135,6 @@ export async function main(ns) {
     }
     ns.printf("-> %i nodes producing $%s/s", ns.hacknet.numNodes(),
       ns.formatNumber(totalProduction, 2))
-    await ns.sleep(60000);
+    await ns.sleep(5 * 60 * 1000);
   }
 }

@@ -35,7 +35,7 @@ export async function main(ns) {
       await ns.sleep(1000)
     ns.print("Back to crime")
   
-    ns.exec("s_crime.js", "home", 1, "Kidnap")
+    ns.exec("s_crime.js", "home",)
     await ns.sleep(5000)
     while(ns.getHackingLevel() < 100) {
       await ns.sleep(1000)
@@ -51,7 +51,7 @@ export async function main(ns) {
       await ns.sleep(1000)
     
     ns.print("Back to crime")
-    ns.exec("s_crime.js", "home", 1, "Kidnap")
+    ns.exec("s_crime.js", "home", 1, "--loop")
     while(ns.getHackingLevel() < 150) {
       await ns.sleep(1000)
       for(var faction of ns.singularity.checkFactionInvitations()) {
