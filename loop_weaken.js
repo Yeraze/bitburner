@@ -7,7 +7,7 @@ export async function main(ns) {
   var minSec= ns.getServerMinSecurityLevel(target);
   let Sec = ns.getServerSecurityLevel(target);
   while (true) {
-    if (Sec > minSec){
+    if (Sec > minSec*1.01){
       await ns.weaken(target);
     } else {
       await ns.sleep(1000);

@@ -11,7 +11,7 @@ export async function main(ns) {
   var maxMoney = ns.getServerMaxMoney(target);
   let Money = ns.getServerMoneyAvailable(target)
   while (true){
-    if ((Money < maxMoney) || force){
+    if ((Money < (maxMoney*0.92)) || force){
       await ns.grow(target);
     } else {
       await ns.sleep(1000);
