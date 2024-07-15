@@ -1,6 +1,10 @@
 /** @param {NS} ns */
 export async function main(ns) {
+  ns.disableLog('ALL')
   var stop =false;
+  ns.tail()
+  ns.moveTail(400,0)
+  ns.resizeTail(420, 110)
 
   while(!stop) {
     var cash = ns.getServerMoneyAvailable("home")
@@ -18,7 +22,7 @@ export async function main(ns) {
     if(nodeCost < cash) {
       upgrades.push( {node: -1,
               price: nodeCost,
-              value: 1,
+              value: (16 - ns.hacknet.numNodes()) ,
               q: 1,
               type: "NODE"} );
     }
@@ -40,7 +44,7 @@ export async function main(ns) {
         HowMany--
         upgrades.push( {node: index, 
                     price: ns.hacknet.getCoreUpgradeCost(index, HowMany),
-                    value: HowMany * 4,
+                    value: HowMany * 10,
                     q:HowMany,
                     type: "CORE"} )
       }
@@ -59,7 +63,7 @@ export async function main(ns) {
         HowMany--
         upgrades.push( {node: index, 
                     price: ns.hacknet.getRamUpgradeCost(index, HowMany),
-                    value: HowMany * 2,
+                    value: HowMany * 5,
                     q:HowMany,
                     type: "RAM"} )
       }
@@ -84,14 +88,16 @@ export async function main(ns) {
       }
     }
     upgrades.sort(((a, b) => (a.value - b.value)))
-
-    var upgrade = upgrades.pop();
+    ns.printf("%i potential upgrades", upgrades.length)
+    var upgrade = upgrades.pop()
     if (upgrade) {
-      if (upgrade.type == "NODE") {
+      if(upgrade.value < 10) {
+        ns.printf("-> Value too low (%i), waiting", upgrade.value)
+      } else if (upgrade.type == "NODE") {
         ns.print("Purchasing a new node")
         ns.hacknet.purchaseNode()
       } else if (upgrade.type == "CORE") {
-        ns.printf("Upgrading CORES : Node %i Cores %i",
+        ns.printf("Upgrading CORES : Node %i Cores +%i",
           upgrade.node, upgrade.q)
         var ret = ns.hacknet.upgradeCore(upgrade.node, upgrade.q)
         if(ret)
@@ -99,7 +105,7 @@ export async function main(ns) {
         else
           ns.printf(" -> Fail!")
       } else if (upgrade.type == "LEVEL") {
-        ns.printf("Upgrading LEVELS : Node %i Level %i",
+        ns.printf("Upgrading LEVELS : Node %i Level +%i",
           upgrade.node, upgrade.q)
         var ret= ns.hacknet.upgradeLevel(upgrade.node, upgrade.q)
         if(ret)
@@ -107,7 +113,7 @@ export async function main(ns) {
         else
           ns.printf(" -> Fail!")
       } else if (upgrade.type == "RAM") {
-        ns.printf("Upgrading RAM : Node %i Level %i",
+        ns.printf("Upgrading RAM : Node %i RAM +%i",
           upgrade.node, upgrade.q)
         var ret = ns.hacknet.upgradeRam(upgrade.node, upgrade.q)
         if(ret)
@@ -115,11 +121,16 @@ export async function main(ns) {
         else
           ns.printf(" -> Fail!")
       }
-      await ns.sleep(20);
     // Now upgrade the cheapest
     } else {
       ns.printf("Nothing to upgrade for now...")
-      await ns.sleep(60000);
     }
+    var totalProduction = 0
+    for(var index=0; index < ns.hacknet.numNodes(); index++) {
+      totalProduction += ns.hacknet.getNodeStats(index).production
+    }
+    ns.printf("-> %i nodes producing $%s/s", ns.hacknet.numNodes(),
+      ns.formatNumber(totalProduction, 2))
+    await ns.sleep(60000);
   }
 }

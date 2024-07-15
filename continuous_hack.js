@@ -5,13 +5,13 @@ export async function main(ns) {
   ns.scp("loop_grow.js", target)
   ns.scp("loop_weaken.js", target)
 
-  var ram = ns.getServerMaxRam(target) - 2;
-  var tWeaken = (Math.max(1, Math.floor((ram / 2) * 0.25)))
+  var ram = ns.getServerMaxRam(target) - 2.1;
+  var tWeaken = Math.max(1, Math.floor((ram / 2) * 0.25))
   ram = ram - (tWeaken * 2)
   if (ram <= 2) {
     ns.printf("I can't do this, not enough ram!")
   } else {
-    var tGrow = Math.max(1, Math.floor((ram / 2) * 0.75))
+    var tGrow = Math.max(1, Math.floor((ram / 2)))
     ns.killall(target)
     if (ns.args.length > 1) {
       // Since we specified a ram number, we want to assume
