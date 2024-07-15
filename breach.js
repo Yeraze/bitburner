@@ -24,7 +24,7 @@ export async function main(ns) {
   ns.nuke(target);
   if (ns.args.length >1) {
     if (ns.args[1] == "backdoor") {
-      ns.tprintf("Installing backdoor on %s", target)
+      ns.printf("Installing backdoor on %s", target)
       ns.exec("install-backdoor.js", "home", 1, target)
     }
   }

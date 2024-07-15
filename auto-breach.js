@@ -7,6 +7,8 @@ export async function main(ns) {
   ns.moveTail(850,0)
   ns.resizeTail(620, 110)
   
+  const enableBackdoor = false
+  
   let hackInProgress = ""
   let serversKnown = 0
   let backdoorServers=["CSEC", "avmnite-02h","I.I.I.I", "run4theh111z"]
@@ -73,23 +75,25 @@ export async function main(ns) {
       ns.exec("breach.js", "home", 1, server)
     }
     // Seeif any of the special game servers are ready for backdoor
-    for(const server of backdoorServers) {
-      var srv = ns.getServer(server)
-      if(!ns.hasRootAccess(server)) {
-        continue  // We needto have root first
+    if(enableBackdoor) {
+      for(const server of backdoorServers) {
+        var srv = ns.getServer(server)
+        if(!ns.hasRootAccess(server)) {
+          continue  // We needto have root first
+        }
+        if(srv.backdoorInstalled) {
+          continue  // No sense doing it a 2nd time
+        }
+        if(srv.requiredHackingSkill > ns.getHackingLevel()) {
+          continue  // we need to be higher level
+        }
+        if(ns.scriptRunning("breach.js", server)) {
+          continue  // already underway
+        }
+        ns.printf("-> BACKDOOR of %s", server)
+        ns.killall(server)
+        ns.exec("breach.js", "home", 1, server, "backdoor")
       }
-      if(srv.backdoorInstalled) {
-        continue  // No sense doing it a 2nd time
-      }
-      if(srv.requiredHackingSkill > ns.getHackingLevel()) {
-        continue  // we need to be higher level
-      }
-      if(ns.scriptRunning("breach.js", server)) {
-        continue  // already underway
-      }
-      ns.printf("-> BACKDOOR of %s", server)
-      ns.killall(server)
-      ns.exec("breach.js", "home", 1, server, "backdoor")
     }
     if (easyServer != "") {
       // We have an easy server to consider for hack
