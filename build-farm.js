@@ -3,12 +3,18 @@ export async function main(ns) {
   // How much RAM each purchased server will have. In this case, it'll
   // be 8GB.
   var ram = 8;
-  if(ns.args.length > 0)
-    ram = ns.args[0]
+  var limit = ns.getPurchasedServerLimit()
+  if(ns.args.indexOf("--ram") != -1)
+    ram = ns.args[ns.args.indexOf("--ram") + 1]
+  if(ns.args.indexOf("--limit") != -1)
+    limit = ns.args[ns.args.indexOf("--limit") + 1]
   
   // Continuously try to purchase servers until we've reached the maximum
   // amount of servers
-  while (ns.getPurchasedServers().length < ns.getPurchasedServerLimit()) {
+
+  ns.tprintf("Preparing to buy %i servers : %iGB Ram", 
+    limit, ram)
+  while (ns.getPurchasedServers().length < limit) {
       // Check if we have enough money to purchase a server
       if (ns.getServerMoneyAvailable("home") > ns.getPurchasedServerCost(ram)) {
           // If we have enough money, then:
