@@ -1,5 +1,5 @@
-/** @param {NS} ns */
 import {getServerList} from "reh.js"
+/** @param {NS} ns */
 export async function main(ns) {
   const target = ns.args[0]
   const serverList = getServerList(ns)

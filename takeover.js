@@ -16,9 +16,8 @@ export async function main(ns) {
 //  ns.tail()
   
   ns.printf("PHASE1: global-weaken of %s", target)
-  if (ns.getServerMaxRam(target) > 0)
-    ns.exec("global-weaken.js", "home", 1, target)
-  ns.exec("remote_weaken.js", "home", 70, target, "nostop")
+  ns.exec("global-weaken.js", "home", 1, target)
+  ns.exec("remote_weaken.js", "home", 2, target, "nostop")
   while( ns.getServerSecurityLevel(target)>ns.getServerMinSecurityLevel(target)) {
     ns.printf("PHASE1: %s security is %i of %i",
       target, ns.getServerSecurityLevel(target), 
@@ -32,12 +31,16 @@ export async function main(ns) {
     await ns.sleep(5000);
   }
 
+  await ns.sleep(1000)
   // cleanup
   ns.exec("global-cleanup.js", "home")
   await ns.sleep(1000)
 
   ns.printf("PHASE2: global-grow of %s", target)
-  ns.exec("global-grow.js", "home", 1, target)
+  if (ns.exec("global-grow.js", "home", 1, target)== 0) {
+    ns.printf("ERROR: Something failed on exec...")
+    return
+  }
   while( ns.getServerMoneyAvailable(target)<(ns.getServerMaxMoney(target)*0.95)) {
     ns.printf("PHASE2: %s money is %.2f of %.2f", target,
       ns.getServerMoneyAvailable(target) / (1000*1000),
@@ -51,6 +54,7 @@ export async function main(ns) {
     await ns.sleep(5000);
   }
 
+  await ns.sleep(1000)
   // cleanup
   ns.scriptKill("remote_weaken.js", "home")
   ns.exec("global-cleanup.js", "home")
