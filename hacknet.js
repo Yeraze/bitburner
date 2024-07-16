@@ -1,4 +1,5 @@
 /** @param {NS} ns */
+import {parsearg} from "reh.js"
 export async function main(ns) {
   ns.disableLog('ALL')
   var stop =false;
@@ -19,14 +20,16 @@ export async function main(ns) {
     var nodeCost = ns.hacknet.getPurchaseNodeCost()
 
     var upgrades = []
-    if(nodeCost < cash) {
-      var newRate = ns.formulas.hacknetNodes.moneyGainRate(1,1,1)
-      upgrades.push( {node: -1,
-              price: nodeCost,
-              value: (16 - ns.hacknet.numNodes()) ,
-              q: newRate,
-              ratio: newRate / nodeCost,
-              type: "NODE"} );
+    if(ns.hacknet.numNodes() < 8) {
+      if(nodeCost < cash) {
+        var newRate = ns.formulas.hacknetNodes.moneyGainRate(1,1,1)
+        upgrades.push( {node: -1,
+                price: nodeCost,
+                value: (16 - ns.hacknet.numNodes()) ,
+                q: newRate,
+                ratio: newRate / nodeCost,
+                type: "NODE"} );
+      }
     }
 
     // Find our cheapest Level, Ram, and Core upgrade

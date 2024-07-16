@@ -1,4 +1,8 @@
 /** @param {NS} ns */
+export function autocomplete(data, args) {
+    return [...data.servers]; // This script autocompletes the list of servers.
+}
+
 export async function main(ns) {
   const target =ns.args[0];
   if(ns.serverExists(target)) {

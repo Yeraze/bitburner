@@ -40,3 +40,11 @@ export function getSortedServerList(ns) {
   }
   return endingList;
 }
+
+export function parsearg(ns, flag, default_value) {
+  if (ns.args.indexOf(flag) == -1) {
+    return default_value
+  } else {
+    return ns.args[ns.args.indexOf(flag)+1] 
+  }
+}

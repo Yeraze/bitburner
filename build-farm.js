@@ -1,13 +1,10 @@
+import {parsearg} from "reh.js"
 /** @param {NS} ns */
 export async function main(ns) {
   // How much RAM each purchased server will have. In this case, it'll
   // be 8GB.
-  var ram = 8;
-  var limit = ns.getPurchasedServerLimit()
-  if(ns.args.indexOf("--ram") != -1)
-    ram = ns.args[ns.args.indexOf("--ram") + 1]
-  if(ns.args.indexOf("--limit") != -1)
-    limit = ns.args[ns.args.indexOf("--limit") + 1]
+  var ram = parsearg(ns, "--ram", 8);
+  var limit = parsearg(ns, "--limit", ns.getPurchasedServerLimit())
   
   // Continuously try to purchase servers until we've reached the maximum
   // amount of servers
