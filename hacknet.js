@@ -1,5 +1,5 @@
-/** @param {NS} ns */
 import {parsearg} from "reh.js"
+/** @param {NS} ns */
 export async function main(ns) {
   ns.disableLog('ALL')
   var stop =false;
@@ -112,19 +112,19 @@ export async function main(ns) {
       } else if (upgrade.type == "CORE") {
         ns.printf("Upgrading CORES : Node %i Cores +%i (+$%.2f)",
           upgrade.node, upgrade.q, upgrade.value)
-        var ret = ns.hacknet.upgradeCore(upgrade.node, upgrade.q, upgrade.value)
+        var ret = ns.hacknet.upgradeCore(upgrade.node, upgrade.q)
         if(!ret)
           ns.printf(" -> Fail!")
       } else if (upgrade.type == "LEVEL") {
         ns.printf("Upgrading LEVELS : Node %i Level +%i (+$%.2f)",
           upgrade.node, upgrade.q, upgrade.value)
-        var ret= ns.hacknet.upgradeLevel(upgrade.node, upgrade.q, upgrade.value)
+        var ret= ns.hacknet.upgradeLevel(upgrade.node, upgrade.q)
         if(!ret)
           ns.printf(" -> Fail!")
       } else if (upgrade.type == "RAM") {
         ns.printf("Upgrading RAM : Node %i RAM +%i (+$%.2f)",
           upgrade.node, upgrade.q, upgrade.value)
-        var ret = ns.hacknet.upgradeRam(upgrade.node, upgrade.q, upgrade.value)
+        var ret = ns.hacknet.upgradeRam(upgrade.node, upgrade.q)
         if(!ret)
           ns.printf(" -> Fail!")
       }

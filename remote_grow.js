@@ -7,7 +7,10 @@ export async function main(ns) {
   const maxMoney = ns.getServerMaxMoney(target);
   let Money = ns.getServerMoneyAvailable(target)
   while (Money < maxMoney){
-    await ns.grow(target);
+    if (ns.getServerSecurityLevel(target) < (ns.getServerMinSecurityLevel(target) * 1.1)) 
+      await ns.grow(target);
+    else
+      await ns.sleep(1000)
     Money = ns.getServerMoneyAvailable(target)
   }
 }

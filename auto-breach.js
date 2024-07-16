@@ -117,6 +117,13 @@ export async function main(ns) {
         if (ns.scriptRunning("takeover.js", "home") == false) {
           ns.printf("Hack of %s complete", hackInProgress)
           hackInProgress = ""
+        } else {
+          ns.printf("Takeover ongoing: %s Security: %i/%i Money: $%s/$%s",
+            hackInProgress, 
+            ns.getServerSecurityLevel(hackInProgress),
+            ns.getServerMinSecurityLevel(hackInProgress),
+            ns.formatNumber(ns.getServerMoneyAvailable(hackInProgress), 0),
+            ns.formatNumber(ns.getServerMaxMoney(hackInProgress), 0))
         }
       }
     }
