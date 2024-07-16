@@ -1,4 +1,6 @@
 /** @param {NS} ns */
+
+
 export function getServerList(ns) {
   var serverList = ["home"]
   var newServerList = []
@@ -48,3 +50,4 @@ export function parsearg(ns, flag, default_value) {
     return ns.args[ns.args.indexOf(flag)+1] 
   }
 }
+

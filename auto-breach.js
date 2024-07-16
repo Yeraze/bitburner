@@ -1,6 +1,6 @@
-/** @param {NS} ns */
 
 import {getServerList} from "reh.js"
+/** @param {NS} ns */
 export async function main(ns) {
   ns.tail()
   ns.disableLog("ALL")
@@ -39,10 +39,10 @@ export async function main(ns) {
     let easyServer = ""
     let easyServerLvl = 1000
     for(const server of serverList){
+      var srv = ns.getServer(server)
       if(server == "home")
         continue
-      let srv = ns.getServer(server)
-      if(srv.maxRam == 0)
+      if (srv.maxRam == 0)
         continue
       if(hackInProgress == "") {
         if(ns.hasRootAccess(server) && (srv.moneyAvailable > 0)) {

@@ -7,6 +7,7 @@ export async function main(ns) {
   ns.moveTail(400,0)
   ns.resizeTail(420, 110)
 
+  var revenue = 0
   while(!stop) {
     var cash = ns.getServerMoneyAvailable("home")
 
@@ -103,7 +104,6 @@ export async function main(ns) {
       }
     }
     upgrades.sort(((a, b) => (a.ratio - b.ratio)))
-    ns.printf("%i potential upgrades", upgrades.length)
     var upgrade = upgrades.pop()
     if (upgrade) {
       if (upgrade.type == "NODE") {
@@ -113,25 +113,19 @@ export async function main(ns) {
         ns.printf("Upgrading CORES : Node %i Cores +%i (+$%.2f)",
           upgrade.node, upgrade.q, upgrade.value)
         var ret = ns.hacknet.upgradeCore(upgrade.node, upgrade.q, upgrade.value)
-        if(ret)
-          ns.printf(" -> Success!")
-        else
+        if(!ret)
           ns.printf(" -> Fail!")
       } else if (upgrade.type == "LEVEL") {
         ns.printf("Upgrading LEVELS : Node %i Level +%i (+$%.2f)",
           upgrade.node, upgrade.q, upgrade.value)
         var ret= ns.hacknet.upgradeLevel(upgrade.node, upgrade.q, upgrade.value)
-        if(ret)
-          ns.printf(" -> Success!")
-        else
+        if(!ret)
           ns.printf(" -> Fail!")
       } else if (upgrade.type == "RAM") {
         ns.printf("Upgrading RAM : Node %i RAM +%i (+$%.2f)",
           upgrade.node, upgrade.q, upgrade.value)
         var ret = ns.hacknet.upgradeRam(upgrade.node, upgrade.q, upgrade.value)
-        if(ret)
-          ns.printf(" -> Success!")
-        else
+        if(!ret)
           ns.printf(" -> Fail!")
       }
       await ns.sleep(100)
@@ -142,8 +136,9 @@ export async function main(ns) {
       for(var index=0; index < ns.hacknet.numNodes(); index++) {
         totalProduction += ns.hacknet.getNodeStats(index).production
       }
-      ns.printf("-> %i nodes producing $%s/s", ns.hacknet.numNodes(),
-        ns.formatNumber(totalProduction, 2))
+      ns.printf("-> %i nodes producing $%s/s (+%s/s)", ns.hacknet.numNodes(),
+        ns.formatNumber(totalProduction, 2), ns.formatNumber(totalProduction - revenue, 2))
+      revenue = totalProduction
       await ns.sleep(5 * 60 * 1000);
     }
   }
