@@ -6,12 +6,14 @@ export async function main(ns) {
   ns.disableLog("ALL")
   ns.moveTail(850,0)
   ns.resizeTail(620, 110)
+  const contractCycle = 30
   
   const enableBackdoor = false
   
   let hackInProgress = ""
   let serversKnown = 0
   let backdoorServers=["CSEC", "avmnite-02h","I.I.I.I", "run4theh111z"]
+  let contractCounter = contractCycle;
   while(true) {
     let PortsAvail = 0;
     if (ns.fileExists("BruteSSH.exe", "home")) {
@@ -104,18 +106,22 @@ export async function main(ns) {
       } else {
         hackInProgress = easyServer
         if (ns.getServerMaxRam(easyServer) < 8) {
+          ns.printf(" -> Initiating simplehack.js on %s", easyServer)
           ns.scp("simplehack.js", easyServer)
           ns.exec("simplehack.js", easyServer, 1, easyServer)
-          ns.exec("continuous_hack.js", "home", 1, easyServer, "10") 
+          ns.exec("continuous_hack.js", "home", 1, easyServer, "100") 
           hackInProgress = ""
         } else {
+          var msg = ns.sprintf("Initiating takeover of %s", hackInProgress)
+          ns.toast(msg, "success")
           ns.exec("takeover.js", "home", 1, hackInProgress)
         }
       }
     } else {
       if (hackInProgress != "") {
         if (ns.scriptRunning("takeover.js", "home") == false) {
-          ns.printf("Hack of %s complete", hackInProgress)
+          var msg = ns.sprintf("Hack of %s complete", hackInProgress)
+          ns.toast(msg, "success")
           hackInProgress = ""
         } else {
           ns.printf("Takeover ongoing: %s Security: %i/%i Money: $%s/$%s",
@@ -126,6 +132,12 @@ export async function main(ns) {
             ns.formatNumber(ns.getServerMaxMoney(hackInProgress), 0))
         }
       }
+    }
+    contractCounter--;
+    if(contractCounter <= 0) {
+      contractCounter = contractCycle;
+      ns.printf("Solving contracts...")
+      ns.exec("find_contracts.js", "home", 1, "--solve")
     }
     await ns.sleep(10 * 1000);
   }

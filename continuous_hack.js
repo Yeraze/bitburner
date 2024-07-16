@@ -15,11 +15,9 @@ export async function main(ns) {
     ns.printf("I can't do this, not enough ram!")
   } else {
     var tGrow = Math.max(1, Math.floor((ram / 2)))
-    ns.killall(target)
     if (ns.args.length > 1) {
       // Since we specified a ram number, we want to assume
       // we're doing a cross-system hack
-      ns.tail()
       ns.printf("-> RAM override of %i G", ns.args[1])
       ram = ns.args[1]
       ns.exec("loop_hack.js",   "home", Math.max(1,Math.floor((ram / 2) * 0.5)), target);

@@ -128,7 +128,7 @@ export async function main(ns) {
         if(!ret)
           ns.printf(" -> Fail!")
       }
-      await ns.sleep(100)
+      await ns.sleep(20)
     // Now upgrade the cheapest
     } else {
       ns.print("Nothing to upgrade for now...")
@@ -136,8 +136,9 @@ export async function main(ns) {
       for(var index=0; index < ns.hacknet.numNodes(); index++) {
         totalProduction += ns.hacknet.getNodeStats(index).production
       }
-      ns.printf("-> %i nodes producing $%s/s (+%s/s)", ns.hacknet.numNodes(),
+      var msg =ns.sprintf("-> %i nodes producing $%s/s (+%s/s)", ns.hacknet.numNodes(),
         ns.formatNumber(totalProduction, 2), ns.formatNumber(totalProduction - revenue, 2))
+      ns.toast(msg, "info")
       revenue = totalProduction
       await ns.sleep(5 * 60 * 1000);
     }

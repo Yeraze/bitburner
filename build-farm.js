@@ -21,6 +21,8 @@ export async function main(ns) {
           //  4. Increment our iterator to indicate that we've bought a new server
           var hostname = ns.purchaseServer(
                 "pserv-" + ns.getPurchasedServers().length, ram);
+          var msg = ns.sprintf("Bought %s" , hostname)
+          ns.toast(msg, "info")
       } else {
         await ns.sleep(30 * 1000);
       }

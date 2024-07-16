@@ -1,6 +1,6 @@
+import * as CONST from "reh-constants.js"
+
 /** @param {NS} ns */
-
-
 export function getServerList(ns) {
   var serverList = ["home"]
   var newServerList = []
@@ -49,5 +49,58 @@ export function parsearg(ns, flag, default_value) {
   } else {
     return ns.args[ns.args.indexOf(flag)+1] 
   }
+}
+
+export function table(ns, data, colours) {
+    let maxItemAmounts = data.map(arr => arr.length);
+    let maxLength = Math.max(...maxItemAmounts);
+    for (let i = 0; i < data.length; i++) {
+        while (data[i].length < maxLength) {
+            data[i].push("");
+        }
+    }
+
+    const h = "─";
+    const dt = "┬";
+    const ut = "┴";
+    const v = "│";
+    const ld = "┐";
+    const lu = "┘";
+    const ur = "┌";
+    const ud = "└";
+    let maxes = [];
+    for (let i = 0; i < data.length; i++) {
+        for (let j = 0; j < data[i].length; j++) {
+            if (maxes.length <= j) maxes.push(0);
+            maxes[j] = Math.max(maxes[j], data[i][j].length);
+        }
+    }
+    let upString = ur;
+    for (let max of maxes.slice(0,-1)) {
+        upString += h.repeat(max);
+        upString += dt;
+    }
+    upString += h.repeat(maxes[maxes.length - 1]);
+    upString += ld;
+    ns.tprint(upString);
+    for (let i = 0; i < data.length; i++) {
+        let column = v;
+        for (let j = 0; j < data[i].length; j++) {
+            let colour = colours[i % colours.length][j % colours[i % colours.length].length]; // fancy schmancy colour wrapping
+            let string = colour + data[i][j] + CONST.reset;
+            column += string;
+            column += " ".repeat(maxes[j] - data[i][j].length);
+            column += v;
+        }
+        ns.tprint(column);
+    }
+    let downString = ud;
+    for (let max of maxes.slice(0,-1)) {
+        downString += h.repeat(max);
+        downString += ut;
+    }
+    downString += h.repeat(maxes[maxes.length - 1]);
+    downString += lu;
+    ns.tprint(downString);
 }
 
