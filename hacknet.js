@@ -21,7 +21,7 @@ export async function main(ns) {
     var nodeCost = ns.hacknet.getPurchaseNodeCost()
 
     var upgrades = []
-    if(ns.hacknet.numNodes() < 8) {
+    if(ns.hacknet.numNodes() < 20) {
       if(nodeCost < cash) {
         var newRate = ns.formulas.hacknetNodes.moneyGainRate(1,1,1)
         upgrades.push( {node: -1,

@@ -11,7 +11,7 @@ export async function main(ns) {
   var ram = ns.getServerMaxRam(target) - 2.1;
   var tWeaken = Math.max(1, Math.floor((ram / 2) * 0.25))
   ram = ram - (tWeaken * 2)
-  if (ram <= 2) {
+  if ((ram <= 2) && (ns.args.length == 1)) {
     ns.printf("I can't do this, not enough ram!")
   } else {
     var tGrow = Math.max(1, Math.floor((ram / 2)))
