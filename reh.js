@@ -82,7 +82,7 @@ export function table(ns, data, colours) {
     }
     upString += h.repeat(maxes[maxes.length - 1]);
     upString += ld;
-    ns.tprint(upString);
+    ns.print(upString);
     for (let i = 0; i < data.length; i++) {
         let column = v;
         for (let j = 0; j < data[i].length; j++) {
@@ -92,7 +92,7 @@ export function table(ns, data, colours) {
             column += " ".repeat(maxes[j] - data[i][j].length);
             column += v;
         }
-        ns.tprint(column);
+        ns.print(column);
     }
     let downString = ud;
     for (let max of maxes.slice(0,-1)) {
@@ -101,6 +101,6 @@ export function table(ns, data, colours) {
     }
     downString += h.repeat(maxes[maxes.length - 1]);
     downString += lu;
-    ns.tprint(downString);
+    ns.print(downString);
 }
 

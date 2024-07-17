@@ -25,6 +25,8 @@ export async function main(ns) {
 
     ns.scp("remote_grow.js", server)
     let threads = Math.floor(ns.getServerMaxRam(server) / ns.getScriptRam("remote_grow.js"))
-    ns.exec("remote_grow.js", server, threads, target)
+    ns.exec("remote_grow.js", server, threads, target,
+      "--maxmoney", ns.getServerMaxMoney(server),
+      "--minsec", ns.getServerMinSecurityLevel(server))
   }
 }
