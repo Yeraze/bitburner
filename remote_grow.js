@@ -9,9 +9,10 @@ export async function main(ns) {
     return
   }
   const target= ns.args[0]
-  const maxMoney = parsearg("--maxmoney", -1)
-  const minSec= parsearg("--minsec", 0)
+  const maxMoney = parsearg(ns, "--maxmoney", -1)
+  const minSec= parsearg(ns, "--minsec", 0)
   let Money = ns.getServerMoneyAvailable(target)
+  ns.printf("MaxMoney = %s", maxMoney)
   while (Money < maxMoney){
     if (ns.getServerSecurityLevel(target) < minSec) 
       await ns.grow(target);
