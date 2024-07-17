@@ -1,10 +1,11 @@
+import {parsearg} from "reh.js"
 /** @param {NS} ns */
 export async function main(ns) {
-  var target = ns.getHostname();
-  if (ns.args.length > 0) {
-    target = ns.args[0]
+  if (ns.args.length < 3) {
+    ns.print("ERROR: Insufficient arguments")
   }
-  var maxMoney = ns.getServerMaxMoney(target);
+  var target = ns.args[0]
+  var maxMoney = parsearg(ns, "--maxmoney", -1)
   var moneyThresh = maxMoney * 0.9;
   while (true){
     const availMoney = ns.getServerMoneyAvailable(target);

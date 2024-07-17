@@ -1,10 +1,12 @@
+import {parsearg} from "reh.js"
 /** @param {NS} ns */
 export async function main(ns) {
-  var target = ns.getHostname();
-  if (ns.args.length > 0) {
-    target = ns.args[0]
+  if (ns.args.length < 3) {
+    ns.printf("ERROR: INsufficient args")
+    return
   }
-  var minSec= ns.getServerMinSecurityLevel(target);
+  var target = ns.args[0]
+  var minSec= parsearg(ns, "--minsec", 1)
   let Sec = ns.getServerSecurityLevel(target);
   while (true) {
     if (Sec > minSec*1.01){
