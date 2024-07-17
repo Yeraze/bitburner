@@ -6,7 +6,31 @@ export async function main(ns) {
   ns.disableLog('ALL')
   ns.tail()
   ns.resizeTail(800, 600)
+
+  let avgMoneyIncrease = [ns.getServerMoneyAvailable("home")]
+  var cash = ns.getServerMoneyAvailable("home")
   while (true) {
+    // Header line first, cash flow data
+    var newCash = ns.getServerMoneyAvailable("home")
+    avgMoneyIncrease.push(newCash - cash)
+    cash = newCash
+    while (avgMoneyIncrease.length > 10)
+      avgMoneyIncrease.shift()
+    
+    var cashRate = avgMoneyIncrease.reduce(
+        (partial, a) => (partial +a), 0 ) / avgMoneyIncrease.length
+    
+    var hnRate = 0
+    for(var index=0; index < ns.hacknet.numNodes(); index++) {
+      hnRate += ns.hacknet.getNodeStats(index).production
+    }
+
+    ns.printf("Money: $%s (+$%s/s)\t\t%i HN (+$%s/sec)",
+        ns.formatNumber(cash, 2), ns.formatNumber(cashRate, 2),
+        ns.hacknet.numNodes(),
+        ns.formatNumber(hnRate, 2))
+
+
     var serverList = getSortedServerList(ns)
     let tableData = []
     let tableColors = []
