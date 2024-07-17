@@ -1,12 +1,7 @@
+import {getServerList} from "reh.js"
 /** @param {NS} ns */
 export async function main(ns) {
-  const serverList = [
-        "n00dles","foodnstuff","sigma-cosmetics", "CSEC",
-        "joesguns", "hong-fang-tea", "nectar-net", "zer0",
-        "harakiri-sushi", "max-hardware", "iron-gym","omega-net",
-        "phantasy", "avmnite-02h", "neo-net", "silver-helix",
-        "rothman-uni", "I.I.I.I", "summit-uni", "the-hub",
-        "zb-institute","catalyst", "netlink"];
+  const serverList = getServerList(ns)
   const servers =serverList.concat(ns.getPurchasedServers());
   
   for (const server of servers) {

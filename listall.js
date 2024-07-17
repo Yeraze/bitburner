@@ -25,10 +25,11 @@ export async function main(ns) {
       hnRate += ns.hacknet.getNodeStats(index).production
     }
 
-    ns.printf("Money: $%s (+$%s/s)\t\t%i HN (+$%s/sec)",
+    ns.printf("Money: $%s (+$%s/s)\t%i HN (+$%s/sec)\t PS:%i",
         ns.formatNumber(cash, 2), ns.formatNumber(cashRate, 2),
         ns.hacknet.numNodes(),
-        ns.formatNumber(hnRate, 2))
+        ns.formatNumber(hnRate, 2),
+        ns.getPurchasedServers().length)
 
 
     var serverList = getSortedServerList(ns)

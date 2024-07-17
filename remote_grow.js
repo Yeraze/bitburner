@@ -10,7 +10,7 @@ export async function main(ns) {
   }
   const target= ns.args[0]
   const maxMoney = parsearg(ns, "--maxmoney", -1)
-  const minSec= parsearg(ns, "--minsec", 0)
+  const minSec= parsearg(ns, "--minsec", 0) * 1.05
   let Money = ns.getServerMoneyAvailable(target)
   ns.printf("MaxMoney = %s", maxMoney)
   while (Money < maxMoney){

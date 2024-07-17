@@ -17,13 +17,16 @@ export async function main(ns) {
   ns.printf("Targeting %s",target)
   for (const server of servers) {
     if (!ns.hasRootAccess(server)) 
-      continue
+      continue    // we don't have root
     if (ns.getServerMaxRam(server) == 0) 
-      continue
+      continue    // this server has no RAM
     if (ns.getServerUsedRam(server) > 1)
-      continue
+      continue    // somethign else is already here
     if (target == server) {
+      // This is the target server, so spawn a weaken for now
       let threads = Math.floor(ns.getServerMaxRam(server) / ramWeaken)
+      ns.scp("reh.js", server)
+      ns.scp("reh-constants.js", server)
       ns.scp("remote_weaken.js", server)
       ns.exec("remote_weaken.js", server, threads, target, "nostop")
       continue
