@@ -73,7 +73,9 @@ export async function main(ns) {
             "--",
           ns.formatRam(srv.maxRam, 0),
           status]
-        rowc = ["",  // server name
+        rowc = [status == "Remote Weaken" ? CONST.fgCyan : 
+                status == "Hacking.."    ? CONST.fgBlue :
+                "",  // server name
           ns.getServerRequiredHackingLevel(S) < ns.getHackingLevel() ?
             CONST.fgGreen : CONST.fgRed,
           srv.backdoorInstalled ? CONST.fgGreen : CONST.fgRed,

@@ -11,10 +11,11 @@ export async function main(ns) {
   const target= ns.args[0]
   const maxMoney = parsearg(ns, "--maxmoney", -1)
   const minSec= parsearg(ns, "--minsec", 0) * 1.05
+  const force= parsearg(ns, "--force", 0)
   let Money = ns.getServerMoneyAvailable(target)
   ns.printf("MaxMoney = %s", maxMoney)
   while (Money < maxMoney){
-    if (ns.getServerSecurityLevel(target) < minSec) 
+    if ((ns.getServerSecurityLevel(target) < minSec) || (force == 1)) 
       await ns.grow(target);
     else
       await ns.sleep(1000)

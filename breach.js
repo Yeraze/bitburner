@@ -4,7 +4,7 @@ export async function main(ns) {
   if (ns.args.length > 0)
     target= ns.args[0]
   
-  ns.tprintf("Breaching %s", target)
+  ns.printf("Breaching %s", target)
   const ramOfHack = 2.5;
   if (ns.fileExists("BruteSSH.exe", "home")) {
       ns.brutessh(target);

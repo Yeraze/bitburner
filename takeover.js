@@ -17,7 +17,6 @@ export async function main(ns) {
   
   ns.printf("PHASE1: global-weaken of %s", target)
   ns.exec("global-weaken.js", "home", 1, target)
-  ns.exec("remote_weaken.js", "home", 20, target, "nostop")
   while( ns.getServerSecurityLevel(target)>ns.getServerMinSecurityLevel(target)) {
     ns.printf("PHASE1: %s security is %i of %i",
       target, ns.getServerSecurityLevel(target), 
@@ -56,6 +55,7 @@ export async function main(ns) {
 
   await ns.sleep(1000)
   // cleanup
+  ns.scriptKill("remote_grow.js", "home")
   ns.scriptKill("remote_weaken.js", "home")
   ns.exec("global-cleanup.js", "home")
   await ns.sleep(1000)

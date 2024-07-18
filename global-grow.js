@@ -15,6 +15,9 @@ export async function main(ns) {
                  "--minsec", ns.getServerMinSecurityLevel(target)]
   
   ns.printf("Targeting %s",target)
+  if(ns.getServerMaxRam("home") > ramGrow*100) {
+    ns.exec("remote_grow.js", "home", 100, target, ...cmdArgs)
+  }
   for (const server of servers) {
     if (!ns.hasRootAccess(server)) 
       continue    // we don't have root
