@@ -34,7 +34,7 @@ export async function main(ns) {
                 / ramScript))
 
     ns.killall(S);
-    await ns.sleep(20);
+    await ns.sleep(250);
     ns.exec("loop_hack.js",   S, tHack, ...cmdArgs);
     ns.exec("loop_weaken.js", S, tWeaken, ...cmdArgs)
     ns.exec("loop_grow.js",   S, tGrow, ...cmdArgs)

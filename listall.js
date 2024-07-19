@@ -6,7 +6,8 @@ export async function main(ns) {
   ns.disableLog('ALL')
   ns.tail()
   ns.resizeTail(800, 600)
-
+  const progressIndicator = ["|", "/", "-", "\\"]
+  var progressPhase = 0;
   let avgMoneyIncrease = [ns.getServerMoneyAvailable("home")]
   var cash = ns.getServerMoneyAvailable("home")
   while (true) {
@@ -14,7 +15,7 @@ export async function main(ns) {
     var newCash = ns.getServerMoneyAvailable("home")
     avgMoneyIncrease.push(newCash - cash)
     cash = newCash
-    while (avgMoneyIncrease.length > 10)
+    while (avgMoneyIncrease.length > 60)
       avgMoneyIncrease.shift()
     
     var cashRate = avgMoneyIncrease.reduce(
@@ -25,18 +26,20 @@ export async function main(ns) {
       hnRate += ns.hacknet.getNodeStats(index).production
     }
 
-    ns.printf("Money: $%s (+$%s/s)\t%i HN (+$%s/sec)\t PS:%i",
+    ns.printf("Money: $%s (+$%s/s)\t%i HN (+$%s/sec)\t PS:%i\t%s",
         ns.formatNumber(cash, 2), ns.formatNumber(cashRate, 2),
         ns.hacknet.numNodes(),
         ns.formatNumber(hnRate, 2),
-        ns.getPurchasedServers().length)
-
+        ns.getPurchasedServers().length,
+        progressIndicator[progressPhase])
+    progressPhase = (progressPhase+1) % progressIndicator.length
 
     var serverList = getSortedServerList(ns)
     let tableData = []
     let tableColors = []
-    let row = ["Server Name", "Level", "B", "Security", "Money", "Avail", "Ram", "Status"]
+    let row = ["Server Name", "Level", "Value", "B", "Security", "Money", "Avail", "Ram", "Status"]
     let rowc = [CONST.fgWhite,
+      CONST.fgWhite,
       CONST.fgWhite,
       CONST.fgWhite,
       CONST.fgWhite,
@@ -48,7 +51,7 @@ export async function main(ns) {
     tableColors.push(rowc)
     for (const S of serverList) {
       var srv = ns.getServer(S)
-      if (ns.getServerMaxRam(S) == 0) 
+      if ((ns.getServerMaxRam(S) == 0) && (ns.args.indexOf("--all") == -1)) 
         continue
       if (ns.hasRootAccess(S)) {
         let status = "UNKNOWN"
@@ -63,8 +66,20 @@ export async function main(ns) {
         if (ns.scriptRunning("loop_hack.js", S))
           status = "Hacking.."
 
+        var msrv = ns.formulas.mockServer()
+        // Clone srv into msrv for tinkering
+        Object.assign(msrv, srv)
+        // Tweak msrv into optimal state
+        //. Max cash, min Security
+        msrv.moneyAvailable = msrv.moneyMax
+        msrv.hackDifficulty = msrv.minDifficulty
+        var hackAmount = msrv.moneyMax * ns.formulas.hacking.hackPercent(msrv, ns.getPlayer())
+        var hackTime = ns.formulas.hacking.hackTime(msrv, ns.getPlayer())
+        var value = ((hackAmount ) / hackTime)
+
         row = [S,
           ns.sprintf("%i", ns.getServerRequiredHackingLevel(S)),
+          ns.sprintf("%.1f", value),
           (srv.backdoorInstalled ? "Y" : "N"),
           ns.formatNumber(ns.getServerSecurityLevel(S), 2) + " / " +
           ns.formatNumber(ns.getServerMinSecurityLevel(S), 2),
@@ -80,6 +95,7 @@ export async function main(ns) {
                 "",  // server name
           ns.getServerRequiredHackingLevel(S) < ns.getHackingLevel() ?
             CONST.fgGreen : CONST.fgRed,
+          "",
           srv.backdoorInstalled ? CONST.fgGreen : CONST.fgRed,
           "",  // Security
           "",  // Money

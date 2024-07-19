@@ -7,6 +7,7 @@ export async function main(ns) {
   }
   var target = ns.args[0]
   var maxMoney = parsearg(ns, "--maxmoney", -1)
+  var minSec = parsearg(ns, "--minsec", -1)
   var force = parsearg(ns, "--force", 0)
   let Money = ns.getServerMoneyAvailable(target)
   while (true){
