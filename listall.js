@@ -48,6 +48,8 @@ export async function main(ns) {
     tableColors.push(rowc)
     for (const S of serverList) {
       var srv = ns.getServer(S)
+      if (ns.getServerMaxRam(S) == 0) 
+        continue
       if (ns.hasRootAccess(S)) {
         let status = "UNKNOWN"
         if (ns.scriptRunning("remote_grow.js", S))

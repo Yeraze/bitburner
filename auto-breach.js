@@ -44,6 +44,7 @@ export async function main(ns) {
       var srv = ns.getServer(server)
       if(server == "home")
         continue
+        /*
       if (srv.maxRam == 0)
         continue
       if(hackInProgress == "") {
@@ -63,6 +64,7 @@ export async function main(ns) {
           }
         }
       }
+      */
       
       if(ns.hasRootAccess(server))
         continue
@@ -77,6 +79,7 @@ export async function main(ns) {
       ns.exec("breach.js", "home", 1, server)
     }
     // Seeif any of the special game servers are ready for backdoor
+    /*
     if(enableBackdoor) {
       for(const server of backdoorServers) {
         var srv = ns.getServer(server)
@@ -96,7 +99,8 @@ export async function main(ns) {
         ns.killall(server)
         ns.exec("breach.js", "home", 1, server, "backdoor")
       }
-    }
+    }a*/
+    /*
     if (easyServer != "") {
       // We have an easy server to consider for hack
       ns.printf("Establishing target %s [%i]", easyServer, easyServerLvl)
@@ -133,6 +137,7 @@ export async function main(ns) {
         }
       }
     }
+    */
     contractCounter--;
     if(contractCounter <= 0) {
       contractCounter = contractCycle;
