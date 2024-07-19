@@ -30,9 +30,11 @@ export async function main(ns) {
 
     var tWeaken = Math.max(1, Math.floor((ram / ramScript) * 0.15))
     var tHack   = Math.max(1, Math.floor((ram / ramScript) * 0.10))
-    var tGrow   = Math.max(1, Math.floor((ram / ramScript) * 0.75))
+    var tGrow   = Math.max(1, Math.floor((ram - (tWeaken + tHack)*ramScript) 
+                / ramScript))
 
-    ns.killall(target);
+    ns.killall(S);
+    await ns.sleep(20);
     ns.exec("loop_hack.js",   S, tHack, ...cmdArgs);
     ns.exec("loop_weaken.js", S, tWeaken, ...cmdArgs)
     ns.exec("loop_grow.js",   S, tGrow, ...cmdArgs)
