@@ -34,6 +34,8 @@ export async function main(ns) {
       continue
 
     var target = targets[targetId]
+    if (!ns.hasRootAccess(target))
+      continue
     var cmdArgs = [
       "--maxmoney", ns.getServerMaxMoney(target),
       "--minsec", ns.getServerMinSecurityLevel(target)]

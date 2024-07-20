@@ -3,14 +3,15 @@ export function autocomplete(data, args) {
 }
 /** @param {NS} ns */
 export async function main(ns) {
-  const targets = ns.args.slice(0, -1)
+  var targets = ns.args.slice(0, -1)
   var threadCount = ns.args.slice(-1)
   ns.exec("crosshair.js", "home", 1, ...targets)
-
-  if (targets.indexOf("EXTEND") != -1) {
-    // Extend a running job
-    if(ns.scriptRunning("loop_hack.js", "home"))
-      return
+  ns.tprintf("Requested Threadcount: %i", threadCount)
+  var extend = (targets.indexOf("EXTEND") != -1)
+  if(extend) {
+    var newTargets = targets.filter((a) => (a != "EXTEND"))
+    ns.tprintf("Extending to new systems")
+    targets = newTargets
   }
   ns.scriptKill("loop_weaken.js", "home")
   ns.scriptKill("loop_hack.js", "home")

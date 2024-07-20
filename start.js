@@ -5,9 +5,13 @@ export async function main(ns) {
   ns.tprintf("Starting auto-breach.js")
   if(ns.scriptRunning("auto-breach.js", "home") == false)
     ns.exec("auto-breach.js", "home")
-  ns.tprintf("starting hacknet.js")
-  if(ns.scriptRunning("hacknet.js", "home") == false)
-    ns.exec("hacknet.js", "home")
+  if (ns.getServerMaxMoney("home") > 1000000) {
+    ns.tprintf("starting hacknet.js")
+    if(ns.scriptRunning("hacknet.js", "home") == false)
+      ns.exec("hacknet.js", "home")
+  } else {
+    ns.tprintf("Loaded, skipping hacknet")
+  }
 
   // These scripts area bit "fat",so make sure we have ram
   if (ns.getServerMaxRam("home") > 128) {
@@ -20,7 +24,7 @@ export async function main(ns) {
   }
   var localThreadCount = Math.max(4, 
           Math.floor((ns.getServerMaxRam("home") * .75) / 2))
-
+  ns.tprintf("localThread safety = %i" , localThreadCount)
   // At the beginning of the game, not much we can do but hack n00dles
   if (ns.getHackingLevel() < 10) {
     ns.exec("blast.js", "home",1, "n00dles", localThreadCount)
@@ -37,62 +41,66 @@ export async function main(ns) {
   //.   For Purchased servers, monitor total RAM available
   //        to account for Upgrades
   // When those come online, add them to the queue
-  ns.exec("blast.js", "home",1, "joesguns", localThreadCount)
-  var ramPServers = ns.getPurchasedServers().reduce(
-      (a,b) => a + ns.getServerMaxRam(b), 0  )
-  var numNPCServers = getServerList(ns).reduce(
-      (a, S) => a+ (ns.hasRootAccess(S) ? 1 : 0),0)
-  while (ns.getHackingLevel() < 300) {
-    await ns.sleep(1000);
-    var newServers = false
-    var pservRam = ns.getPurchasedServers().reduce(
-      (a,b) => a + ns.getServerMaxRam(b), 0    )
-    if (pservRam > ramPServers) {
-      newServers = true
-      ramPServers = pservRam
+  if (ns.getHackingLevel()< 300) {
+    ns.exec("blast.js", "home",1, "joesguns", localThreadCount)
+    var ramPServers = ns.getPurchasedServers().reduce(
+        (a,b) => a + ns.getServerMaxRam(b), 0  )
+    var numNPCServers = getServerList(ns).reduce(
+        (a, S) => a+ (ns.hasRootAccess(S) ? 1 : 0),0)
+    while (ns.getHackingLevel() < 300) {
+      await ns.sleep(1000);
+      var newServers = false
+      var pservRam = ns.getPurchasedServers().reduce(
+        (a,b) => a + ns.getServerMaxRam(b), 0    )
+      if (pservRam > ramPServers) {
+        newServers = true
+        ramPServers = pservRam
+      }
+      var curnumNPCServers = getServerList(ns).reduce(
+        (a, S) => a+ (ns.hasRootAccess(S) ? 1 : 0),0)
+      if(curnumNPCServers > numNPCServers) {
+        newServers = true
+        numNPCServers = curnumNPCServers
+      }
+      if (newServers) {
+        ns.exec("blast.js", "home",1, "joesguns", "EXTEND", localThreadCount)
+      }
     }
-    var curnumNPCServers = getServerList(ns).reduce(
-      (a, S) => a+ (ns.hasRootAccess(S) ? 1 : 0),0)
-    if(curnumNPCServers > numNPCServers) {
-      newServers = true
-      numNPCServers = curnumNPCServers
-    }
-    if (newServers) {
-      ns.exec("blast.js", "home",1, "joesguns", "EXTEND", localThreadCount)
-    }
+    ns.exec("global-cleanup.js", "home", 1, "--loop")
+    await ns.sleep(1000)
   }
 
   // Once we hit level 300, we can move on to 
   // joesguns & phantasy
 
-  ns.exec("global-cleanup.js", "home", 1, "--loop")
-  await ns.sleep(1000)
-  ns.exec("blast.js", "home",1, "joesguns", "phantasy", "4")
-  var ramPServers = ns.getPurchasedServers().reduce(
-      (a,b) => a + ns.getServerMaxRam(b), 0  )
-  numNPCServers = getServerList(ns).reduce(
-      (a, S) => a+ (ns.hasRootAccess(S) ? 1 : 0),0)
-  while (ns.getHackingLevel() < 1000) {
-    await ns.sleep(1000);
-    var newServers = false
-    var pservRam = ns.getPurchasedServers().reduce(
-      (a,b) => a + ns.getServerMaxRam(b), 0    )
-    if (pservRam > ramPServers) {
-      newServers = true
-      ramPServers = pservRam
+  if(ns.getHackingLevel() < 1000) {
+    ns.exec("blast.js", "home",1, "joesguns", "phantasy", localThreadCount)
+    var ramPServers = ns.getPurchasedServers().reduce(
+        (a,b) => a + ns.getServerMaxRam(b), 0  )
+    numNPCServers = getServerList(ns).reduce(
+        (a, S) => a+ (ns.hasRootAccess(S) ? 1 : 0),0)
+    while (ns.getHackingLevel() < 1000) {
+      await ns.sleep(1000);
+      var newServers = false
+      var pservRam = ns.getPurchasedServers().reduce(
+        (a,b) => a + ns.getServerMaxRam(b), 0    )
+      if (pservRam > ramPServers) {
+        newServers = true
+        ramPServers = pservRam
+      }
+      var curnumNPCServers = getServerList(ns).reduce(
+        (a, S) => a+ (ns.hasRootAccess(S) ? 1 : 0),0)
+      if(curnumNPCServers > numNPCServers) {
+        newServers = true
+        numNPCServers = curnumNPCServers
+      }
+      if (newServers) {
+        ns.exec("blast.js", "home",1, "joesguns", "phantasy", "EXTEND", localThreadCount)
+      }
     }
-    var curnumNPCServers = getServerList(ns).reduce(
-      (a, S) => a+ (ns.hasRootAccess(S) ? 1 : 0),0)
-    if(curnumNPCServers > numNPCServers) {
-      newServers = true
-      numNPCServers = curnumNPCServers
-    }
-    if (newServers) {
-      ns.exec("blast.js", "home",1, "joesguns", "phantasy", "EXTEND", localThreadCount)
-    }
+    ns.exec("global-cleanup.js", "home", 1, "--loop")
+    await ns.sleep(1000)
   }
-  ns.exec("global-cleanup.js", "home", 1, "--loop")
-  await ns.sleep(1000)
   ns.exec("blast.js", "home",1, "joesguns", "phantasy", "the-hub", "4")
   // Once we hit level 1000, just let 
   // these 3run open with a blast.. Anything beyond here
