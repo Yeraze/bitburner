@@ -12,7 +12,11 @@ export async function main(ns) {
   let Money = ns.getServerMoneyAvailable(target)
   while (true){
     if ((Money < (maxMoney*0.92)) || (force == 1)){
-      await ns.grow(target);
+      if (ns.getServerSecurityLevel(target) < minSec * 1.2) {
+        await ns.grow(target);
+      } else {
+        await ns.sleep(20 + (Math.random()*100.0))
+      }
     } else {
       await ns.sleep(1000);
     }
