@@ -1,15 +1,22 @@
 import {getServerList} from 'reh.js'
 /** @param {NS} ns */
 export async function main(ns) {
-  ns.disableLog('sleep')
   ns.tprint("Initial setup...")
-  ns.exec("auto-breach.js", "home")
-  ns.exec("hacknet.js", "home")
+  ns.tprintf("Starting auto-breach.js")
+  if(ns.scriptRunning("auto-breach.js", "home") == false)
+    ns.exec("auto-breach.js", "home")
+  ns.tprintf("starting hacknet.js")
+  if(ns.scriptRunning("hacknet.js", "home") == false)
+    ns.exec("hacknet.js", "home")
 
   // These scripts area bit "fat",so make sure we have ram
   if (ns.getServerMaxRam("home") > 128) {
-    ns.exec("build-farm.js", "home")
-    ns.exec("listall.js", "home", 1, "--loop")
+    ns.tprintf("Starting build-farm.js")
+    if(ns.scriptRunning("build-farm.js", "home") == false)
+      ns.exec("build-farm.js", "home")
+    ns.tprintf("starting listall.js")
+    if(ns.scriptRunning("listall.js", "home") == false)
+      ns.exec("listall.js", "home", 1, "--loop")
   }
   var localThreadCount = Math.min(4, 
           Math.floor((ns.getServerMaxRam("home") * .75) / 2))
@@ -32,20 +39,23 @@ export async function main(ns) {
   // When those come online, add them to the queue
   ns.exec("blast.js", "home",1, "joesguns", localThreadCount)
   var ramPServers = ns.getPurchasedServers().reduce(
-      (a,b) => a + ns.getServerMaxRam(B), 0  )
-  var numNPCServers = getServerList().filter((S) => ns.hasRootAccess(S)).length()
+      (a,b) => a + ns.getServerMaxRam(b), 0  )
+  var numNPCServers = getServerList(ns).reduce(
+      (a, S) => a+ (ns.hasRootAccess(S) ? 1 : 0),0)
   while (ns.getHackingLevel() < 300) {
     await ns.sleep(1000);
     var newServers = false
     var pservRam = ns.getPurchasedServers().reduce(
-      (a,b) => a + ns.getServerMaxRam(B), 0    )
+      (a,b) => a + ns.getServerMaxRam(b), 0    )
     if (pservRam > ramPServers) {
       newServers = true
       ramPServers = pservRam
     }
-    if(getServerList().filter((S) => ns.hasRootAccess(S)).length > numNPCServers) {
+    var curnumNPCServers = getServerList(ns).reduce(
+      (a, S) => a+ (ns.hasRootAccess(S) ? 1 : 0),0)
+    if(curnumNPCServers > numNPCServers) {
       newServers = true
-      numNPCServers = getServerList().filter((S) => ns.hasRootAccess(S)).length()
+      numNPCServers = curnumNPCServers
     }
     if (newServers) {
       ns.exec("blast.js", "home",1, "joesguns", localThreadCount)
@@ -59,20 +69,23 @@ export async function main(ns) {
   await ns.sleep(1000)
   ns.exec("blast.js", "home",1, "joesguns", "phantasy", "4")
   var ramPServers = ns.getPurchasedServers().reduce(
-      (a,b) => a + ns.getServerMaxRam(B), 0  )
-  numNPCServers = getServerList().filter((S) => ns.hasRootAccess(S)).length()
+      (a,b) => a + ns.getServerMaxRam(b), 0  )
+  numNPCServers = getServerList(ns).reduce(
+      (a, S) => a+ (ns.hasRootAccess(S) ? 1 : 0),0)
   while (ns.getHackingLevel() < 1000) {
     await ns.sleep(1000);
     var newServers = false
     var pservRam = ns.getPurchasedServers().reduce(
-      (a,b) => a + ns.getServerMaxRam(B), 0    )
+      (a,b) => a + ns.getServerMaxRam(b), 0    )
     if (pservRam > ramPServers) {
       newServers = true
       ramPServers = pservRam
     }
-    if(getServerList().filter((S) => ns.hasRootAccess(S)).length > numNPCServers) {
+    var curnumNPCServers = getServerList(ns).reduce(
+      (a, S) => a+ (ns.hasRootAccess(S) ? 1 : 0),0)
+    if(curnumNPCServers > numNPCServers) {
       newServers = true
-      numNPCServers = getServerList().filter((S) => ns.hasRootAccess(S)).length()
+      numNPCServers = curnumNPCServers
     }
     if (newServers) {
       ns.exec("blast.js", "home",1, "joesguns", "phantasy", localThreadCount)
