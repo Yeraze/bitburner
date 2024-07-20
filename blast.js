@@ -19,10 +19,14 @@ export async function main(ns) {
       "--minsec", ns.getServerMinSecurityLevel(target),
       "--maxmoney", ns.getServerMaxMoney(target)]
   
-  
-    ns.exec("loop_weaken.js", "home", Math.floor(threadCount * 0.15), ...cmdArgs)
-    ns.exec("loop_hack.js", "home", Math.floor(threadCount * 0.10), ...cmdArgs)
-    ns.exec("loop_grow.js", "home", Math.floor(threadCount * 0.75), ...cmdArgs)
+    
+    var tWeaken = Math.max(1, Math.floor(threadCount * 0.15))
+    var tHack = Math.max(1, Math.floor(threadCount * 0.10))
+    var tGrow = Math.max(1, threadCount - tWeaken - tHack)
+    ns.tprintf("->H:%s G:%s W:%s",tHack, tGrow, tWeaken)
+    ns.exec("loop_weaken.js", "home", tWeaken, ...cmdArgs)
+    ns.exec("loop_hack.js", "home", tHack, ...cmdArgs)
+    ns.exec("loop_grow.js", "home", tGrow, ...cmdArgs)
   }
 
 }
