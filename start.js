@@ -18,7 +18,7 @@ export async function main(ns) {
     if(ns.scriptRunning("listall.js", "home") == false)
       ns.exec("listall.js", "home", 1, "--loop")
   }
-  var localThreadCount = Math.min(4, 
+  var localThreadCount = Math.max(4, 
           Math.floor((ns.getServerMaxRam("home") * .75) / 2))
 
   // At the beginning of the game, not much we can do but hack n00dles
@@ -58,7 +58,7 @@ export async function main(ns) {
       numNPCServers = curnumNPCServers
     }
     if (newServers) {
-      ns.exec("blast.js", "home",1, "joesguns", localThreadCount)
+      ns.exec("blast.js", "home",1, "joesguns", "EXTEND", localThreadCount)
     }
   }
 
@@ -88,7 +88,7 @@ export async function main(ns) {
       numNPCServers = curnumNPCServers
     }
     if (newServers) {
-      ns.exec("blast.js", "home",1, "joesguns", "phantasy", localThreadCount)
+      ns.exec("blast.js", "home",1, "joesguns", "phantasy", "EXTEND", localThreadCount)
     }
   }
   ns.exec("global-cleanup.js", "home", 1, "--loop")

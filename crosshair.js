@@ -1,18 +1,24 @@
-import {getServerList} from "reh.js"
+import {getSortedServerList} from "reh.js"
 export function autocomplete(data, args) {
     return [...data.servers]; // This script autocompletes the list of servers.
 }
 /** @param {NS} ns */
 export async function main(ns) {
-  const targets = ns.args
+  var targets = ns.args
   var ramScript = Math.max(ns.getScriptRam("loop_hack.js"),
                             ns.getScriptRam("loop_weaken.js"), 
                             ns.getScriptRam("loop_grow.js"))
+
+
+  var extend = (targets.indexOf("EXTEND") != -1)
+  if(extend) {
+    var newTargets = targets.filter((a) => (a != "EXTEND"))
+    ns.tprintf("Extending to new systems")
+    targets = newTargets
+  }
   ns.tprintf("Cross targets: %s", targets)
-
-
   var targetId = 0
-  for(const S of getServerList(ns).concat(ns.getPurchasedServers())) {
+  for(const S of getSortedServerList(ns).concat(ns.getPurchasedServers())) {
     // copy the scripts we need
     ns.scp("reh.js", S)
     ns.scp("reh-constants.js", S)
@@ -36,9 +42,16 @@ export async function main(ns) {
     var tHack   = Math.max(1, Math.floor((ram / ramScript) * 0.10))
     var tGrow   = Math.max(1, Math.floor((ram - (tWeaken + tHack)*ramScript) 
                 / ramScript))
+
+    if (extend) {
+      var scriptPid = ns.getRunningScript("loop_grow.js", S, target, ...cmdArgs)
+      if (scriptPid) {
+        if (scriptPid.threads == tGrow)
+          continue
+      }
+    }
     ns.tprintf("-> %s Crosshair target: %s [H:%i G:%i W:%i]", 
           S, target, tHack, tGrow, tWeaken)
-
     ns.killall(S);
     await ns.sleep(250);
     ns.exec("loop_hack.js",   S, tHack, target, ...cmdArgs);

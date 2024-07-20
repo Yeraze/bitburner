@@ -7,6 +7,11 @@ export async function main(ns) {
   var threadCount = ns.args.slice(-1)
   ns.exec("crosshair.js", "home", 1, ...targets)
 
+  if (targets.indexOf("EXTEND") != -1) {
+    // Extend a running job
+    if(ns.scriptRunning("loop_hack.js", "home"))
+      return
+  }
   ns.scriptKill("loop_weaken.js", "home")
   ns.scriptKill("loop_hack.js", "home")
   ns.scriptKill("loop_grow.js", "home")
