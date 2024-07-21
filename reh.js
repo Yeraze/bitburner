@@ -14,8 +14,8 @@ export async function execAndWait(ns, script, host, ...cmdArgs) {
   var pid= ns.exec(script, host, ...cmdArgs)
   while (ns.isRunning(pid, host)) {
     await ns.sleep(500)
-  ns.tprintf("-> [%s]:%s Finished...", host, script)
   }
+  ns.tprintf("-> [%s]:%s Finished...", host, script)
 }
 /** @param {NS} ns */
 export function getServerList(ns) {

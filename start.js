@@ -37,5 +37,5 @@ async function hackUntilLevel(ns, target, stopAtLevel) {
 
   while (ns.getHackingLevel() < stopAtLevel)
     await ns.sleep(1000);
-  execAndWait(ns, "global-cleanup.js", "home", 1, "--super")
+  await execAndWait(ns, "global-cleanup.js", "home", 1, "--super")
 }

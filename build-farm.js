@@ -37,6 +37,8 @@ export async function main(ns) {
         if(ns.getServerMaxRam(S) >= upgrade) {
           continue
         }
+        if(keepgoing)
+          continue
         if(ns.getServerMoneyAvailable("home") > ns.getPurchasedServerUpgradeCost(S, upgrade)) {
           ns.upgradePurchasedServer(S, upgrade)
           ns.toast(ns.sprintf("Upgraded %s to %i RAM", S, upgrade), "info")
