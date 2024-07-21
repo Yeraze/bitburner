@@ -42,7 +42,8 @@ export async function main(ns) {
           ns.toast(ns.sprintf("Upgraded %s to %i RAM", S, upgrade), "info")
         } else {
           keepgoing = true
-          ns.tprintf("Upgrade of %s costs %i", S, ns.getPurchasedServerUpgradeCost(S, upgrade))
+          ns.tprintf("Upgrade of %s costs $%s", S, 
+              ns.formatNumber(ns.getPurchasedServerUpgradeCost(S, upgrade)))
         }
       }
       await ns.sleep(30 * 1000)

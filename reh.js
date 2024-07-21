@@ -1,6 +1,23 @@
 import * as CONST from "reh-constants.js"
 
 /** @param {NS} ns */
+export function execContinue(ns, script, host, ...cmdArgs) {
+  if (ns.scriptRunning(script, host) == false) {
+    ns.tprintf("Launching [%s]:%s...", host, script)
+    ns.exec(script, host, ...cmdArgs)
+  }
+}
+
+/** @param {NS} ns */
+export async function execAndWait(ns, script, host, ...cmdArgs) {
+  ns.tprintf("Launching [%s]:%s and waiting...", host, script)
+  var pid= ns.exec(script, host, ...cmdArgs)
+  while (ns.isRunning(pid, host)) {
+    await ns.sleep(500)
+  ns.tprintf("-> [%s]:%s Finished...", host, script)
+  }
+}
+/** @param {NS} ns */
 export function getServerList(ns) {
   var serverList = ["home"]
   var newServerList = []

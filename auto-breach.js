@@ -76,6 +76,7 @@ export async function main(ns) {
       ns.printf("[%s] P:%i L:%i", server, 
         srv.numOpenPortsRequired, ns.getServerRequiredHackingLevel(server))  
       ns.printf("Breaching %s", server)
+      ns.tprintf("Breaching %s", server)
       ns.exec("breach.js", "home", 1, server)
     }
     // Seeif any of the special game servers are ready for backdoor
