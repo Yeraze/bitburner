@@ -22,15 +22,8 @@ export async function main(ns) {
     var cashRate = avgMoneyIncrease.reduce(
         (partial, a) => (partial +a), 0 ) / avgMoneyIncrease.length
     
-    var hnRate = 0
-    for(var index=0; index < ns.hacknet.numNodes(); index++) {
-      hnRate += ns.hacknet.getNodeStats(index).production
-    }
-
-    ns.printf("Money: $%s (+$%s/s)\t%i HN (+$%s/sec)\t PS:%i\t%s",
+    ns.printf("Money: $%s (+$%s/s)\t\t\t\t PS:%i\t%s",
         ns.formatNumber(cash, 2), ns.formatNumber(cashRate*4.0, 2),
-        ns.hacknet.numNodes(),
-        ns.formatNumber(hnRate, 2),
         ns.getPurchasedServers().length,
         progressIndicator[progressPhase])
     progressPhase = (progressPhase+1) % progressIndicator.length

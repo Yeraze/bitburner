@@ -65,6 +65,21 @@ export async function main(ns) {
           status = "Hacking.."
         if (ns.scriptRunning("loop_hack.js", S))
           status = "Hacking.."
+        if (ns.scriptRunning("batcher/tHack.js", S)) {
+          if (status == "UNKNOWN")
+            status = ""
+          status += "[H]"
+        }
+        if (ns.scriptRunning("batcher/tGrow.js", S)) {
+          if (status == "UNKNOWN")
+            status = ""
+          status = "[G]"
+        }
+        if (ns.scriptRunning("batcher/tWeaken.js", S)) {
+          if (status == "UNKNOWN")
+            status = ""
+          status = "[W]"
+        }
 
         var msrv = ns.formulas.mockServer()
         // Clone srv into msrv for tinkering

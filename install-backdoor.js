@@ -1,3 +1,7 @@
+export function autocomplete(data, args) {
+    return [...data.servers]; // This script autocompletes the list of servers.
+}
+
 /** @param {NS} ns */
 export async function main(ns) {
   var target = ns.args[0]
@@ -15,4 +19,5 @@ export async function main(ns) {
   }
   ns.printf("Installing backdoor...")
   await ns.singularity.installBackdoor();
+  ns.singularity.connect("home")
 }

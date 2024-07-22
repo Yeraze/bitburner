@@ -44,27 +44,6 @@ export async function main(ns) {
       var srv = ns.getServer(server)
       if(server == "home")
         continue
-        /*
-      if (srv.maxRam == 0)
-        continue
-      if(hackInProgress == "") {
-        if(ns.hasRootAccess(server) && (srv.moneyAvailable > 0)) {
-          let alreadyHacked = false
-          if (ns.getServerMaxRam(server) == 0)
-            alreadyHacked = true // Not entire correct, butgood enough
-          if (ns.scriptRunning("loop_hack.js", server))
-            alreadyHacked = true
-          if (ns.scriptRunning("simplehack.js", server))
-            alreadyHacked = true
-          if (alreadyHacked == false) {
-            if (ns.getServerRequiredHackingLevel(server) < easyServerLvl) {
-              easyServerLvl = ns.getServerRequiredHackingLevel(server)
-              easyServer = server
-            }
-          }
-        }
-      }
-      */
       
       if(ns.hasRootAccess(server))
         continue
@@ -79,66 +58,6 @@ export async function main(ns) {
       ns.tprintf("Breaching %s", server)
       ns.exec("breach.js", "home", 1, server)
     }
-    // Seeif any of the special game servers are ready for backdoor
-    /*
-    if(enableBackdoor) {
-      for(const server of backdoorServers) {
-        var srv = ns.getServer(server)
-        if(!ns.hasRootAccess(server)) {
-          continue  // We needto have root first
-        }
-        if(srv.backdoorInstalled) {
-          continue  // No sense doing it a 2nd time
-        }
-        if(srv.requiredHackingSkill > ns.getHackingLevel()) {
-          continue  // we need to be higher level
-        }
-        if(ns.scriptRunning("breach.js", server)) {
-          continue  // already underway
-        }
-        ns.printf("-> BACKDOOR of %s", server)
-        ns.killall(server)
-        ns.exec("breach.js", "home", 1, server, "backdoor")
-      }
-    }a*/
-    /*
-    if (easyServer != "") {
-      // We have an easy server to consider for hack
-      ns.printf("Establishing target %s [%i]", easyServer, easyServerLvl)
-      if (ns.getServerRequiredHackingLevel(easyServer) > ns.getHackingLevel()) {
-        ns.printf("-> Cannot hack,required level %i", 
-            ns.getServerRequiredHackingLevel(easyServer))
-      } else {
-        hackInProgress = easyServer
-        if (ns.getServerMaxRam(easyServer) < 8) {
-          ns.printf(" -> Initiating simplehack.js on %s", easyServer)
-          ns.scp("simplehack.js", easyServer)
-          ns.exec("simplehack.js", easyServer, 1, easyServer)
-          ns.exec("continuous_hack.js", "home", 1, easyServer, "100") 
-          hackInProgress = ""
-        } else {
-          var msg = ns.sprintf("Initiating takeover of %s", hackInProgress)
-          ns.toast(msg, "success")
-          ns.exec("takeover.js", "home", 1, hackInProgress)
-        }
-      }
-    } else {
-      if (hackInProgress != "") {
-        if (ns.scriptRunning("takeover.js", "home") == false) {
-          var msg = ns.sprintf("Hack of %s complete", hackInProgress)
-          ns.toast(msg, "success")
-          hackInProgress = ""
-        } else {
-          ns.printf("Takeover ongoing: %s Security: %i/%i Money: $%s/$%s",
-            hackInProgress, 
-            ns.getServerSecurityLevel(hackInProgress),
-            ns.getServerMinSecurityLevel(hackInProgress),
-            ns.formatNumber(ns.getServerMoneyAvailable(hackInProgress), 0),
-            ns.formatNumber(ns.getServerMaxMoney(hackInProgress), 0))
-        }
-      }
-    }
-    */
     contractCounter--;
     if(contractCounter <= 0) {
       contractCounter = contractCycle;

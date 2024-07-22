@@ -18,7 +18,7 @@ export async function main(ns) {
   }
   ns.tprintf("Cross targets: %s", targets)
   var targetId = 0
-  for(const S of getSortedServerList(ns).concat(ns.getPurchasedServers())) {
+  for(const S of getSortedServerList(ns)) {
     // copy the scripts we need
     ns.scp("reh.js", S)
     ns.scp("reh-constants.js", S)

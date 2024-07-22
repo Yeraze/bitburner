@@ -7,6 +7,14 @@ export function execContinue(ns, script, host, ...cmdArgs) {
     ns.exec(script, host, ...cmdArgs)
   }
 }
+/** @param {NS} ns */
+export function rehprintf(ns, format, ...printvars) {
+  ns.tprintf(format, ...printvars)
+  ns.printf(format, ...printvars)
+
+  var msg = ns.sprintf(format, ...printvars)
+  ns.toast(msg, "info")
+}
 
 /** @param {NS} ns */
 export async function execAndWait(ns, script, host, ...cmdArgs) {
@@ -32,8 +40,6 @@ export function getServerList(ns) {
       //. - Seeif we already own it
       // If neither of these are true, remember it
       for(const connected of network){
-        if(ns.getServer(connected).purchasedByPlayer) 
-          continue
         if(newServerList.indexOf(connected) == -1) {
           newServerList = newServerList.concat(connected)
         }
