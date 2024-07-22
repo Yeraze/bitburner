@@ -12,6 +12,13 @@ export async function main(ns) {
     if(ns.args.indexOf("--super") != -1) {
       if(server != "home")
         ns.killall(server)
+      else {
+        ns.scriptKill("batcher/controller.js", "home")
+        ns.scriptKill("batcher/tGrow.js", "home")
+        ns.scriptKill("batcher/tWeaken.js", "home")
+        ns.scriptKill("batcher/tHack.js", "home")
+
+      }
     } else {
       if(ns.scriptRunning("remote_weaken.js", server))
         ns.scriptKill("remote_weaken.js", server)

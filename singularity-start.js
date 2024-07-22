@@ -19,25 +19,32 @@ export async function main(ns) {
   ns.singularity.purchaseTor();
 
   var keepGoing = true
+  var factionList = []
   while(keepGoing) {
     await ns.sleep(1000)
     keepGoing = false;
     for(var prog of ns.singularity.getDarkwebPrograms()) {
-      if (ns.singularity.getDarkwebProgramCost(prog) > ns.getServerMoneyAvailable("home")) {
-        keepGoing = true
-        continue
+      if(ns.fileExists(prog, "home") == false) {
+        if (ns.singularity.getDarkwebProgramCost(prog) > ns.getServerMoneyAvailable("home")) {
+          keepGoing = true
+          continue
+        }
+        rehprintf(ns, "Buying program %s", prog)
+        ns.singularity.purchaseProgram(prog)
       }
-      rehprintf("ns, Buying program %s", prog)
-      ns.singularity.purchaseProgram(prog)
     }
 
     for(var faction of ns.singularity.checkFactionInvitations()) {
-      if (ns.singularity.getFactionEnemies(faction).length == 0) {
-        rehprintf(ns, "Joining faction %s", faction)
-        ns.singularity.joinFaction(faction)
-        ns.singularity.workForFaction(faction, "hacking")
-      } else {
-        rehprintf(ns, "Not joining faction %s, due to enemies", faction)
+      if(factionList.indexOf(faction) == -1) {
+        factionList.push(faction)
+        if (ns.singularity.getFactionEnemies(faction).length == 0) {
+          rehprintf(ns, "Joining faction %s", faction)
+          ns.singularity.joinFaction(faction)
+          ns.scriptKill("s_crime.js", "home")
+          ns.singularity.workForFaction(faction, "hacking")
+        } else {
+          rehprintf(ns, "Not joining faction %s, due to enemies", faction)
+        }
       }
     }
 
@@ -46,10 +53,17 @@ export async function main(ns) {
       // if we are of sufficient level to hack
       //    and have root access
       //    and there is no backdoor
-      if(ns.getHackingLevel() > ns.getServerRequiredHackingLevel(S))
-        if(ns.hasRootAccess(S) == true)
-          if(ns.getServer(S).backdoorInstalled == false)
-            await execAndWait(ns, "install-backdoor.js", "home", 1, S)
+      if(ns.getHackingLevel() < ns.getServerRequiredHackingLevel(S)) {
+        keepGoing = true
+        continue
+      }
+      if(!ns.hasRootAccess(S)) {
+        keepGoing = true
+        continue
+      }
+      if(ns.getServer(S).backdoorInstalled)
+        continue
+      await execAndWait(ns, "install-backdoor.js", "home", 1, S)
     }
   }
 }

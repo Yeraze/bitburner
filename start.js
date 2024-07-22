@@ -48,11 +48,31 @@ async function hackUntilLevel(ns, target, stopAtLevel) {
     await ns.sleep(1000);
   while (ns.getHackingLevel() < ns.getServerRequiredHackingLevel(target)) 
     await ns.sleep(1000)
-  rehprintf(ns, "HWGW Attack on %s", target)
+  var totalRam = getServerList(ns)
+      .filter((S) => ns.hasRootAccess(S))
+      .reduce((a, S) => (a + ns.getServerMaxRam(S)), 0)
+  rehprintf(ns, "HWGW Attack on %s (%s available ram)", target, 
+      ns.formatRam(totalRam))
   ns.exec("batcher/controller.js", "home", 1, target)
-
-  while (ns.getHackingLevel() < stopAtLevel)
-    await ns.sleep(1000);
+  var spokenRam = totalRam
+  while (ns.getHackingLevel() < stopAtLevel) {
+    await ns.sleep(5000);
+    var totalRamNow = getServerList(ns)
+      .filter((S) => ns.hasRootAccess(S))
+      .reduce((a, S) => (a + ns.getServerMaxRam(S)), 0)
+    if(totalRamNow!=spokenRam){
+      ns.printf("Detected new ram: %s", ns.formatRam(totalRamNow)) 
+      spokenRam= totalRamNow
+    }
+    if (totalRamNow > totalRam * 1.50) {
+      rehprintf("-> Restarting HWGW attack on %i (%i available ram)",
+        target, totalRamNow)
+      // Significant uptick in available ram.. so let's restart
+      await execAndWait(ns, "global-cleanup.js", "home", 1, "--super")
+      ns.exec("batcher/controller.js", "home", 1, target)
+      totalRam = totalRamNow
+    }
+  }
   rehprintf(ns, "Ending attack on %s", target)
   await execAndWait(ns, "global-cleanup.js", "home", 1, "--super")
   ns.scriptKill("batcher/controller.js", "home")

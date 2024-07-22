@@ -5,23 +5,71 @@ async function waitForMoney(ns, limit){
   while(ns.getServerMoneyAvailable("home") < limit) 
     await ns.sleep(5000)
 }
+
+/** @param {NS} ns */
+async function buyServers(ns) {
+  var ram = 8
+  var limit = ns.getPurchasedServerLimit()
+  rehprintf(ns, "Preparing to buy %i servers : %iGB Ram", 
+    limit, ram)
+  while (ns.getPurchasedServers().length < limit) {
+    // Check if we have enough money to purchase a server
+    if (ns.getServerMoneyAvailable("home") > ns.getPurchasedServerCost(ram)) {
+        // If we have enough money, then:
+        //  1. Purchase the server
+        //  2. Copy our hacking script onto the newly-purchased server
+        //  3. Run our hacking script on the newly-purchased server with 3 threads
+        //  4. Increment our iterator to indicate that we've bought a new server
+        var hostname = ns.purchaseServer(
+              "pserv-" + ns.getPurchasedServers().length, ram);
+        var msg = ns.sprintf("Bought %s" , hostname)
+        rehprintf(ns, msg)
+    } else {
+      await ns.sleep(30 * 1000);
+    }
+  }
+}
+
+/** @param {NS} ns */
+async function upgradeServers(ns, upgrade) {
+  var keepgoing = true
+  rehprintf(ns, "Preparing to upgrade to %s Ram", 
+    ns.formatRam(upgrade))
+  while(keepgoing) {
+    keepgoing = false
+    for(const S of ns.getPurchasedServers()) {
+      if(ns.getServerMaxRam(S) >= upgrade) {
+        continue
+      }
+      if(keepgoing)
+        continue
+      if(ns.getServerMoneyAvailable("home") > ns.getPurchasedServerUpgradeCost(S, upgrade)) {
+        ns.upgradePurchasedServer(S, upgrade)
+        rehprintf(ns, "Upgraded %s to %s RAM", S, 
+          ns.formatRam(upgrade))
+      } else {
+        keepgoing = true
+        ns.printf(ns, "Upgrade of %s costs $%s", S, 
+            ns.formatNumber(ns.getPurchasedServerUpgradeCost(S, upgrade)))
+      }
+    }
+    await ns.sleep(30 * 1000)
+  }
+}
 /** @param {NS} ns */
 export async function main(ns) {
   ns.disableLog('ALL')
   ns.tail()
   rehprintf(ns, "Beginning with basic 8GB Nodes")
-  await execAndWait(ns, "build-farm.js", "home", 1)
+  await buyServers(ns)
 
   await waitForMoney(ns, 100000000)
-  rehprintf(ns, "Upgrading to 64GB Nodes")
-  await execAndWait(ns, "build-farm.js", "home", 1, "--upgrade", "64")
+  await upgradeServers(ns, 64)
 
   await waitForMoney(ns, 1000000000) 
-  rehprintf(ns, "Upgrading to 1TB Nodes")
-  await execAndWait(ns, "build-farm.js", "home", 1, "--upgrade", "1024")
+  await upgradeServers(ns, 1024)
 
   await waitForMoney(ns, 30000000000) 
-  rehprintf(ns, "Upgrading to 64TB nodes")
-  await execAndWait(ns, "build-farm.js", "home", 1, "--upgrade", "65536")
+  await upgradeServers(ns, 65536)
   rehprintf(ns, "Finished with Purchased Servers!!")
 }
