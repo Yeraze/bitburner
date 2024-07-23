@@ -28,6 +28,7 @@ export async function main(ns) {
                        "Embedded Netburner Module Core V2 Upgrade",
                        "Neuralstimulator",
                        "Neuroreceptor Management Implant",
+                       "Neuregen Gene Modification",
                        "Embedded Netburner Module Core V3 Upgrade",
                        "Embedded Netburner Module Analyze Engine",
                        "Embedded Netburner Module Direct Memory Access Upgrade",
@@ -86,7 +87,7 @@ export async function main(ns) {
     var focus = augmentsIHave.indexOf("Neuroreceptor Management Implant") == -1
     ns.singularity.workForFaction(minRepFaction, "hacking", focus)
     // See if we can make a donation
-    if( ns.singularity.getFactionFavor(minRepFaction) > 150) {
+    if( ns.singularity.getFactionFavor(minRepFaction) >= 150) {
       if (ns.getServerMoneyAvailable("home") > 100e9) {
         ns.singularity.donateToFaction(minRepFaction, 100e9)
         rehprintf(ns, "Donated $%s to %s", ns.formatNumber(100e9), minRepFaction)

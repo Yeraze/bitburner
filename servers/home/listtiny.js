@@ -28,8 +28,7 @@ export async function main(ns) {
         progressIndicator[progressPhase])
     progressPhase = (progressPhase+1) % progressIndicator.length
 
-    var serverList= ["n00dles", "joesguns", "phantasy", "the-hub", 
-                "blade"]
+    var serverList= ["joesguns", "phantasy", "rho-construction", "ecorp"]
     let tableData = []
     let tableColors = []
     let row = ["Server Name", "Level", "Value", "B", "Security", "Money", "Avail", "Ram"]

@@ -53,7 +53,8 @@ async function upgradeServers(ns, upgrade) {
             ns.formatNumber(ns.getPurchasedServerUpgradeCost(S, upgrade)))
       }
     }
-    await ns.sleep(30 * 1000)
+    if (keepgoing)
+      await ns.sleep(30 * 1000)
   }
 }
 /** @param {NS} ns */
@@ -64,14 +65,10 @@ export async function main(ns) {
   ns.resizeTail(500,110)
   rehprintf(ns, "Beginning with basic 8GB Nodes")
   await buyServers(ns)
-
-  await waitForMoney(ns, 100000000)
-  await upgradeServers(ns, 64)
-
-  await waitForMoney(ns, 1000000000) 
-  await upgradeServers(ns, 1024)
-
-  await waitForMoney(ns, 30000000000) 
-  await upgradeServers(ns, 65536)
+  var size = 64
+  while (size <= 1024*1024) {
+    await upgradeServers(ns, size)
+    size = size * 4
+  }
   rehprintf(ns, "Finished with Purchased Servers!!")
 }
