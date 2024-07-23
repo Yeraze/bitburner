@@ -36,7 +36,8 @@ export async function main(ns) {
     //        to account for Upgrades
     // When those come online, add them to the queue
     await hackUntilTarget(ns, "joesguns", "phantasy")
-    await hackUntilTarget(ns, "phantasy", "ecorp")
+    await hackUntilTarget(ns, "phantasy", "rho-construction")
+    await hackUntilTarget(ns, "rho-construction", "ecorp")
     await hackUntilTarget(ns, "ecorp", "FOREVER")
   }
 }

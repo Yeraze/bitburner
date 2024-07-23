@@ -29,14 +29,14 @@ export async function execAnywhere(ns, scripts, ...cmdArgs) {
     if(candidateServers.indexOf("home") > -1) 
       host = "home"
     ns.scp(scripts, host, "home")
-    rehprintf(ns, "Launching %s on %s", scripts[0], host)
+    ns.printf("Launching %s on %s", scripts[0], host)
     var pid = ns.exec(scripts[0], host, ...cmdArgs)
     while (ns.isRunning(pid, host)) {
       await ns.sleep(500)
     }
-    rehprintf(ns, "Finished %s on %s", scripts[0], host)
+    ns.printf("Finished %s on %s", scripts[0], host)
   } else {
-    ns.tprintf("Cannot find RAM for %s", scripts[0])
+    ns.printf("Cannot find RAM for %s", scripts[0])
   }
 }
 
