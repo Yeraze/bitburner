@@ -85,6 +85,13 @@ export async function main(ns) {
     // But we don't have sufficient Faction Rep.. so start grinding!
     var focus = augmentsIHave.indexOf("Neuroreceptor Management Implant") == -1
     ns.singularity.workForFaction(minRepFaction, "hacking", focus)
+    // See if we can make a donation
+    if( ns.singularity.getFactionFavor(minRepFaction) > 150) {
+      if (ns.getServerMoneyAvailable("home") > 100e9) {
+        ns.singularity.donateToFaction(minRepFaction, 100e9)
+        rehprintf(ns, "Donated $%s to %s", ns.formatNumber(100e9), minRepFaction)
+      }
+    }
     rehprintf(ns, "Hacking for %s to buy %s (%s)", minRepFaction, favAugment,
       ns.formatPercent( ns.singularity.getFactionRep(minRepFaction) / minRepValue ))
   }
