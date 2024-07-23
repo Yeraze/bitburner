@@ -1,4 +1,4 @@
-import {rehprintf, execAndWait} from 'reh.js'
+import {rehprintf, execAndWait, execAnywhere} from 'reh.js'
 
 var factionList = []
 /** @param {NS} ns */
@@ -40,12 +40,14 @@ export async function main(ns) {
 
 /** @param {NS} ns */
 async function manageAugments(ns) {
-  await execAndWait(ns, "singularity-augments.js", "home", 1)
+  const pkg = ["singularity-augments.js", "reh.js", "reh-constants.js"]
+  await execAnywhere(ns, pkg, 1)
 }
 
 /** @param {NS} ns */
 async function manageHome(ns) {
-  await execAndWait(ns, "singularity-home.js", "home", 1)
+  const pkg = ["singularity-home.js", "reh.js", "reh-constants.js"]
+  await execAnywhere(ns, pkg, 1)
 }
 
 /** @param {NS} ns */
@@ -71,7 +73,8 @@ function manageDarkweb(ns) {
 
 /** @param {NS} ns */
 async function manageFactions(ns) {
-  await execAndWait(ns, "singularity-factions.js", "home", 1)
+  const pkg = ["singularity-factions.js", "reh.js", "reh-constants.js"]
+  await execAnywhere(ns, pkg, 1)
 }
 
 /** @param {NS} ns */

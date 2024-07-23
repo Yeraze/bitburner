@@ -17,6 +17,30 @@ export function rehprintf(ns, format, ...printvars) {
 }
 
 /** @param {NS} ns */
+export async function execAnywhere(ns, scripts, ...cmdArgs) {
+  const reqRam = ns.getScriptRam(scripts[0])
+  var candidateServers = getServerList(ns)
+      .filter((S) => ns.hasRootAccess(S))
+      .filter((S) => (ns.getServerMaxRam(S) - ns.getServerUsedRam(S) > reqRam))
+  
+  if (candidateServers.length > 0) {
+    var host = candidateServers[0]
+    // Always prefer home if it's in the list
+    if(candidateServers.indexOf("home") > -1) 
+      host = "home"
+    ns.scp(scripts, host, "home")
+    rehprintf(ns, "Launching %s on %s", scripts[0], host)
+    var pid = ns.exec(scripts[0], host, ...cmdArgs)
+    while (ns.isRunning(pid, host)) {
+      await ns.sleep(500)
+    }
+    rehprintf(ns, "Finished %s on %s", scripts[0], host)
+  } else {
+    ns.tprintf("Cannot find RAM for %s", scripts[0])
+  }
+}
+
+/** @param {NS} ns */
 export async function execAndWait(ns, script, host, ...cmdArgs) {
   ns.tprintf("Launching [%s]:%s and waiting...", host, script)
   var pid= ns.exec(script, host, ...cmdArgs)
