@@ -49,7 +49,7 @@ async function upgradeServers(ns, upgrade) {
           ns.formatRam(upgrade))
       } else {
         keepgoing = true
-        ns.printf(ns, "Upgrade of %s costs $%s", S, 
+        ns.printf("Upgrade of %s costs $%s", S, 
             ns.formatNumber(ns.getPurchasedServerUpgradeCost(S, upgrade)))
       }
     }
@@ -60,6 +60,8 @@ async function upgradeServers(ns, upgrade) {
 export async function main(ns) {
   ns.disableLog('ALL')
   ns.tail()
+  ns.moveTail(50, 130)
+  ns.resizeTail(500,110)
   rehprintf(ns, "Beginning with basic 8GB Nodes")
   await buyServers(ns)
 

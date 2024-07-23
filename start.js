@@ -3,6 +3,8 @@ import {rehprintf, execContinue, execAndWait, getServerList} from 'reh.js'
 export async function main(ns) {
   ns.disableLog('ALL')
   ns.tail()
+  ns.moveTail(50, 600)
+  ns.resizeTail(500,110)
   rehprintf(ns, "Initial setup...")
   rehprintf(ns, "Starting auto-breach.js")
   execContinue(ns, "auto-breach.js", "home", 1)
@@ -18,7 +20,7 @@ export async function main(ns) {
       await ns.sleep(1000)
     }
     execContinue(ns, "blast.js", "home", 1, "joesguns", 4)
-  } else {}
+  } else {
   
     while(ns.getHackingLevel() < 10) {
       rehprintf(ns, "Waiting for level10...")
@@ -33,19 +35,22 @@ export async function main(ns) {
     //.   For Purchased servers, monitor total RAM available
     //        to account for Upgrades
     // When those come online, add them to the queue
-    await hackUntilLevel(ns, "joesguns", 300)
-    await hackUntilLevel(ns, "phantasy", 3000)
-    await hackUntilLevel(ns, "ecorp", 10000)
+    await hackUntilTarget(ns, "joesguns", "phantasy")
+    await hackUntilTarget(ns, "phantasy", "ecorp")
+    await hackUntilTarget(ns, "ecorp", "FOREVER")
+  }
 }
 
 /** @param {NS} ns */
-async function hackUntilLevel(ns, target, stopAtLevel) {
-  if (ns.getHackingLevel() > stopAtLevel)
-    return
+async function hackUntilTarget(ns, target, stopAtTarget) {
+  if (stopAtTarget != "FOREVER")
+    if (ns.getHackingLevel() > ns.getServerRequiredHackingLevel(stopAtTarget)*3)
+      return
   // First wait until we have root
-  rehprintf(ns, "Waiting for breach & level on %s", target)
+  rehprintf(ns, "Waiting for root access on %s", target)
   while (ns.hasRootAccess(target) == false) 
     await ns.sleep(1000);
+  rehprintf(ns, "Waiting for Hack level on %s", target)
   while (ns.getHackingLevel() < ns.getServerRequiredHackingLevel(target)) 
     await ns.sleep(1000)
   var totalRam = getServerList(ns)
@@ -55,18 +60,27 @@ async function hackUntilLevel(ns, target, stopAtLevel) {
       ns.formatRam(totalRam))
   ns.exec("batcher/controller.js", "home", 1, target)
   var spokenRam = totalRam
-  while (ns.getHackingLevel() < stopAtLevel) {
+  var keepGoing =true 
+  if (stopAtTarget== "FOREVER")
+    return
+  while (keepGoing) {
+    if(ns.getHackingLevel() > ns.getServerRequiredHackingLevel(stopAtTarget)*3) {
+      if(ns.hasRootAccess(stopAtTarget)) {
+        keepGoing= false
+      }
+    }
     await ns.sleep(5000);
     var totalRamNow = getServerList(ns)
       .filter((S) => ns.hasRootAccess(S))
       .reduce((a, S) => (a + ns.getServerMaxRam(S)), 0)
     if(totalRamNow!=spokenRam){
-      ns.printf("Detected new ram: %s", ns.formatRam(totalRamNow)) 
+      ns.printf("Detected new ram: %s (+%s)", ns.formatRam(totalRamNow),
+        ns.formatPercent( (totalRamNow / totalRam) - 1.0)) 
       spokenRam= totalRamNow
     }
     if (totalRamNow > totalRam * 1.50) {
-      rehprintf("-> Restarting HWGW attack on %i (%i available ram)",
-        target, totalRamNow)
+      rehprintf(ns, "-> Restarting HWGW attack on %s (%s available ram)",
+        target, ns.formatRam(totalRamNow))
       // Significant uptick in available ram.. so let's restart
       await execAndWait(ns, "global-cleanup.js", "home", 1, "--super")
       ns.exec("batcher/controller.js", "home", 1, target)

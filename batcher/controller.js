@@ -1,3 +1,6 @@
+export function autocomplete(data, args) {
+    return [...data.servers]; // This script autocompletes the list of servers.
+}
 /*
 Welcome to part 4. A continuous batcher is a major hurdle compared to everything we've done so far. The number
 and complexity of the challenges increases drastically when trying to keep everything running indefinitely.

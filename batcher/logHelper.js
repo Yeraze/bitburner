@@ -7,7 +7,7 @@
 /** @param {NS} ns */
 export async function main(ns) {
 
-	const logFile = "/part4/log.txt";
+	const logFile = "/batcher/log.txt";
 	ns.clear(logFile);  // Clear the previous log for each instance.
 	ns.disableLog("ALL");
 	ns.tail();

@@ -1,8 +1,12 @@
 import {rehprintf, execAndWait} from 'reh.js'
+
+var factionList = []
 /** @param {NS} ns */
 export async function main(ns) {
   ns.disableLog('ALL')
   ns.tail()
+  ns.moveTail(50,0)
+  ns.resizeTail(500, 110)
   if (ns.getHackingLevel() < 10) {
     rehprintf(ns, "Starting CS to hit level 10...")
     ns.singularity.universityCourse("rothman university", "computer science", true);
@@ -11,59 +15,83 @@ export async function main(ns) {
     }
   }
 
-  rehprintf(ns, "Waiting for $200k...")
+  rehprintf(ns, "Waiting for $250k...")
   while(ns.getServerMoneyAvailable("home") < 250000) {
     await ns.sleep(1000);
   }
-  rehprintf(ns, "Buying TOR router...")
-  ns.singularity.purchaseTor();
 
   var keepGoing = true
-  var factionList = []
+  var counter = 59
+  rehprintf(ns, "Entering main loop...")
   while(keepGoing) {
     await ns.sleep(1000)
-    keepGoing = false;
-    for(var prog of ns.singularity.getDarkwebPrograms()) {
-      if(ns.fileExists(prog, "home") == false) {
-        if (ns.singularity.getDarkwebProgramCost(prog) > ns.getServerMoneyAvailable("home")) {
-          keepGoing = true
-          continue
-        }
-        rehprintf(ns, "Buying program %s", prog)
-        ns.singularity.purchaseProgram(prog)
-      }
-    }
+    counter++
+    
+    manageDarkweb(ns)
+    await installBackdoors(ns)
 
-    for(var faction of ns.singularity.checkFactionInvitations()) {
-      if(factionList.indexOf(faction) == -1) {
-        factionList.push(faction)
-        if (ns.singularity.getFactionEnemies(faction).length == 0) {
-          rehprintf(ns, "Joining faction %s", faction)
-          ns.singularity.joinFaction(faction)
-          ns.scriptKill("s_crime.js", "home")
-          ns.singularity.workForFaction(faction, "hacking")
-        } else {
-          rehprintf(ns, "Not joining faction %s, due to enemies", faction)
-        }
-      }
+    if (counter % 60 == 0) {
+      await manageFactions(ns)
+      await manageHome(ns)
+      await manageAugments(ns)
     }
+  }
+}
 
-    const backdoorServers = ["CSEC", "avmnite-02h", "I.I.I.I", "run4theh111z"]
-    for(var S of backdoorServers) {
-      // if we are of sufficient level to hack
-      //    and have root access
-      //    and there is no backdoor
-      if(ns.getHackingLevel() < ns.getServerRequiredHackingLevel(S)) {
+/** @param {NS} ns */
+async function manageAugments(ns) {
+  await execAndWait(ns, "singularity-augments.js", "home", 1)
+}
+
+/** @param {NS} ns */
+async function manageHome(ns) {
+  await execAndWait(ns, "singularity-home.js", "home", 1)
+}
+
+/** @param {NS} ns */
+function manageDarkweb(ns) {
+  var keepGoing = false
+  if ( ns.singularity.getDarkwebPrograms().length == 0) {
+    rehprintf(ns, "Buying TOR router...")
+    ns.singularity.purchaseTor();
+    return false
+  }
+  for(var prog of ns.singularity.getDarkwebPrograms()) {
+    if(ns.fileExists(prog, "home") == false) {
+      if (ns.singularity.getDarkwebProgramCost(prog) > ns.getServerMoneyAvailable("home")) {
         keepGoing = true
         continue
       }
-      if(!ns.hasRootAccess(S)) {
-        keepGoing = true
-        continue
-      }
-      if(ns.getServer(S).backdoorInstalled)
-        continue
-      await execAndWait(ns, "install-backdoor.js", "home", 1, S)
+      rehprintf(ns, "Buying program %s", prog)
+      ns.singularity.purchaseProgram(prog)
     }
+  }
+  return keepGoing
+}
+
+/** @param {NS} ns */
+async function manageFactions(ns) {
+  await execAndWait(ns, "singularity-factions.js", "home", 1)
+}
+
+/** @param {NS} ns */
+async function installBackdoors(ns) {
+  const backdoorServers = ["CSEC", "avmnite-02h", "I.I.I.I", "run4theh111z"]
+  var keepGoing = false
+  for(var S of backdoorServers) {
+    // if we are of sufficient level to hack
+    //    and have root access
+    //    and there is no backdoor
+    if(ns.getHackingLevel() < ns.getServerRequiredHackingLevel(S)) {
+      keepGoing = true
+      continue
+    }
+    if(!ns.hasRootAccess(S)) {
+      keepGoing = true
+      continue
+    }
+    if(ns.getServer(S).backdoorInstalled)
+      continue
+    await execAndWait(ns, "install-backdoor.js", "home", 1, S)
   }
 }
