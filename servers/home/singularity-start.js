@@ -23,6 +23,8 @@ export async function main(ns) {
   var keepGoing = true
   var counter = 59
   rehprintf(ns, "Entering main loop...")
+  var playerLevel = ns.getHackingLevel()
+  var resetCount = 0
   while(keepGoing) {
     await ns.sleep(1000)
     counter++
@@ -34,6 +36,20 @@ export async function main(ns) {
       await manageFactions(ns)
       await manageHome(ns)
       await manageAugments(ns)
+    }
+
+    if (counter % 300 == 0) {
+      if(ns.getHackingLevel() - playerLevel < 5) {
+        resetCount++
+        ns.toast(ns.sprintf("CONSIDERING RESET: %i of 3", resetCount), "warning", null)
+        if(resetCount > 3) {
+          ns.toast("RESETTING!!!", "warning", null)
+          ns.spawn("reset.js", 1)
+        }
+      } else {
+        rehprintf(ns, "Moved %i levels since last check...", ns.getHackingLevel() - playerLevel)
+        playerLevel = ns.getHackingLevel()
+      }
     }
   }
 }

@@ -25,13 +25,14 @@ export async function main(ns) {
             if(ns.singularity.getAugmentationRepReq(aug) > ns.singularity.getFactionRep(faction)) {
                 boughtIt = true
                 rehprintf(ns, "-> Donations enabled purchasing %s from %s", aug, faction)
-                // Spawn this off separately... memory conservation
                 ns.singularity.purchaseAugmentation(faction, aug)
             }    
         }
     }   
     if(!boughtIt) {
-        rehprintf(ns, "Grinding up for %s from %s", aug, faction)
+        rehprintf(ns, "Grinding up for %s from %s (%s)", 
+            aug, faction,
+            ns.formatPercent( ns.singularity.getFactionRep(faction) / ns.singularity.getAugmentationRepReq(aug)))
         ns.spawn("singularity-factionjoin.js", {spawnDelay: 0}, faction)
     }
 
