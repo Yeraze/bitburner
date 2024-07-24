@@ -76,7 +76,7 @@ async function hackUntilTarget(ns, target, stopAtTarget) {
         ns.formatPercent( (totalRamNow / totalRam) - 1.0)) 
       spokenRam= totalRamNow
     }
-    if (totalRamNow > totalRam * 1.50) {
+    if (totalRamNow > totalRam * 2.0) {
       rehprintf(ns, "-> Restarting HWGW attack on %s (%s available ram)",
         target, ns.formatRam(totalRamNow))
       // Significant uptick in available ram.. so let's restart

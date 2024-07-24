@@ -31,6 +31,10 @@ export async function execAnywhereNoWait(ns, scripts, threads, ...cmdArgs) {
     ns.scp(scripts, host, "home")
     ns.printf("Launching %s on %s", scripts[0], host)
     var pid = ns.exec(scripts[0], host, threads, ...cmdArgs)
+    if (pid == 0) {
+      ns.printf("-> LAUNCH FAILED")
+      return
+    }
   } else {
     ns.printf("Cannot find RAM for %s", scripts[0])
   }
@@ -51,6 +55,10 @@ export async function execAnywhere(ns, scripts, threads, ...cmdArgs) {
     ns.scp(scripts, host, "home")
     ns.printf("Launching %s on %s", scripts[0], host)
     var pid = ns.exec(scripts[0], host, threads, ...cmdArgs)
+    if (pid == 0) {
+      ns.printf("-> LAUNCH FAILED")
+      return
+    }
     while (ns.isRunning(pid, host)) {
       await ns.sleep(500)
     }
@@ -64,11 +72,17 @@ export async function execAnywhere(ns, scripts, threads, ...cmdArgs) {
 export async function execAndWait(ns, script, host, ...cmdArgs) {
   ns.tprintf("Launching [%s]:%s and waiting...", host, script)
   var pid= ns.exec(script, host, ...cmdArgs)
+  if(pid == 0) {
+    ns.tprintf("-> LAUNCH FAILED")
+    return
+  }
   while (ns.isRunning(pid, host)) {
     await ns.sleep(500)
   }
   ns.tprintf("-> [%s]:%s Finished...", host, script)
 }
+
+
 /** @param {NS} ns */
 export function getServerList(ns) {
   var serverList = ["home"]
