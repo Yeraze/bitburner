@@ -36,14 +36,16 @@ export async function main(ns) {
   var minRepFaction = "NONE"
   var minRepValue = 10e9
   var favAugment = ""
+  // First search the list to see what the "lowest rep" aug is
   for(var aug of augmentsToBuy) {
     if (augmentsIHave.indexOf(aug) != -1) 
       continue // we already own this one
-    if(ns.singularity.getAugmentationPrice(aug) > ns.getServerMoneyAvailable("home"))
-      continue // too expensive
+
     for(var fac of ns.getPlayer().factions) {
       if(ns.singularity.getAugmentationsFromFaction(fac).indexOf(aug) != -1) {
         if(ns.singularity.getAugmentationRepReq(aug) < ns.singularity.getFactionRep(fac)) {
+          if(ns.singularity.getAugmentationPrice(aug) > ns.getServerMoneyAvailable("home"))
+            continue // too expensive
           rehprintf(ns, "Purchasing %s from %s", aug, fac)
           ns.singularity.purchaseAugmentation(fac, aug)
         } else {
@@ -62,37 +64,47 @@ export async function main(ns) {
   for(var aug of augmentsToBuy) {
     if (augmentsIHave.indexOf(aug) != -1) 
       continue // we already own this one
-    if(ns.singularity.getAugmentationPrice(aug) > ns.getServerMoneyAvailable("home"))
-      continue // too expensive
     for(var fac of ns.singularity.checkFactionInvitations()) {
       if(ns.singularity.getAugmentationsFromFaction(fac).indexOf(aug) != -1) {
-        if(ns.singularity.getAugmentationRepReq(aug) < ns.singularity.getFactionRep(fac)) {
+        if(ns.singularity.getAugmentationRepReq(aug)  < minRepValue) {
+          // So we found a "rep-cheaper" aug than anything we have accessto already
+          // but it's offered by a faction we haven't joined yet.. So join up!
+          //  This isn't perfect.. if we have multiple outstanding fac invites 
+          // that conflict, we could choose poorly..But eventually it'll all work itself out
+          minRepFaction = fac
+          favAugment = aug
           ns.singularity.joinFaction(fac)
-          rehprintf(ns, "Purchasing %s from %s", aug, fac)
-          ns.singularity.purchaseAugmentation(fac, aug)
-        } else {
-          if(ns.singularity.getAugmentationRepReq(aug)  < minRepValue) {
-            minRepFaction = fac
-            favAugment = aug
-            ns.singularity.joinFaction(fac)
-            minRepValue = ns.singularity.getAugmentationRepReq(aug)
-          }
+          minRepValue = ns.singularity.getAugmentationRepReq(aug)
         }
       }
     }
   }
   if (minRepFaction != "NONE") {
-    // So this augment is available to buy.
+    // So there is an augment available to buy.
     // But we don't have sufficient Faction Rep.. so start grinding!
+
+    // If we have the NMI we can background the hacking
     var focus = augmentsIHave.indexOf("Neuroreceptor Management Implant") == -1
     ns.singularity.workForFaction(minRepFaction, "hacking", focus)
+    
     // See if we can make a donation
     if( ns.singularity.getFactionFavor(minRepFaction) >= 150) {
-      if (ns.getServerMoneyAvailable("home") > 100e9) {
-        ns.singularity.donateToFaction(minRepFaction, 100e9)
-        rehprintf(ns, "Donated $%s to %s", ns.formatNumber(100e9), minRepFaction)
+      var boughtIt = false
+      // See how many donations we can make before we run out of cash
+      //  or can just buy the augment we're looking at
+      //  each donation is 100e9 = $100B
+      const donation = 100e9
+      while((ns.getServerMoneyAvailable("home") > donation) && !boughtIt) {
+        ns.singularity.donateToFaction(minRepFaction, donation)
+        rehprintf(ns, "Donated $%s to %s", ns.formatNumber(donation), minRepFaction)
+        if(ns.singularity.getAugmentationRepReq(favAugment) > ns.singularity.getFactionRep(minRepFaction)) {
+          boughtIt = true
+          rehprintf(ns, "Purchasing %s from %s", aug, fac)
+          ns.singularity.purchaseAugmentation(minRepFaction, favAugment)
+        }
       }
     }
+
     rehprintf(ns, "Hacking for %s to buy %s (%s)", minRepFaction, favAugment,
       ns.formatPercent( ns.singularity.getFactionRep(minRepFaction) / minRepValue ))
   }
