@@ -5,8 +5,11 @@ export async function main(ns) {
     const aug = ns.args[1]
     // If we have the NMI we can background the hacking
 
-    if (ns.singularity.purchaseAugmentation(faction, aug))
+    if (ns.singularity.purchaseAugmentation(faction, aug)) {
+        rehprintf(ns, "Purchased %s from %s", aug, faction)
+        ns.toast(ns.sprintf("Purchased %s", aug), "success", null)
         return
+    }
 
     // We couldn't buy it.. see if we can donate up to it..
     var boughtIt = false
@@ -21,7 +24,7 @@ export async function main(ns) {
             rehprintf(ns, "Donated $%s to %s", ns.formatNumber(donation), faction)
             if(ns.singularity.getAugmentationRepReq(aug) > ns.singularity.getFactionRep(faction)) {
                 boughtIt = true
-                rehprintf(ns, "Purchasing %s from %s", aug, faction)
+                rehprintf(ns, "-> Donations enabled purchasing %s from %s", aug, faction)
                 // Spawn this off separately... memory conservation
                 ns.singularity.purchaseAugmentation(faction, aug)
             }    

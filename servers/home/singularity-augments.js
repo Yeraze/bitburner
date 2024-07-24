@@ -82,6 +82,23 @@ export async function main(ns) {
       }
     }
   }
+
+  // ok... If we got here then there's probably nothing to buy.
+  // so NFG it is!
+  for(var fac of ns.getPlayer().factions) {
+    for(var aug of ns.singularity.getAugmentationsFromFaction(fac)) {
+      if(aug.startsWith("NeuroFlux Governor")) {
+        if(ns.getServerMoneyAvailable("home") < ns.singularity.getAugmentationPrice(aug))
+          continue // we can't afford this with cash
+        if(ns.singularity.getFactionRep(fac) < ns.singularity.getAugmentationRepReq(aug))
+          continue // we can't afford this with rep
+        // If we got here, we should be able to afford it.
+        ns.spawn("singularity-augpurchase.js", {spawnDelay: 0}, fac, aug)      
+        // We never start grinding for NFG, we just buy it when it's available.  
+      }
+    }
+  }
+
   if (minRepFaction != "NONE") {
     // So there is an augment available to buy.
     // But we don't have sufficient Faction Rep.. so start grinding!
@@ -92,10 +109,9 @@ export async function main(ns) {
     //  a faction to join
     //  an augment to purchase
     //  a faction to grind
+  // which kinda means "we're done?" with augments
 
-
-  rehprintf(ns, "Hacking for %s to buy %s (%s)", minRepFaction, favAugment,
-      ns.formatPercent( ns.singularity.getFactionRep(minRepFaction) / minRepValue ))
+  rehprintf(ns, "Done with augments....")
 
 
 }
