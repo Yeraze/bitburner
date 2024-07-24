@@ -36,6 +36,7 @@ export async function main(ns) {
   var minRepFaction = "NONE"
   var minRepValue = 10e9
   var favAugment = ""
+  var augsToBuy = []
   // First search the list to see what the "lowest rep" aug is
   for(var aug of augmentsToBuy) {
     if (augmentsIHave.indexOf(aug) != -1) 
@@ -47,7 +48,7 @@ export async function main(ns) {
           if(ns.singularity.getAugmentationPrice(aug) > ns.getServerMoneyAvailable("home"))
             continue // too expensive
           rehprintf(ns, "Purchasing %s from %s", aug, fac)
-          ns.singularity.purchaseAugmentation(fac, aug)
+          ns.spawn("singularity-augpurchase.js", {spawnDelay: 0}, fac, aug)
         } else {
           if(ns.singularity.getAugmentationRepReq(aug)  < minRepValue) {
             minRepFaction = fac
@@ -73,8 +74,10 @@ export async function main(ns) {
           // that conflict, we could choose poorly..But eventually it'll all work itself out
           minRepFaction = fac
           favAugment = aug
-          ns.singularity.joinFaction(fac)
           minRepValue = ns.singularity.getAugmentationRepReq(aug)
+
+          // Join the faction and start hacking for it
+          ns.spawn("singularity-factionjoin.js", {spawnDelay: 0}, fac)
         }
       }
     }
@@ -82,31 +85,17 @@ export async function main(ns) {
   if (minRepFaction != "NONE") {
     // So there is an augment available to buy.
     // But we don't have sufficient Faction Rep.. so start grinding!
-
-    // If we have the NMI we can background the hacking
-    var focus = augmentsIHave.indexOf("Neuroreceptor Management Implant") == -1
-    ns.singularity.workForFaction(minRepFaction, "hacking", focus)
-    
-    // See if we can make a donation
-    if( ns.singularity.getFactionFavor(minRepFaction) >= 150) {
-      var boughtIt = false
-      // See how many donations we can make before we run out of cash
-      //  or can just buy the augment we're looking at
-      //  each donation is 100e9 = $100B
-      const donation = 100e9
-      while((ns.getServerMoneyAvailable("home") > donation) && !boughtIt) {
-        ns.singularity.donateToFaction(minRepFaction, donation)
-        rehprintf(ns, "Donated $%s to %s", ns.formatNumber(donation), minRepFaction)
-        if(ns.singularity.getAugmentationRepReq(favAugment) > ns.singularity.getFactionRep(minRepFaction)) {
-          boughtIt = true
-          rehprintf(ns, "Purchasing %s from %s", aug, fac)
-          ns.singularity.purchaseAugmentation(minRepFaction, favAugment)
-        }
-      }
-    }
-
-    rehprintf(ns, "Hacking for %s to buy %s (%s)", minRepFaction, favAugment,
-      ns.formatPercent( ns.singularity.getFactionRep(minRepFaction) / minRepValue ))
+    ns.spawn("singularity-augpurchase.js", {spawnDelay: 0}, minRepFaction, favAugment)
   }
+
+    // We only get here if we have NOT found
+    //  a faction to join
+    //  an augment to purchase
+    //  a faction to grind
+
+
+  rehprintf(ns, "Hacking for %s to buy %s (%s)", minRepFaction, favAugment,
+      ns.formatPercent( ns.singularity.getFactionRep(minRepFaction) / minRepValue ))
+
 
 }

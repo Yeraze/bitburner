@@ -73,8 +73,10 @@ function manageDarkweb(ns) {
 
 /** @param {NS} ns */
 async function manageFactions(ns) {
-  const pkg = ["singularity-factions.js", "reh.js", "reh-constants.js"]
-  await execAnywhere(ns, pkg, 1)
+  // This script is pretty fat..
+  //  So only run it if we're >127G ram
+  if (ns.getServerMaxRam("home") > 127) 
+    await execAndWait(ns, "singularity-factions.js", "home", 1)
 }
 
 /** @param {NS} ns */

@@ -3,6 +3,9 @@ import {rehprintf} from 'reh.js'
 export async function main(ns) {
   // Check for travel reqs
   if (ns.getServerMoneyAvailable("home") > 200000) {
+    // This is a map of the factions we care about, and the location 
+    // we have to travel to for eligibility
+    // The list is ordered by priority
     var factionOrder = [{faction: "Cybersec", location: ""},
                         {faction: "Nitesec",  location: ""}, 
                         {faction: "The Black Hand", location: ""},
@@ -11,11 +14,15 @@ export async function main(ns) {
                         {faction: "BitRunners", location: ""},
                         {faction: "Daedalus", location:""}
                         ]
-    
+    // get the list of all factions we know of: Joined and Pending
     var currentFactions = ns.getPlayer().factions.concat(
         ns.singularity.checkFactionInvitations())
     
     for(var faction of factionOrder) {
+      // Search every faction in the list..
+      //  If the faction has not already invited us,
+      //  and there is a city specified, then travel there.
+      // We exit on the first one found.
       if(currentFactions.indexOf(faction.faction) == -1) {
         if(faction.location != "") {
           if (ns.getPlayer().city != faction.location) {
