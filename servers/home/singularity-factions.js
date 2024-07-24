@@ -1,13 +1,6 @@
 import {rehprintf} from 'reh.js'
 /** @param {NS} ns */
 export async function main(ns) {
-  for(var faction of ns.singularity.checkFactionInvitations()) {
-    if (ns.singularity.getFactionEnemies(faction).length == 0) {
-      rehprintf(ns, "Joining faction %s", faction)
-      ns.singularity.joinFaction(faction)
-    }
-  }
-
   // Check for travel reqs
   if (ns.getServerMoneyAvailable("home") > 200000) {
     var factionOrder = [{faction: "Cybersec", location: ""},
@@ -19,7 +12,9 @@ export async function main(ns) {
                         {faction: "Daedalus", location:""}
                         ]
     
-    var currentFactions = ns.getPlayer().factions
+    var currentFactions = ns.getPlayer().factions.concat(
+        ns.singularity.checkFactionInvitations())
+    
     for(var faction of factionOrder) {
       if(currentFactions.indexOf(faction.faction) == -1) {
         if(faction.location != "") {

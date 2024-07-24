@@ -17,7 +17,7 @@ export function rehprintf(ns, format, ...printvars) {
 }
 
 /** @param {NS} ns */
-export async function execAnywhere(ns, scripts, ...cmdArgs) {
+export async function execAnywhereNoWait(ns, scripts, threads, ...cmdArgs) {
   const reqRam = ns.getScriptRam(scripts[0])
   var candidateServers = getServerList(ns)
       .filter((S) => ns.hasRootAccess(S))
@@ -30,7 +30,27 @@ export async function execAnywhere(ns, scripts, ...cmdArgs) {
       host = "home"
     ns.scp(scripts, host, "home")
     ns.printf("Launching %s on %s", scripts[0], host)
-    var pid = ns.exec(scripts[0], host, ...cmdArgs)
+    var pid = ns.exec(scripts[0], host, threads, ...cmdArgs)
+  } else {
+    ns.printf("Cannot find RAM for %s", scripts[0])
+  }
+}
+
+/** @param {NS} ns */
+export async function execAnywhere(ns, scripts, threads, ...cmdArgs) {
+  const reqRam = ns.getScriptRam(scripts[0])
+  var candidateServers = getServerList(ns)
+      .filter((S) => ns.hasRootAccess(S))
+      .filter((S) => (ns.getServerMaxRam(S) - ns.getServerUsedRam(S) > reqRam))
+  
+  if (candidateServers.length > 0) {
+    var host = candidateServers[0]
+    // Always prefer home if it's in the list
+    if(candidateServers.indexOf("home") > -1) 
+      host = "home"
+    ns.scp(scripts, host, "home")
+    ns.printf("Launching %s on %s", scripts[0], host)
+    var pid = ns.exec(scripts[0], host, threads, ...cmdArgs)
     while (ns.isRunning(pid, host)) {
       await ns.sleep(500)
     }

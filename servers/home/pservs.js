@@ -71,4 +71,5 @@ export async function main(ns) {
     size = size * 4
   }
   rehprintf(ns, "Finished with Purchased Servers!!")
+  ns.closeTail()
 }

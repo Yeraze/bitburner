@@ -1,4 +1,4 @@
-import {rehprintf, execContinue, execAndWait, getServerList} from 'reh.js'
+import {rehprintf, execContinue, execAnywhere, execAndWait, execAnywhereNoWait, getServerList} from 'reh.js'
 /** @param {NS} ns */
 export async function main(ns) {
   ns.disableLog('ALL')
@@ -7,39 +7,36 @@ export async function main(ns) {
   ns.resizeTail(500,110)
   rehprintf(ns, "Initial setup...")
   rehprintf(ns, "Starting auto-breach.js")
-  execContinue(ns, "auto-breach.js", "home", 1)
+  execAnywhereNoWait(ns, ["auto-breach.js", "reh.js", "reh-constants.js"], 1)
+  if (ns.getHackingLevel() < 10) {
+    await execAnywhere(ns, ["singularity-cs.js"], 1)
+  }
+  execAnywhereNoWait(ns, ["pservs.js","reh.js", "reh-constants.js"], 1)
 
   // These scripts area bit "fat",so make sure we have ram
   if (ns.getServerMaxRam("home") > 127) {
-    execContinue(ns, "pservs.js", "home", 1)
     execContinue(ns, "singularity-start.js", "home", 1)
   }
-  if (ns.getServerMaxRam("home") < 65) {
-    while(ns.getHackingLevel() < 10) {
-      rehprintf(ns, "Waiting for level10...")
-      await ns.sleep(1000)
-    }
-    execContinue(ns, "blast.js", "home", 1, "joesguns", 4)
-  } else {
   
-    while(ns.getHackingLevel() < 10) {
-      rehprintf(ns, "Waiting for level10...")
-      await ns.sleep(1000)
-    }
-    execContinue(ns, "s_crime.js", "home", 1, "--loop")
-    
-    // At HL10 we can switch to joesguns
-    // We'll be here a while, so there's more logic going on
-    // Monitor for new servers added to the list,
-    //    Either servers we bought, or new ones available as our HL grows
-    //.   For Purchased servers, monitor total RAM available
-    //        to account for Upgrades
-    // When those come online, add them to the queue
-    await hackUntilTarget(ns, "joesguns", "phantasy")
-    await hackUntilTarget(ns, "phantasy", "rho-construction")
-    await hackUntilTarget(ns, "rho-construction", "ecorp")
-    await hackUntilTarget(ns, "ecorp", "FOREVER")
+  rehprintf(ns, "Waiting for level10...")
+  while(ns.getHackingLevel() < 10) {
+    await ns.sleep(1000)
   }
+  rehprintf(ns, "Initiating crime...")
+  await execAnywhere(ns, ["s_crime.js"], 1)
+    
+  // At HL10 we can switch to joesguns
+  // We'll be here a while, so there's more logic going on
+  // Monitor for new servers added to the list,
+  //    Either servers we bought, or new ones available as our HL grows
+  //.   For Purchased servers, monitor total RAM available
+  //        to account for Upgrades
+  // When those come online, add them to the queue
+  await hackUntilTarget(ns, "joesguns", "phantasy")
+  await hackUntilTarget(ns, "phantasy", "ecorp")
+  //await hackUntilTarget(ns, "rho-construction", "ecorp")
+  await hackUntilTarget(ns, "ecorp", "FOREVER")
+  ns.closeTail()
 }
 
 /** @param {NS} ns */
