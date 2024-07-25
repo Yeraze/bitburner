@@ -47,7 +47,8 @@ export async function main(ns) {
           ns.spawn("reset.js", 1)
         }
       } else {
-        rehprintf(ns, "Moved %i levels since last check...", ns.getHackingLevel() - playerLevel)
+        rehprintf(ns, "Averaging %s levels/min", 
+          ns.formatNumber((ns.getHackingLevel() - playerLevel)/5, 2))
       }
       playerLevel = ns.getHackingLevel()
 
@@ -58,7 +59,7 @@ export async function main(ns) {
 
 /** @param {NS} ns */
 async function manageAugments(ns) {
-  const pkg = ["singularity-augments.js", "reh.js", "reh-constants.js"]
+  const pkg = ["singularity-augments.js", "reh.js", "reh-constants.js", "singulariry-factionjoin.js", "singularity-augpurchase.js"]
   await execAnywhere(ns, pkg, 1)
 }
 
@@ -94,10 +95,8 @@ function manageDarkweb(ns) {
 
 /** @param {NS} ns */
 async function manageFactions(ns) {
-  // This script is pretty fat..
-  //  So only run it if we're >127G ram
-  if (ns.getServerMaxRam("home") > 127) 
-    await execAndWait(ns, "singularity-factions.js", "home", 1)
+  const pkg = ["singularity-factions.js","reh.js", "reh-constants.js", "singularity-factionjoin.js"]
+  await execAnywhere(ns, pkg, 1)
 }
 
 /** @param {NS} ns */

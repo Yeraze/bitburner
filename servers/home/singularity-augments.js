@@ -1,4 +1,5 @@
 import {rehprintf} from 'reh.js'
+import * as CONST from 'reh-constants.js'
 /** @param {NS} ns */
 export async function main(ns) {
   const augmentsIHave = ns.singularity.getOwnedAugmentations(true)
@@ -42,6 +43,7 @@ export async function main(ns) {
   var minRepValue = 10e9
   var favAugment = ""
   var augsToBuy = []
+  var savingUp = false
   // First search the list to see what the "lowest rep" aug is
   for(var aug of augmentsToBuy) {
     if (augmentsIHave.indexOf(aug) != -1) 
@@ -50,8 +52,14 @@ export async function main(ns) {
     for(var fac of ns.getPlayer().factions) {
       if(ns.singularity.getAugmentationsFromFaction(fac).indexOf(aug) != -1) {
         if(ns.singularity.getAugmentationRepReq(aug) < ns.singularity.getFactionRep(fac)) {
-          if(ns.singularity.getAugmentationPrice(aug) > ns.getServerMoneyAvailable("home"))
+          if(ns.singularity.getAugmentationPrice(aug) > ns.getServerMoneyAvailable("home")) {
+            ns.tprintf("%s-> Qualify for %s, but too expensive (%s)",
+                CONST.fgYellow, aug, 
+                ns.formatPercent(ns.getServerMoneyAvailable("home")/ ns.singularity.getAugmentationPrice(aug))
+            )
+            savingUp = true
             continue // too expensive
+          }
           rehprintf(ns, "Purchasing %s from %s", aug, fac)
           ns.spawn("singularity-augpurchase.js", {spawnDelay: 0}, fac, aug)
         } else {
@@ -90,19 +98,21 @@ export async function main(ns) {
 
   // ok... If we got here then there's probably nothing to buy.
   // so NFG it is!
-  for(var fac of ns.getPlayer().factions) {
-    for(var aug of ns.singularity.getAugmentationsFromFaction(fac)) {
-      if(aug.startsWith("NeuroFlux Governor")) {
-        if(ns.getServerMoneyAvailable("home") < ns.singularity.getAugmentationPrice(aug))
-          continue // we can't afford this with cash
-        if(ns.singularity.getFactionRep(fac) < ns.singularity.getAugmentationRepReq(aug))
-          continue // we can't afford this with rep
-        // If we got here, we should be able to afford it.
-        ns.spawn("singularity-augpurchase.js", {spawnDelay: 0}, fac, aug)      
-        // We never start grinding for NFG, we just buy it when it's available.  
+  // Unless we're saving up for something
+  if(savingUp == false) 
+    for(var fac of ns.getPlayer().factions) {
+      for(var aug of ns.singularity.getAugmentationsFromFaction(fac)) {
+        if(aug.startsWith("NeuroFlux Governor")) {
+          if(ns.getServerMoneyAvailable("home") < ns.singularity.getAugmentationPrice(aug))
+            continue // we can't afford this with cash
+          if(ns.singularity.getFactionRep(fac) < ns.singularity.getAugmentationRepReq(aug))
+            continue // we can't afford this with rep
+          // If we got here, we should be able to afford it.
+          ns.spawn("singularity-augpurchase.js", {spawnDelay: 0}, fac, aug)      
+          // We never start grinding for NFG, we just buy it when it's available.  
+        }
       }
     }
-  }
 
   if (minRepFaction != "NONE") {
     // So there is an augment available to buy.
