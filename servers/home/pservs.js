@@ -35,8 +35,11 @@ async function upgradeServers(ns, upgrade) {
   var keepgoing = true
   rehprintf(ns, "Preparing to upgrade to %s Ram", 
     ns.formatRam(upgrade))
+
   while(keepgoing) {
     keepgoing = false
+    var firstUpgrade = ""
+    var lastUpgrade = ""
     for(const S of ns.getPurchasedServers()) {
       if(ns.getServerMaxRam(S) >= upgrade) {
         continue
@@ -44,17 +47,30 @@ async function upgradeServers(ns, upgrade) {
       if(keepgoing)
         continue
       if(ns.getServerMoneyAvailable("home") > ns.getPurchasedServerUpgradeCost(S, upgrade)) {
+        lastUpgrade= S
+        if (firstUpgrade == "")
+          firstUpgrade = S
         ns.upgradePurchasedServer(S, upgrade)
-        rehprintf(ns, "Upgraded %s to %s RAM", S, 
-          ns.formatRam(upgrade))
       } else {
         keepgoing = true
         ns.printf("Upgrade of %s costs $%s", S, 
             ns.formatNumber(ns.getPurchasedServerUpgradeCost(S, upgrade)))
       }
     }
-    if (keepgoing)
+    if (keepgoing) {
+      if (firstUpgrade == "") {
+        // Nothing to do, nothing got upgraded...
+      } else if (firstUpgrade == lastUpgrade) {
+        // one server gotupgraded
+        rehprintf(ns, "Upgraded %s to %s RAM", firstUpgrade, 
+          ns.formatRam(upgrade))
+      } else {
+        // multiple servers got upgraded
+        rehprintf(ns, "Upgraded %s -> %s to %s RAM", firstUpgrade, lastUpgrade, 
+          ns.formatRam(upgrade))
+      }
       await ns.sleep(30 * 1000)
+    }
   }
 }
 /** @param {NS} ns */

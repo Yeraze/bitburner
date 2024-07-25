@@ -46,10 +46,11 @@ export async function main(ns) {
           ns.toast("RESETTING!!!", "warning", null)
           ns.spawn("reset.js", 1)
         }
-      } else {
-        rehprintf(ns, "Averaging %s levels/min", 
-          ns.formatNumber((ns.getHackingLevel() - playerLevel)/5, 2))
-      }
+      } 
+      rehprintf(ns, "Averaging %s levels/min [%i strike(s) remaining]", 
+          ns.formatNumber((ns.getHackingLevel() - playerLevel)/5, 2),
+          3 - resetCount)
+      
       playerLevel = ns.getHackingLevel()
 
     }
@@ -101,22 +102,23 @@ async function manageFactions(ns) {
 
 /** @param {NS} ns */
 async function installBackdoors(ns) {
-  const backdoorServers = ["CSEC", "avmnite-02h", "I.I.I.I", "run4theh111z"]
-  var keepGoing = false
+  const backdoorServers = ["CSEC", "avmnite-02h", "I.I.I.I", "run4theh111z", "w0r1d_d43m0n"]
   for(var S of backdoorServers) {
     // if we are of sufficient level to hack
     //    and have root access
     //    and there is no backdoor
-    if(ns.getHackingLevel() < ns.getServerRequiredHackingLevel(S)) {
-      keepGoing = true
+    if(!ns.serverExists(S)) 
       continue
-    }
-    if(!ns.hasRootAccess(S)) {
-      keepGoing = true
+
+    if(ns.getHackingLevel() < ns.getServerRequiredHackingLevel(S)) 
       continue
-    }
+    
+    if(!ns.hasRootAccess(S)) 
+      continue
+    
     if(ns.getServer(S).backdoorInstalled)
       continue
+    
     await execAndWait(ns, "install-backdoor.js", "home", 1, S)
   }
 }

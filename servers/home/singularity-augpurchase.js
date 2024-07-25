@@ -8,6 +8,10 @@ export async function main(ns) {
     if (ns.singularity.purchaseAugmentation(faction, aug)) {
         rehprintf(ns, "Purchased %s from %s", aug, faction)
         ns.toast(ns.sprintf("Purchased %s", aug), "success", null)
+        if(aug == "The Red Pill") {
+            ns.toast("Restarting to ENDGAME!", "info", null)
+            ns.spawn("reset.js")
+        }
         return
     }
 
@@ -22,10 +26,16 @@ export async function main(ns) {
         while((ns.getServerMoneyAvailable("home") > donation) && !boughtIt) {
             ns.singularity.donateToFaction(faction, donation)
             rehprintf(ns, "Donated $%s to %s", ns.formatNumber(donation), faction)
-            if(ns.singularity.getAugmentationRepReq(aug) > ns.singularity.getFactionRep(faction)) {
+            if(ns.singularity.getAugmentationRepReq(aug) < ns.singularity.getFactionRep(faction)) {
                 boughtIt = true
                 rehprintf(ns, "-> Donations enabled purchasing %s from %s", aug, faction)
-                ns.singularity.purchaseAugmentation(faction, aug)
+                if(ns.singularity.purchaseAugmentation(faction, aug))
+                    ns.toast(ns.sprintf("Purchased %s", aug), "success", null)
+
+                if(aug == "The Red Pill") {
+                    ns.toast("Restarting to ENDGAME!", "info", null)
+                    ns.spawn("reset.js")
+                }
             }    
         }
     }   

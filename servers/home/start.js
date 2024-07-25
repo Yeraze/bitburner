@@ -33,9 +33,9 @@ export async function main(ns) {
   //        to account for Upgrades
   // When those come online, add them to the queue
   await hackUntilTarget(ns, "joesguns", "phantasy")
-  await hackUntilTarget(ns, "phantasy", "ecorp")
-  //await hackUntilTarget(ns, "rho-construction", "ecorp")
-  await hackUntilTarget(ns, "ecorp", "FOREVER")
+  await hackUntilTarget(ns, "phantasy", "global-pharm")
+  await hackUntilTarget(ns, "global-pharm", "megacorp")
+  await hackUntilTarget(ns, "megacorp", "FOREVER")
   ns.closeTail()
 }
 
@@ -65,17 +65,21 @@ async function hackUntilTarget(ns, target, stopAtTarget) {
   var spokenRam = totalRam
   var keepGoing =true 
 
-  // If we specified "FOREVER", then we don't do any monitoring or anything.
-  // We just let it ride.
-  if (stopAtTarget== "FOREVER")
-    return
+
   while (keepGoing) {
     // See if we've hit the proper target level
-    //  General rule of thumb is 3x the required HAcking level
-    if(ns.getHackingLevel() > ns.getServerRequiredHackingLevel(stopAtTarget)*3) {
-      if(ns.hasRootAccess(stopAtTarget)) {
-        keepGoing= false
+    //  General rule of thumb is 3x the required Hacking level
+    if(stopAtTarget != "FOREVER") 
+      if(ns.getHackingLevel() > ns.getServerRequiredHackingLevel(stopAtTarget)*3) {
+        if(ns.hasRootAccess(stopAtTarget)) {
+          keepGoing= false
+        }
       }
+    if(ns.getHackingLevel() > 2500) {
+      // Daedalus check.. If we haven't receivedthe invite to daedalus yet, then don't
+      // switch targets.. That just wastes time waiting for another prep
+      if(ns.getPlayer().factions.indexOf('Daedalus') == -1)
+        keepGoing = true
     }
     await ns.sleep(5000);
     var rekick = false
