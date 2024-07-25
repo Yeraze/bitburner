@@ -29,6 +29,11 @@ export async function main(ns) {
                        "Neuralstimulator",
                        "Neuroreceptor Management Implant",
                        "Neuregen Gene Modification",
+                       "Wired Reflexes",
+                       "Speech Enhancement",
+                       "Nuoptimal Nootropic Injector Implant",
+                       "Speech Processor Implant",
+                       "Nanofiber Weave",
                        "Embedded Netburner Module Core V3 Upgrade",
                        "Embedded Netburner Module Analyze Engine",
                        "Embedded Netburner Module Direct Memory Access Upgrade",
@@ -112,6 +117,4 @@ export async function main(ns) {
   // which kinda means "we're done?" with augments
 
   rehprintf(ns, "Done with augments....")
-
-
 }

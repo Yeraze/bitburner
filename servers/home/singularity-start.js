@@ -42,14 +42,15 @@ export async function main(ns) {
       if(ns.getHackingLevel() - playerLevel < 10) {
         resetCount++
         ns.toast(ns.sprintf("CONSIDERING RESET: %i of 3", resetCount), "warning", null)
-        if(resetCount > 3) {
+        if(resetCount >= 3) {
           ns.toast("RESETTING!!!", "warning", null)
           ns.spawn("reset.js", 1)
         }
       } else {
         rehprintf(ns, "Moved %i levels since last check...", ns.getHackingLevel() - playerLevel)
-        playerLevel = ns.getHackingLevel()
       }
+      playerLevel = ns.getHackingLevel()
+
     }
 
   }
@@ -71,9 +72,12 @@ async function manageHome(ns) {
 function manageDarkweb(ns) {
   var keepGoing = false
   if ( ns.singularity.getDarkwebPrograms().length == 0) {
-    rehprintf(ns, "Buying TOR router...")
-    ns.singularity.purchaseTor();
-    return false
+    if(ns.getServerMoneyAvailable("home") > 200000) {
+      rehprintf(ns, "Buying TOR router...")
+      ns.singularity.purchaseTor();
+    } else {
+      return false
+    }
   }
   for(var prog of ns.singularity.getDarkwebPrograms()) {
     if(ns.fileExists(prog, "home") == false) {
