@@ -29,6 +29,8 @@ export async function main(ns) {
             }    
         }
     }   
+    // If we still coudn't buy it, just flag that we're grinding for it
+    // Triggering "factionjoin" will also starting hacking for it
     if(!boughtIt) {
         rehprintf(ns, "Grinding up for %s from %s (%s)", 
             aug, faction,
