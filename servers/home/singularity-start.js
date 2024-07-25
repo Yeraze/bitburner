@@ -39,7 +39,7 @@ export async function main(ns) {
     }
 
     if (counter % 300 == 0) {
-      if(ns.getHackingLevel() - playerLevel < 5) {
+      if(ns.getHackingLevel() - playerLevel < 10) {
         resetCount++
         ns.toast(ns.sprintf("CONSIDERING RESET: %i of 3", resetCount), "warning", null)
         if(resetCount > 3) {
@@ -51,6 +51,7 @@ export async function main(ns) {
         playerLevel = ns.getHackingLevel()
       }
     }
+
   }
 }
 

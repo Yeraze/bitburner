@@ -8,7 +8,7 @@ export async function main(ns) {
                        "CashRoot Starter Kit",
                        "Cranial Signal Processors - Gen I",
                        "Cranial Signal Processors - Gen II",
-                       "Cranial Signal Processors - Gen II",
+                       "Cranial Signal Processors - Gen III",
                        "Cranial Signal Processors - Gen IV",
                        "Cranial Signal Processors - Gen V",
                        "CRTX42-AA Gene Modification",
