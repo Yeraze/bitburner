@@ -1,4 +1,5 @@
 import {rehprintf, execContinue, execAnywhere, execAndWait, execAnywhereNoWait, getServerList} from 'reh.js'
+import * as CONST from 'reh-constants.js'
 /** @param {NS} ns */
 export async function main(ns) {
   ns.disableLog('ALL')
@@ -75,12 +76,7 @@ async function hackUntilTarget(ns, target, stopAtTarget) {
           keepGoing= false
         }
       }
-    if(ns.getHackingLevel() > 2500) {
-      // Daedalus check.. If we haven't receivedthe invite to daedalus yet, then don't
-      // switch targets.. That just wastes time waiting for another prep
-      if(ns.getPlayer().factions.indexOf('Daedalus') == -1)
-        keepGoing = true
-    }
+
     await ns.sleep(5000);
     var rekick = false
     // First check if the script is still running...

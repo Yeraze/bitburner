@@ -81,7 +81,8 @@ function manageDarkweb(ns) {
       return false
     }
   }
-  for(var prog of ns.singularity.getDarkwebPrograms()) {
+  const progsICareAbout = ["BruteSSH.exe", "FTPCrack.exe", "relaySMTP.exe", "HTTPWorm.exe", "SQLInject.exe"]
+  for(var prog of progsICareAbout) {
     if(ns.fileExists(prog, "home") == false) {
       if (ns.singularity.getDarkwebProgramCost(prog) > ns.getServerMoneyAvailable("home")) {
         keepGoing = true
