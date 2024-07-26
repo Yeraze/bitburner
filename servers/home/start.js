@@ -34,7 +34,8 @@ export async function main(ns) {
   //        to account for Upgrades
   // When those come online, add them to the queue
   await hackUntilTarget(ns, "joesguns", "phantasy")
-  await hackUntilTarget(ns, "phantasy", "global-pharm")
+  await hackUntilTarget(ns, "phantasy", "rho-construction")
+  await hackUntilTarget(ns, "rho-construction", "global-pharm")
   await hackUntilTarget(ns, "global-pharm", "megacorp")
   await hackUntilTarget(ns, "megacorp", "FOREVER")
   ns.closeTail()
