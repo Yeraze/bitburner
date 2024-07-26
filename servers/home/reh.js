@@ -73,7 +73,7 @@ export async function execAndWait(ns, script, host, ...cmdArgs) {
   //ns.tprintf("Launching [%s]:%s and waiting...", host, script)
   var pid= ns.exec(script, host, ...cmdArgs)
   if(pid == 0) {
-    ns.printf("-> %s LAUNCH FAILED [%s on HOME]", CONST.fgRed, scripts[0])
+    ns.printf("-> %s LAUNCH FAILED [%s on HOME]", CONST.fgRed, script)
     return
   }
   while (ns.isRunning(pid, host)) {

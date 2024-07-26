@@ -57,18 +57,18 @@ async function upgradeServers(ns, upgrade) {
             ns.formatNumber(ns.getPurchasedServerUpgradeCost(S, upgrade)))
       }
     }
+    if (firstUpgrade == "") {
+      // Nothing to do, nothing got upgraded...
+    } else if (firstUpgrade == lastUpgrade) {
+      // one server gotupgraded
+      rehprintf(ns, "Upgraded %s to %s RAM", firstUpgrade, 
+        ns.formatRam(upgrade))
+    } else {
+      // multiple servers got upgraded
+      rehprintf(ns, "Upgraded %s -> %s to %s RAM", firstUpgrade, lastUpgrade, 
+        ns.formatRam(upgrade))
+    }
     if (keepgoing) {
-      if (firstUpgrade == "") {
-        // Nothing to do, nothing got upgraded...
-      } else if (firstUpgrade == lastUpgrade) {
-        // one server gotupgraded
-        rehprintf(ns, "Upgraded %s to %s RAM", firstUpgrade, 
-          ns.formatRam(upgrade))
-      } else {
-        // multiple servers got upgraded
-        rehprintf(ns, "Upgraded %s -> %s to %s RAM", firstUpgrade, lastUpgrade, 
-          ns.formatRam(upgrade))
-      }
       await ns.sleep(30 * 1000)
     }
   }

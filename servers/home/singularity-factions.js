@@ -26,10 +26,11 @@ export async function main(ns) {
       if(currentFactions.indexOf(faction.faction) == -1) {
         if(faction.location != "") {
           if (ns.getPlayer().city != faction.location) {
-            rehprintf(ns, "Traveling to %s, looking for %s", faction.location,
-              faction.faction)
-            ns.singularity.travelToCity(faction.location)
-            return
+            if (ns.singularity.travelToCity(faction.location))  {
+              rehprintf(ns, "Traveling to %s, looking for %s", faction.location,
+                faction.faction)
+              return
+            }
           }
         }
       }
