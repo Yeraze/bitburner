@@ -3,9 +3,9 @@ export function autocomplete(data, args) {
 }
 /** @param {NS} ns */
 export async function main(ns) {
+  ns.tail()
   var targets = ns.args.slice(0, -1)
   var threadCount = ns.args.slice(-1)
-  ns.exec("crosshair.js", "home", 1, ...targets)
   ns.tprintf("Requested Threadcount: %i", threadCount)
   var extend = (targets.indexOf("EXTEND") != -1)
   if(extend) {
@@ -34,5 +34,6 @@ export async function main(ns) {
     ns.exec("loop_hack.js", "home", tHack, ...cmdArgs)
     ns.exec("loop_grow.js", "home", tGrow, ...cmdArgs)
   }
+  ns.spawn("crosshair.js", {spawnDelay: 0}, ...targets)
 
 }

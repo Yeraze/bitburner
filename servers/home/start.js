@@ -8,25 +8,64 @@ export async function main(ns) {
   ns.resizeTail(500,110)
   rehprintf(ns, "Initial setup...")
   rehprintf(ns, "Starting auto-breach.js")
+  await execAnywhere(ns, ["s_crime.js"], 1, "Rob Store")
   execAnywhereNoWait(ns, ["auto-breach.js", "reh.js", "reh-constants.js"], 1)
-  if (ns.getHackingLevel() < 10) {
-    await execAnywhere(ns, ["singularity-cs.js"], 1)
-  }
   execAnywhereNoWait(ns, ["pservs.js","reh.js", "reh-constants.js"], 1)
 
   // These scripts area bit "fat",so make sure we have ram
-  if (ns.getServerMaxRam("home") > 127) {
-    execContinue(ns, "singularity-start.js", "home", 1)
+  if (ns.getServerMaxRam("home") < 128) {
+    rehprintf(ns, "Looks like we're still earlygame, starting n00dle blast")
+    await execAndWait(ns, "blast.js", "home", 1, "n00dles", 4);
+    var totalRam = getServerList(ns)
+        .filter((S) => ns.hasRootAccess(S))
+        .reduce((a, S) => (a + ns.getServerMaxRam(S)), 0)
+    while(ns.getHackingLevel() < 30) {
+      await ns.sleep(10000)
+      var totalRamNow = getServerList(ns)
+        .filter((S) => ns.hasRootAccess(S))
+        .reduce((a, S) => (a + ns.getServerMaxRam(S)), 0)
+      if (totalRamNow > totalRam) {
+        rehprintf(ns, "-> Extending n00dle blast")
+        execAndWait(ns, "blast.js", "home", 1, "n00dles", "EXTEND", 4 );
+        totalRam = totalRamNow
+      }
+    }
+    await ns.sleep(5000)
+    ns.scriptKill("loop_hack.js", "home")
+    ns.scriptKill("loop_grow.js", "home")
+    ns.scriptKill("loop_weaken.js", "home")
+    await execAndWait(ns, "global-cleanup.js", "home", 1, "--loop")
+    await ns.sleep(5000)
+
+    rehprintf(ns, "Looks like we're still earlygame, starting joesguns blast")
+
+    await execAndWait(ns, "blast.js", "home", 1, "joesguns", 4);
+    while(ns.getServerMaxRam("home") <= 128) {
+      await ns.sleep(10000)
+      if(ns.getServerMaxRam("home") < 64) {
+        ns.scriptKill("loop_hack.js", "home")
+        ns.scriptKill("loop_grow.js", "home")
+        ns.scriptKill("loop_weaken.js", "home")
+      }
+      await execAndWait(ns, "singularity-home.js", "home", 1)
+      var totalRamNow = getServerList(ns)
+        .filter((S) => ns.hasRootAccess(S))
+        .reduce((a, S) => (a + ns.getServerMaxRam(S)), 0)
+      if (totalRamNow > totalRam) {
+        rehprintf(ns, "-> Extending joesguns blast")
+        await execAndWait(ns, "blast.js", "home", 1, "joesguns", "EXTEND", 4 );
+        totalRam = totalRamNow
+      }
+    }
+    ns.scriptKill("loop_hack.js", "home")
+    ns.scriptKill("loop_grow.js", "home")
+    ns.scriptKill("loop_weaken.js", "home")
+    await execAndWait(ns, "global-cleanup.js", "home", 1, "--loop")
   }
-  
-  rehprintf(ns, "Waiting for level10...")
-  while(ns.getHackingLevel() < 10) {
-    await ns.sleep(1000)
-  }
-  rehprintf(ns, "Initiating crime...")
-  await execAnywhere(ns, ["s_crime.js"], 1)
-    
-  // At HL10 we can switch to joesguns
+  rehprintf(ns, "Beginning Singularity manager...")
+  execContinue(ns, "singularity-start.js", "home", 1)
+
+  // Now we can switch to joesguns
   // We'll be here a while, so there's more logic going on
   // Monitor for new servers added to the list,
   //    Either servers we bought, or new ones available as our HL grows
