@@ -99,11 +99,15 @@ async function hackUntilTarget(ns, target, stopAtTarget) {
 
   // First wait until we have root & proper hacking level
   rehprintf(ns, "Waiting for root access on %s", target)
-  while (ns.hasRootAccess(target) == false) 
+  while (ns.hasRootAccess(target) == false) {
     await ns.sleep(1000);
+    await checkForBreaches(ns)
+  }
   rehprintf(ns, "Waiting for Hack level on %s", target)
-  while (ns.getHackingLevel() < ns.getServerRequiredHackingLevel(target)) 
+  while (ns.getHackingLevel() < ns.getServerRequiredHackingLevel(target)) {
+    await checkForBreaches(ns)
     await ns.sleep(1000)
+  }
 
   // Calculate the initial amount of RAM available
   var totalRam = getServerList(ns)
@@ -176,9 +180,7 @@ async function checkContracts(ns) {
     var contracts = ns.ls(S, ".cct")
     for (const C of contracts) {
       ns.tprintf("Found contract %s %s", S, C)
-      if (solve) {
-        await execAndWait(ns, "solve_contract.js", "home", 1, S, C)
-      }
+      await execAndWait(ns, "solve_contract.js", "home", 1, S, C)
     }
   }
 }
