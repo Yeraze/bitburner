@@ -36,6 +36,7 @@ export async function main(ns) {
       await manageFactions(ns)
       await manageHome(ns)
       await manageAugments(ns)
+      await manageSleeves(ns)
     }
 
     if (counter % 300 == 0) {
@@ -60,6 +61,9 @@ export async function main(ns) {
   }
 }
 
+async function manageSleeves(ns) {
+  await execAndWait(ns, "singularity-sleeve.js", "home", 1)
+}
 /** @param {NS} ns */
 async function manageAugments(ns) {
   const pkg = ["singularity-augments.js", "reh.js", "reh-constants.js", "singulariry-factionjoin.js", "singularity-augpurchase.js"]

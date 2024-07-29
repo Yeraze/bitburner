@@ -1,5 +1,6 @@
 import {rehprintf, execContinue, execAnywhere, execAndWait, execAnywhereNoWait, getServerList} from 'reh.js'
 import * as CONST from 'reh-constants.js'
+import { getServers } from './batcher/utils'
 /** @param {NS} ns */
 export async function main(ns) {
   ns.disableLog('ALL')
@@ -9,18 +10,24 @@ export async function main(ns) {
   rehprintf(ns, "Initial setup...")
   rehprintf(ns, "Starting auto-breach.js")
   await execAnywhere(ns, ["s_crime.js"], 1, "Rob Store")
-  execAnywhereNoWait(ns, ["auto-breach.js", "reh.js", "reh-constants.js"], 1)
+  //execAnywhereNoWait(ns, ["auto-breach.js", "reh.js", "reh-constants.js"], 1)
   execAnywhereNoWait(ns, ["pservs.js","reh.js", "reh-constants.js"], 1)
 
   // These scripts area bit "fat",so make sure we have ram
   if (ns.getServerMaxRam("home") < 128) {
     rehprintf(ns, "Looks like we're still earlygame, starting n00dle blast")
+
+    // Use the blast.js script to hack n00dles
+    // until our Hacking level is 30 (3x Joesguns)
     await execAndWait(ns, "blast.js", "home", 1, "n00dles", 4);
     var totalRam = getServerList(ns)
         .filter((S) => ns.hasRootAccess(S))
         .reduce((a, S) => (a + ns.getServerMaxRam(S)), 0)
     while(ns.getHackingLevel() < 30) {
       await ns.sleep(10000)
+      await checkForBreaches(ns)
+      await checkContracts(ns)
+
       var totalRamNow = getServerList(ns)
         .filter((S) => ns.hasRootAccess(S))
         .reduce((a, S) => (a + ns.getServerMaxRam(S)), 0)
@@ -38,10 +45,14 @@ export async function main(ns) {
     await ns.sleep(5000)
 
     rehprintf(ns, "Looks like we're still earlygame, starting joesguns blast")
-
+    // Now use the blast.js script to hack joesguns
+    // until we have 128G RAM ... 
     await execAndWait(ns, "blast.js", "home", 1, "joesguns", 4);
     while(ns.getServerMaxRam("home") < 128) {
       await ns.sleep(10000)
+      await checkForBreaches(ns)
+      await checkContracts(ns)
+
       if(ns.getServerMaxRam("home") < 64) {
         ns.scriptKill("loop_hack.js", "home")
         ns.scriptKill("loop_grow.js", "home")
@@ -118,6 +129,8 @@ async function hackUntilTarget(ns, target, stopAtTarget) {
       }
 
     await ns.sleep(5000);
+    await checkForBreaches(ns)
+    await checkContracts(ns)
     var rekick = false
     // First check if the script is still running...
     //    Itmight have crashed.. especially in very early-game, low ram
@@ -155,4 +168,52 @@ async function hackUntilTarget(ns, target, stopAtTarget) {
   rehprintf(ns, "Ending attack on %s", target)
   await execAndWait(ns, "global-cleanup.js", "home", 1, "--super")
   ns.scriptKill("batcher/controller.js", "home")
+}
+
+async function checkContracts(ns) {
+  const serverList = getServerList(ns)
+  for (const S of serverList) {
+    var contracts = ns.ls(S, ".cct")
+    for (const C of contracts) {
+      ns.tprintf("Found contract %s %s", S, C)
+      if (solve) {
+        await execAndWait(ns, "solve_contract.js", "home", 1, S, C)
+      }
+    }
+  }
+}
+
+/** @param {NS} ns */
+async function checkForBreaches(ns) {
+  let PortsAvail = 0;
+  if (ns.fileExists("BruteSSH.exe", "home")) {
+      PortsAvail = PortsAvail +1
+  }
+  if (ns.fileExists("FTPCrack.exe", "home")) {
+      PortsAvail = PortsAvail +1
+  }
+  if (ns.fileExists("relaySMTP.exe", "home")) {
+      PortsAvail = PortsAvail +1
+  }
+  if (ns.fileExists("HTTPWorm.exe", "home")) {
+      PortsAvail = PortsAvail +1
+  }
+  if (ns.fileExists("SQLInject.exe", "home")) {
+      PortsAvail = PortsAvail +1
+  }
+  var serverList = getServerList(ns).filter((A) => 
+    (ns.getServerRequiredHackingLevel(A) <= ns.getHackingLevel()))
+  for(const server of serverList){
+    if(server == "home")
+      continue
+    
+    if(ns.hasRootAccess(server))
+      continue
+
+    if(ns.getServerNumPortsRequired(server) > PortsAvail) {
+      continue
+    }
+    ns.printf("Breaching %s", server)
+    await execAndWait(ns, "breach.js", "home", 1, server)
+  }
 }
