@@ -26,7 +26,7 @@ export async function main(ns) {
         .reduce((a, S) => (a + ns.getServerMaxRam(S)), 0)
       if (totalRamNow > totalRam) {
         rehprintf(ns, "-> Extending n00dle blast")
-        execAndWait(ns, "blast.js", "home", 1, "n00dles", "EXTEND", 4 );
+        await execAndWait(ns, "blast.js", "home", 1, "n00dles", "EXTEND", 4 );
         totalRam = totalRamNow
       }
     }
@@ -40,7 +40,7 @@ export async function main(ns) {
     rehprintf(ns, "Looks like we're still earlygame, starting joesguns blast")
 
     await execAndWait(ns, "blast.js", "home", 1, "joesguns", 4);
-    while(ns.getServerMaxRam("home") <= 128) {
+    while(ns.getServerMaxRam("home") < 128) {
       await ns.sleep(10000)
       if(ns.getServerMaxRam("home") < 64) {
         ns.scriptKill("loop_hack.js", "home")

@@ -46,7 +46,9 @@ export async function main(ns) {
           ns.toast("RESETTING!!!", "warning", null)
           ns.spawn("reset.js", 1)
         }
-      } 
+      } else {
+        resetCount = 0
+      }
       rehprintf(ns, "Averaging %s levels/min [%i strike(s) remaining]", 
           ns.formatNumber((ns.getHackingLevel() - playerLevel)/5, 2),
           3 - resetCount)
