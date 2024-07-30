@@ -28,7 +28,7 @@ const COSTS = { hack: 1.7, weaken1: 1.75, grow: 1.75, weaken2: 1.75 };
 
 // A new optional constant. The RamNet will attempt to reserve this much ram at home.
 // You can set it to 0 if you don't want to reserve anything, and setting it too high will just reserve as much as possible.
-const RESERVED_HOME_RAM = 20;
+const RESERVED_HOME_RAM = 32;
 
 // A brand new class to help keep our increasingly complex logic organized.
 class ContinuousBatcher {

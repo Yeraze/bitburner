@@ -74,7 +74,7 @@ async function manageSleeves(ns) {
 }
 /** @param {NS} ns */
 async function manageAugments(ns) {
-  const pkg = ["singularity-augments.js", "reh.js", "reh-constants.js", "singulariry-factionjoin.js", "singularity-augpurchase.js"]
+  const pkg = ["singularity-augments.js", "reh.js", "reh-constants.js", "singularity-factionjoin.js", "singularity-augpurchase.js"]
   await execAnywhere(ns, pkg, 1)
 }
 

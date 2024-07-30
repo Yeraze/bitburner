@@ -1,17 +1,20 @@
 import {rehprintf} from 'reh.js'
 /** @param {NS} ns */
 export async function main(ns) {
-  if (ns.getServerMoneyAvailable("home") > ns.singularity.getUpgradeHomeRamCost()) {
+  var ramCost = ns.singularity.getUpgradeHomeRamCost()
+  if (ns.getServerMoneyAvailable("home") > ramCost) {
     if (ns.singularity.upgradeHomeRam()) {
       rehprintf(ns, "Upgraded home RAM")
-      ns.toast(ns.sprintf("Upgrading home RAM: $%s", ns.formatNumber(ns.singularity.getUpgradeHomeRamCost())),
+      ns.toast(ns.sprintf("Upgrading home RAM: $%s", ns.formatNumber(ramCost)),
           "success", null)  
     }
   }
-  if (ns.getServerMoneyAvailable("home") > ns.singularity.getUpgradeHomeCoresCost()) {
+
+  var coreCost = ns.singularity.getUpgradeHomeCoresCost()
+  if (ns.getServerMoneyAvailable("home") > coreCost) {
     if(ns.singularity.upgradeHomeCores()) {
       rehprintf(ns, "Upgraded home CORES")
-      ns.toast(ns.sprintf("Upgrading home CORES: $%s", ns.formatNumber(ns.singularity.getUpgradeHomeCoresCost())),
+      ns.toast(ns.sprintf("Upgrading home CORES: $%s", ns.formatNumber(coreCost)),
           "success", null)      
     }
   }
