@@ -31,4 +31,6 @@ export async function main(ns) {
     }
   }
 
+  ns.sleeve.setToUniversityCourse(0, "Rothman University", "Computer Science")
+
 }

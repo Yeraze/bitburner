@@ -17,7 +17,6 @@ export async function main(ns) {
         ns.scriptKill("batcher/tGrow.js", "home")
         ns.scriptKill("batcher/tWeaken.js", "home")
         ns.scriptKill("batcher/tHack.js", "home")
-
       }
     } else {
       if(ns.scriptRunning("remote_weaken.js", server))

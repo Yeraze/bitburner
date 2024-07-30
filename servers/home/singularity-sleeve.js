@@ -15,15 +15,15 @@ export async function main(ns) {
             ns.sleeve.setToSynchronize(sleeveNum)
             continue
         }
-
         // Put the sleeve to work
+        ns.sleeve.setToUniversityCourse(sleeveNum, "Rothman University", "Algorithms")
     }
     for(var sleeveNum =0; sleeveNum < ns.sleeve.getNumSleeves(); sleeveNum++) {
         var sleeve = ns.sleeve.getSleeve(sleeveNum)
         // Purchase any augments
         for(var aug of ns.sleeve.getSleevePurchasableAugs(sleeveNum)) {
             if(aug.cost < ns.getServerMoneyAvailable("home")) {
-                if(ns.sleeve.purchaseSleeveAug(sleeveNum, aug))
+                if(ns.sleeve.purchaseSleeveAug(sleeveNum, aug.name))
                     ns.toast(ns.sprintf("[SLEEVE:%i] Buying augment %s", sleeveNum, aug.name), "info", null)
             }
         }

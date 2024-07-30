@@ -46,6 +46,11 @@ async function upgradeServers(ns, upgrade) {
       }
       if(keepgoing)
         continue
+      if(ns.getPurchasedServerUpgradeCost(S, upgrade) == Infinity) {
+        rehprintf(ns, "ERROR: There isn't one!  We're done!")
+        return
+      }
+
       if(ns.getServerMoneyAvailable("home") > ns.getPurchasedServerUpgradeCost(S, upgrade)) {
         lastUpgrade= S
         if (firstUpgrade == "")

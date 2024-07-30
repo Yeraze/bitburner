@@ -38,14 +38,22 @@ export async function main(ns) {
       await manageAugments(ns)
       await manageSleeves(ns)
     }
-
+    // every 5 minutes or so (300 cycles)
     if (counter % 300 == 0) {
+      // If the average Hacking Levels per Second drops under 2
+      //  Since this happens every 5 minutes, check for 10 levels
       if(ns.getHackingLevel() - playerLevel < 10) {
-        resetCount++
-        ns.toast(ns.sprintf("CONSIDERING RESET: %i of 3", resetCount), "warning", null)
-        if(resetCount >= 3) {
-          ns.toast("RESETTING!!!", "warning", null)
-          ns.spawn("reset.js", 1)
+        var augsPurchased = ns.singularity.getOwnedAugmentations(true).filter( 
+            (A) => (ns.singularity.getOwnedAugmentations(false).indexOf(A) == -1))
+        if (augsPurchased.length == 0) {
+          ns.tprintf("WARN:-> Should be a reset, but wait for an augmentation purchase")
+        } else {
+          resetCount++
+          ns.toast(ns.sprintf("CONSIDERING RESET: %i of 3", resetCount), "warning", null)
+          if(resetCount >= 3) {
+            ns.toast("RESETTING!!!", "warning", null)
+            ns.spawn("reset.js", 1)
+          }  
         }
       } else {
         resetCount = 0
