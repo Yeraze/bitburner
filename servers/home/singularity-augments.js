@@ -109,22 +109,20 @@ export async function main(ns) {
   // ok... If we got here then there's probably nothing to buy.
   // so NFG it is!
   // Unless we're saving up for something
-  //  And don't make an NFG the first augment we buy this run.. Just drives up prices.
-  if((savingUp == false) && (augsPurchased.length > 0)) {
+  if(savingUp == false) {
     // NFG's are offered by every faction, so just check the 1st one
-    if (ns.getPlayer().factions.length > 0) {
-      var fac = ns.getPlayer().factions[0]
-      var aug = "NeuroFlux Governor"
+    if(ns.getServerMoneyAvailable("home") > ns.singularity.getAugmentationPrice(aug)) {
+      for (var fac of ns.getPlayer().factions) {
+        var aug = "NeuroFlux Governor"
 
-      if(ns.getServerMoneyAvailable("home") < ns.singularity.getAugmentationPrice(aug)) {
-        ns.tprintf("-> Next NFG costs $%s", ns.formatNumber(ns.singularity.getAugmentationPrice(aug)))
-      } else if(ns.singularity.getFactionRep(fac) < ns.singularity.getAugmentationRepReq(aug)) {
-        ns.tprintf("-> Next NFG requires %s rep", ns.formatNumber(ns.singularity.getAugmentationRepReq(aug)))
-      } else {
-        // If we got here, we should be able to afford it.
-        ns.spawn("singularity-augpurchase.js", {spawnDelay: 0}, fac, aug)      
-        // We never start grinding for NFG, we just buy it when it's available. 
-      } 
+        if(ns.singularity.getFactionRep(fac) < ns.singularity.getAugmentationRepReq(aug)) {
+          ns.tprintf("-> Next NFG requires %s rep", ns.formatNumber(ns.singularity.getAugmentationRepReq(aug)))
+        } else {
+          // If we got here, we should be able to afford it.
+          ns.spawn("singularity-augpurchase.js", {spawnDelay: 0}, fac, aug)      
+          // We never start grinding for NFG, we just buy it when it's available. 
+        } 
+      }
     }
   }
 

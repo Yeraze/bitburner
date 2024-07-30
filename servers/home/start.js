@@ -204,7 +204,7 @@ async function checkForBreaches(ns) {
       PortsAvail = PortsAvail +1
   }
   var serverList = getServerList(ns).filter((A) => 
-    (ns.getServerRequiredHackingLevel(A) <= ns.getHackingLevel()))
+    (ns.getServerNumPortsRequired(A) <= PortsAvail))
   for(const server of serverList){
     if(server == "home")
       continue
@@ -212,9 +212,6 @@ async function checkForBreaches(ns) {
     if(ns.hasRootAccess(server))
       continue
 
-    if(ns.getServerNumPortsRequired(server) > PortsAvail) {
-      continue
-    }
     ns.printf("Breaching %s", server)
     await execAndWait(ns, "breach.js", "home", 1, server)
   }

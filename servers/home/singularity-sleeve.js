@@ -17,7 +17,9 @@ export async function main(ns) {
         }
 
         // Put the sleeve to work
-
+    }
+    for(var sleeveNum =0; sleeveNum < ns.sleeve.getNumSleeves(); sleeveNum++) {
+        var sleeve = ns.sleeve.getSleeve(sleeveNum)
         // Purchase any augments
         for(var aug of ns.sleeve.getSleevePurchasableAugs(sleeveNum)) {
             if(aug.cost < ns.getServerMoneyAvailable("home")) {
