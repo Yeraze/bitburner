@@ -8,6 +8,14 @@ export async function main(ns) {
 	const start = performance.now();
 	const port = ns.getPortHandle(ns.pid);
 	const job = JSON.parse(ns.args[0]);
+	ns.atExit(() => {
+		const end = Date.now();
+		if (job.report) ns.writePort(job.port, job.type + job.batch);
+		// Uncomment one of these if you want to log completed jobs. Make sure to uncomment the appropriate lines in the controller as well.
+		// ns.tprint(`Batch ${job.batch}: ${job.type} finished at ${end.toString().slice(-6)}/${Math.round(job.end).toString().slice(-6)}\n`);
+		// ns.writePort(job.log, `Batch ${job.batch}: ${job.type} finished at ${end.toString().slice(-6)}/${Math.round(job.end + tDelay).toString().slice(-6)}\n`);
+	});
+	
 	let tDelay = 0;
 	let delay = job.end - job.time - Date.now();
 	if (delay < 0) {
@@ -20,11 +28,5 @@ export async function main(ns) {
 	port.write(tDelay);
 	await promise;
 
-	ns.atExit(() => {
-		const end = Date.now();
-		if (job.report) ns.writePort(job.port, job.type + job.batch);
-		// Uncomment one of these if you want to log completed jobs. Make sure to uncomment the appropriate lines in the controller as well.
-		// ns.tprint(`Batch ${job.batch}: ${job.type} finished at ${end.toString().slice(-6)}/${Math.round(job.end).toString().slice(-6)}\n`);
-		// ns.writePort(job.log, `Batch ${job.batch}: ${job.type} finished at ${end.toString().slice(-6)}/${Math.round(job.end + tDelay).toString().slice(-6)}\n`);
-	});
+
 }

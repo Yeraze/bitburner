@@ -11,7 +11,7 @@ export async function main(ns) {
   rehprintf(ns, "Starting auto-breach.js")
   await execAnywhere(ns, ["s_crime.js"], 1, "Rob Store")
   //execAnywhereNoWait(ns, ["auto-breach.js", "reh.js", "reh-constants.js"], 1)
-  execAnywhereNoWait(ns, ["pservs.js","reh.js", "reh-constants.js"], 1)
+  execAnywhereNoWait(ns, ["pservs.js","reh.js", "reh-constants.js"], {threads:1, temporary:true})
 
   // These scripts area bit "fat",so make sure we have ram
   if (ns.getServerMaxRam("home") < 128) {
@@ -19,7 +19,7 @@ export async function main(ns) {
 
     // Use the blast.js script to hack n00dles
     // until our Hacking level is 30 (3x Joesguns)
-    await execAndWait(ns, "blast.js", "home", 1, "n00dles", 4);
+    await execAndWait(ns, "blast.js", "home", {threads:1, temporary:true}, "n00dles", 4);
     var totalRam = getServerList(ns)
         .filter((S) => ns.hasRootAccess(S))
         .reduce((a, S) => (a + ns.getServerMaxRam(S)), 0)
@@ -33,7 +33,7 @@ export async function main(ns) {
         .reduce((a, S) => (a + ns.getServerMaxRam(S)), 0)
       if (totalRamNow > totalRam) {
         rehprintf(ns, "-> Extending n00dle blast")
-        await execAndWait(ns, "blast.js", "home", 1, "n00dles", "EXTEND", 4 );
+        await execAndWait(ns, "blast.js", "home", {threads:1, temporary:true}, "n00dles", "EXTEND", 4 );
         totalRam = totalRamNow
       }
     }
@@ -47,7 +47,7 @@ export async function main(ns) {
     rehprintf(ns, "Looks like we're still earlygame, starting joesguns blast")
     // Now use the blast.js script to hack joesguns
     // until we have 128G RAM ... 
-    await execAndWait(ns, "blast.js", "home", 1, "joesguns", 4);
+    await execAndWait(ns, "blast.js", "home", {threads:1, temporary:true}, "joesguns", 4);
     while(ns.getServerMaxRam("home") < 128) {
       await ns.sleep(10000)
       await checkForBreaches(ns)
@@ -64,7 +64,7 @@ export async function main(ns) {
         .reduce((a, S) => (a + ns.getServerMaxRam(S)), 0)
       if (totalRamNow > totalRam) {
         rehprintf(ns, "-> Extending joesguns blast")
-        await execAndWait(ns, "blast.js", "home", 1, "joesguns", "EXTEND", 4 );
+        await execAndWait(ns, "blast.js", "home", {threads:1, temporary:true}, "joesguns", "EXTEND", 4 );
         totalRam = totalRamNow
       }
     }
@@ -74,7 +74,7 @@ export async function main(ns) {
     await execAndWait(ns, "global-cleanup.js", "home", 1, "--loop")
   }
   rehprintf(ns, "Beginning Singularity manager...")
-  execContinue(ns, "singularity-start.js", "home", 1)
+  execContinue(ns, "singularity-start.js", "home", {threads:1, temporary:true})
 
   // Now we can switch to joesguns
   // We'll be here a while, so there's more logic going on
@@ -117,7 +117,7 @@ async function hackUntilTarget(ns, target, stopAtTarget) {
       ns.formatRam(totalRam))
 
   // and START
-  ns.exec("batcher/controller.js", "home", 1, target)
+  ns.exec("batcher/controller.js", "home", {threads:1, temporary:true}, target)
   var spokenRam = totalRam
   var keepGoing =true 
 
@@ -164,7 +164,7 @@ async function hackUntilTarget(ns, target, stopAtTarget) {
         target, ns.formatRam(totalRamNow))
       // This isa bit messy, yes.. And can leave the target in an unprepped state
       // But it's the fastest way..
-      await execAndWait(ns, "global-cleanup.js", "home", 1, "--super")
+      await execAndWait(ns, "global-cleanup.js", "home", {threads:1, temporary:true}, "--super")
       ns.exec("batcher/controller.js", "home", 1, target)
       totalRam = totalRamNow
     }

@@ -82,11 +82,13 @@ class ContinuousBatcher {
 				this.#schedule.push(job);
 			}
 		}
+
 	}
 
 	// The function for deploying jobs. Very similar to the code from our shotgun batcher with some minor changes.
 	async deploy() {
 		// The for loop is replaced by a while loop, since our Deque isn't iterable.
+
 		while (!this.#schedule.isEmpty()) {
 			const job = this.#schedule.shift();
 			job.end += this.#metrics.delay;
@@ -95,6 +97,7 @@ class ContinuousBatcher {
 			const tPort = this.#ns.getPortHandle(jobPid);
 
 			// We save the pid for later.
+
 			job.pid = jobPid;
 			await tPort.nextWrite();
 
@@ -103,9 +106,11 @@ class ContinuousBatcher {
 			this.#running.set(job.id, job);
 		}
 
+
 		// After the loop, we adjust future job ends to account for the delay, then discard it.
 		this.#metrics.end += this.#metrics.delay;
 		this.#metrics.delay = 0;
+
 	}
 
 	// Our old timeout function is now a proper function of its own. A few extra baubles in the log, but nothing exciting.
@@ -144,17 +149,21 @@ class ContinuousBatcher {
 			// We make sure to handle it all before we move on.
 			while (!dataPort.empty()) {
 				// Workers now report unique identifiers (type + batchnumber) used to find them on the map.
+
 				const data = dataPort.read();
 
 				// Free up the ram, them remove them from the active list.
 				// The check handles a corner case where a hack gets "cancelled" after it's already finished.
 				if (this.#running.has(data)) {
+
 					this.#ramNet.finish(this.#running.get(data));
 					this.#running.delete(data);
+
 				}
 
 				// If it's a W2, we've got an opening to do some work.
 				if (data.startsWith("weaken2")) {
+
 					// Recalculate times. Threads too, but only if prepped (the logic is in the function itself).
 					this.#metrics.calculate(this.#ns);
 
@@ -184,6 +193,7 @@ class ContinuousBatcher {
 					this.scheduleBatches(1);
 					await this.deploy();
 					this.log();
+
 				}
 			}
 		}
