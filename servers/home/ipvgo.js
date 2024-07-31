@@ -49,7 +49,10 @@ const getRandomMove = (board, validMoves, move) => {
 
     // Look through all the points on the board
     // and build out a Score for each cell
-    for (let x = 0; x < (move < 2 ? 2 : size); x++) {
+
+    // The funny looking X loop is to restrict the first few moves to 
+    // one side of the board
+    for (let x = 0; x < (move < 5 ? 2 : size); x++) {
       score.push( [] )
       for (let y = 0; y < size; y++) {
         // Make sure the point is a valid move
@@ -60,9 +63,11 @@ const getRandomMove = (board, validMoves, move) => {
         // We don't want to run out of empty node connections!
         const isNotReservedSpace = x % 2 === 1 || y % 2 === 1;
 
-        if (isValidMove && isNotReservedSpace) {
+        if (isValidMove && isNotReservedSpace) 
             score[x][y] = 1
 
+        // If this move is valid, is it connecting to an existing node
+        if (score[x][y] > 0) {
             var nbr = [validMoves[x+1]?.[y  ],
             validMoves[x-1]?.[y  ],
             validMoves[x  ]?.[y+1],
@@ -76,14 +81,16 @@ const getRandomMove = (board, validMoves, move) => {
     var maxScore = 0
     var movex = 0
     var movey = 0
-    for (let x = 0; x < (move < 2 ? 2 : size); x++) {
+    for (let x = 0; x < (move < 5 ? 2 : size); x++) {
         for (let y = 0; y < size; y++) { 
             if(score[x][y] > 0)
                 moveOptions.push([x, y]);
         }
     } 
 
+    // Sort the move options from Highest to Lowest
     moveOptions.sort( (B, A) => (score[A[0]][A[1]] - score[B[0]][B[1]]) )
+    // Trim to the top 5
     var goodOptions = moveOptions.slice(0, 5)
 
     // Choose one of the found moves at random
