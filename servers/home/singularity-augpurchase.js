@@ -42,6 +42,21 @@ export async function main(ns) {
     // If we still coudn't buy it, just flag that we're grinding for it
     // Triggering "factionjoin" will also starting hacking for it
     if(!boughtIt) {
+        var favor = ns.singularity.getFactionFavor(faction)
+        if (favor < 150) {
+            // See if a reset to convert Rep->Favor would be enough to
+            // enable donations on the next run.
+            var convFavor = ns.singularity.getFactionFavorGain(faction)
+
+            if(favor + convFavor > 150) {
+                ns.toast(ns.sprintf("Restarting to enable DONATIONS for %s", faction), "info", null)
+                ns.spawn("reset.js")
+            } else {
+                ns.tprintf("INFO: Too early for reset, would only net %i favor (%s)",
+                    favor + convFavor, faction)
+            }
+        }
+        
         rehprintf(ns, "Grinding up for %s from %s (%s)", 
             aug, faction,
             ns.formatPercent( ns.singularity.getFactionRep(faction) / ns.singularity.getAugmentationRepReq(aug)))

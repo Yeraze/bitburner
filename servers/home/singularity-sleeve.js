@@ -16,7 +16,9 @@ export async function main(ns) {
             continue
         }
         // Put the sleeve to work
-        // ns.sleeve.setToUniversityCourse(sleeveNum, "Rothman University", "Algorithms")
+        if(ns.sleeve.getTask(sleeveNum) == null) {
+            ns.sleeve.setToUniversityCourse(sleeveNum, "Rothman University", "Algorithms")
+        }
     }
     for(var sleeveNum =0; sleeveNum < ns.sleeve.getNumSleeves(); sleeveNum++) {
         var sleeve = ns.sleeve.getSleeve(sleeveNum)
