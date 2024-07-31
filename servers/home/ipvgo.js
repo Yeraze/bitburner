@@ -68,10 +68,10 @@ const getRandomMove = (board, validMoves, move) => {
 
         // If this move is valid, is it connecting to an existing node
         if (score[x][y] > 0) {
-            var nbr = [validMoves[x+1]?.[y  ],
-            validMoves[x-1]?.[y  ],
-            validMoves[x  ]?.[y+1],
-            validMoves[x  ]?.[y-1]]
+            var nbr = [board[x+1]?.[y  ] == 'X',
+                       board[x-1]?.[y  ] == 'X',
+                       board[x  ][y+1] == 'X',
+                       board[x  ][y-1] == 'X']
             if(nbr.includes(true))
                 score[x][y] = 2
          }
