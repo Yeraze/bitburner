@@ -5,10 +5,9 @@ var factionList = []
 /** @param {NS} ns */
 export async function main(ns) {
   ns.disableLog('ALL')
-  ns.tail()
-  ns.moveTail(50,0)
-  ns.resizeTail(500, 110)
+
   if (ns.getHackingLevel() < 10) {
+    db.dbLog(ns, "start", "Starting CS to hit level 10...")
     rehprintf(ns, "Starting CS to hit level 10...")
     ns.singularity.universityCourse("rothman university", "computer science", true);
     while (ns.getHackTime() < 10) {
@@ -16,14 +15,14 @@ export async function main(ns) {
     }
   }
 
-  rehprintf(ns, "Waiting for $250k...")
+  db.dbLog(ns, "start", "Waiting for $250k...")
   while(ns.getServerMoneyAvailable("home") < 250000) {
     await ns.sleep(1000);
   }
 
   var keepGoing = true
   var counter = 59
-  rehprintf(ns, "Entering main loop...")
+  db.dbLog(ns, "start","Entering main loop...")
   var playerLevel = ns.getHackingLevel()
   var resetCount = 0
   while(keepGoing) {
@@ -47,7 +46,7 @@ export async function main(ns) {
         var augsPurchased = ns.singularity.getOwnedAugmentations(true).filter( 
             (A) => (ns.singularity.getOwnedAugmentations(false).indexOf(A) == -1))
         if (augsPurchased.length == 0) {
-          ns.tprintf("WARN:-> Should be a reset, but wait for an augmentation purchase")
+          db.dbLog(ns, "start", "WARN:-> Should be a reset, but wait for an augmentation purchase")
         } else {
           resetCount++
           ns.toast(ns.sprintf("CONSIDERING RESET: %i of 3", resetCount), "warning", null)
@@ -59,9 +58,6 @@ export async function main(ns) {
       } else {
         resetCount = 0
       }
-      rehprintf(ns, "Averaging %s levels/min [%i strike(s) remaining]", 
-          ns.formatNumber((ns.getHackingLevel() - playerLevel)/5, 2),
-          3 - resetCount)
       
       var record = {velocity: ns.formatNumber((ns.getHackingLevel() - playerLevel)/5, 2),
                     strikes: resetCount
@@ -95,7 +91,7 @@ function manageDarkweb(ns) {
   var keepGoing = false
   if ( ns.singularity.getDarkwebPrograms().length == 0) {
     if(ns.getServerMoneyAvailable("home") > 200000) {
-      rehprintf(ns, "Buying TOR router...")
+      db.dbLog(ns, "start", "Buying TOR router...")
       ns.singularity.purchaseTor();
     } else {
       return false
@@ -108,7 +104,7 @@ function manageDarkweb(ns) {
         keepGoing = true
         continue
       }
-      rehprintf(ns, "Buying program %s", prog)
+      db.dbLog(ns, "start", ns.sprintf("Buying program %s", prog))
       ns.singularity.purchaseProgram(prog)
     }
   }
@@ -139,7 +135,7 @@ async function installBackdoors(ns) {
     
     if(ns.getServer(S).backdoorInstalled)
       continue
-    
+    db.dbLog(ns, "start", ns.sprintf("Backdooring %s", S))
     await execAndWait(ns, "install-backdoor.js", "home", 1, S)
   }
 }

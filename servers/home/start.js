@@ -5,9 +5,8 @@ import * as db from 'database.js'
 /** @param {NS} ns */
 export async function main(ns) {
   ns.disableLog('ALL')
-  ns.tail()
-  ns.moveTail(50, 600)
-  ns.resizeTail(500,110)
+  for(var file of ns.ls("home", "/db/*.txt")) 
+    ns.clear(file)
   db.dbLog(ns, "start", "Initial setup...")
   db.dbLog(ns, "start", "Starting auto-breach.js")
   await execAnywhere(ns, ["s_crime.js"], 1, "Rob Store")
@@ -99,12 +98,12 @@ async function hackUntilTarget(ns, target, stopAtTarget) {
       return
 
   // First wait until we have root & proper hacking level
-  db.dbLog(ns, "start", "Waiting for root access on %s", target)
+  db.dbLog(ns, "start", ns.sprintf("Waiting for root access on %s", target))
   while (ns.hasRootAccess(target) == false) {
     await ns.sleep(1000);
     await checkForBreaches(ns)
   }
-  db.dbLog(ns, "start", "Waiting for Hack level on %s", target)
+  db.dbLog(ns, "start", ns.sprintf("Waiting for Hack level on %s", target))
   while (ns.getHackingLevel() < ns.getServerRequiredHackingLevel(target)) {
     await checkForBreaches(ns)
     await ns.sleep(1000)
@@ -114,8 +113,8 @@ async function hackUntilTarget(ns, target, stopAtTarget) {
   var totalRam = getServerList(ns)
       .filter((S) => ns.hasRootAccess(S))
       .reduce((a, S) => (a + ns.getServerMaxRam(S)), 0)
-  db.dbLog(ns, "start", "HWGW Attack on %s (%s available ram)", target, 
-      ns.formatRam(totalRam))
+  db.dbLog(ns, "start", ns.sprintf("HWGW Attack on %s (%s available ram)", target, 
+      ns.formatRam(totalRam)))
 
   // and START
   ns.exec("batcher/controller.js", "home", {threads:1, temporary:true}, target)
@@ -170,7 +169,7 @@ async function hackUntilTarget(ns, target, stopAtTarget) {
       totalRam = totalRamNow
     }
   }
-  rdb.dbLog(ns, "start", "Ending attack on %s", target)
+  db.dbLog(ns, "start", ns.sprintf("Ending attack on %s", target))
   await execAndWait(ns, "global-cleanup.js", "home", 1, "--super")
   ns.scriptKill("batcher/controller.js", "home")
 }

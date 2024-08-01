@@ -10,7 +10,7 @@ export function dbRead(ns, table) {
     if (ns.fileExists(filename, "home"))
         return JSON.parse(ns.read(filename)) 
     else    
-        return []
+        return null
 }
 
 export function formatTime(ns, time) {
@@ -28,7 +28,8 @@ export function dbLog(ns, table, line) {
     var logline = ns.sprintf("[%s] %s",
         formatTime(ns, ns.getTimeSinceLastAug()), line)
     var lines = dbRead(ns, `log_${table}`)
-
+    if (lines == null)
+        lines = []
     lines.unshift(logline)
     if (lines.length > 10) 
         lines = lines.slice(0, 10)

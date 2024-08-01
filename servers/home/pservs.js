@@ -91,9 +91,7 @@ async function upgradeServers(ns, upgrade) {
 /** @param {NS} ns */
 export async function main(ns) {
   ns.disableLog('ALL')
-  ns.tail()
-  ns.moveTail(50, 130)
-  ns.resizeTail(500,110)
+
   rehprintf(ns, "Beginning with basic 8GB Nodes")
   await buyServers(ns)
   var size = 64

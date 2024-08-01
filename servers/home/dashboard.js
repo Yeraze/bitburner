@@ -13,9 +13,9 @@ export async function main(ns) {
     while(true) {
         await ns.sleep(1000)
         var batcher = db.dbRead(ns, "batcher")
-        var sleeves = db.dbRead(ns, "sleeves")
-        var faction = db.dbRead(ns, "faction")
-        var factionList = db.dbRead(ns, "factions")
+        var sleeves = db.dbRead(ns, "sleeves") || []
+        var faction = db.dbRead(ns, "faction") 
+        var factionList = db.dbRead(ns, "factions") || []
         var augment = db.dbRead(ns, "augment")
         var global = db.dbRead(ns, "global")
         ns.clearLog()
@@ -34,15 +34,30 @@ export async function main(ns) {
         ns.printf("Time of this run: %s", ns.tFormat(ns.getTimeSinceLastAug()))
         ns.printf("Money: $%s (+$%s/s)",
             ns.formatNumber(cash, 2), ns.formatNumber(cashRate, 2))
-        if(global.strikes > 0) 
-            ns.printf("Velocity: %s/min [%i strikes]", global.velocity, global.strikes)
-        else
-            ns.printf("Velocity: %s/min", global.velocity)
-        ns.printf("Current target: %s", batcher.target)
-        ns.printf("-> %s :: %s", batcher.greed, batcher.status)
-        ns.printf("Augment: Saving for %s [%s] (%s)", 
-            augment.augment, augment.faction, augment.progress
-        )
+        if(global) {
+            if(global.strikes > 0) 
+                ns.printf("Velocity: %s/min [%i strikes]", global.velocity, global.strikes)
+            else
+                ns.printf("Velocity: %s/min", global.velocity)
+        } else {
+            ns.printf("Velocity: pending")
+        }
+
+        if(batcher) {
+            ns.printf("Current target: %s", batcher.target)
+            ns.printf("-> %s :: %s", batcher.greed, batcher.status)
+        } else {
+            ns.printf("Current target: <unknown>")
+            ns.printf("-> (no current target)")
+        }
+
+        if(augment) {
+            ns.printf("Augment: Saving for %s [%s] (%s)", 
+                augment.augment, augment.faction, augment.progress
+            )
+        } else {
+            ns.printf("Augment: <none>")
+        }
         var dtable = []
         var ctable = []
         var row = ["Sleeve", "Shock", "Sync", "Status"]
