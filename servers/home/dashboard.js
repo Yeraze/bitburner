@@ -88,6 +88,16 @@ export async function main(ns) {
         }
         table(ns, dtable, ctable)
 
+        var lines = db.dbLogFetch(ns, "pserv", 5)
+        ns.printf("=== Purchased Server Log:")
+        for(var l of lines)
+            ns.print(l)
+
+        lines = db.dbLogFetch(ns, "start", 5)
+        ns.printf("=== Startup Log:")
+        for(var l of lines)
+            ns.print(l)
+
     }
 
 }

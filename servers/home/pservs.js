@@ -1,4 +1,5 @@
 import {rehprintf, execAndWait} from 'reh.js'
+import * as db from 'database.js'
 /** @param {NS} ns */
 async function waitForMoney(ns, limit){
   rehprintf(ns, "Waiting for $%s", ns.formatNumber(limit))
@@ -10,8 +11,10 @@ async function waitForMoney(ns, limit){
 async function buyServers(ns) {
   var ram = 8
   var limit = ns.getPurchasedServerLimit()
-  rehprintf(ns, "Preparing to buy %i servers : %iGB Ram", 
+  var line = ns.sprintf("Preparing to buy %i servers : %iGB Ram", 
     limit, ram)
+  rehprintf(ns, line) 
+  db.dbLog(ns, "pserv", line)
   while (ns.getPurchasedServers().length < limit) {
     // Check if we have enough money to purchase a server
     if (ns.getServerMoneyAvailable("home") > ns.getPurchasedServerCost(ram)) {
@@ -24,6 +27,7 @@ async function buyServers(ns) {
               "pserv-" + ns.getPurchasedServers().length, ram);
         var msg = ns.sprintf("Bought %s" , hostname)
         rehprintf(ns, msg)
+        db.dbLog(ns, "pserv", msg)
     } else {
       await ns.sleep(30 * 1000);
     }
@@ -33,8 +37,10 @@ async function buyServers(ns) {
 /** @param {NS} ns */
 async function upgradeServers(ns, upgrade) {
   var keepgoing = true
-  rehprintf(ns, "Preparing to upgrade to %s Ram", 
+  var line = ns.sprintf("Preparing to upgrade to %s Ram", 
     ns.formatRam(upgrade))
+  rehprintf(ns, line)
+  db.dbLog(ns, "pserv", line)
 
   while(keepgoing) {
     keepgoing = false
@@ -58,8 +64,8 @@ async function upgradeServers(ns, upgrade) {
         ns.upgradePurchasedServer(S, upgrade)
       } else {
         keepgoing = true
-        ns.printf("Upgrade of %s costs $%s", S, 
-            ns.formatNumber(ns.getPurchasedServerUpgradeCost(S, upgrade)))
+        db.dbLog(ns, "pserv", ns.sprintf("Upgrade of %s costs $%s", S, 
+            ns.formatNumber(ns.getPurchasedServerUpgradeCost(S, upgrade))))
       }
     }
     if (firstUpgrade == "") {
@@ -68,10 +74,14 @@ async function upgradeServers(ns, upgrade) {
       // one server gotupgraded
       rehprintf(ns, "Upgraded %s to %s RAM", firstUpgrade, 
         ns.formatRam(upgrade))
+      db.dbLog(ns, "pserv", ns.sprintf("Upgraded %s to %s RAM", firstUpgrade, 
+        ns.formatRam(upgrade)))
     } else {
       // multiple servers got upgraded
       rehprintf(ns, "Upgraded %s -> %s to %s RAM", firstUpgrade, lastUpgrade, 
         ns.formatRam(upgrade))
+      db.dbLog(ns, "pserv", ns.sprintf("Upgraded %s -> %s to %s RAM", firstUpgrade, lastUpgrade, 
+        ns.formatRam(upgrade)))
     }
     if (keepgoing) {
       await ns.sleep(30 * 1000)
