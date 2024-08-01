@@ -5,7 +5,7 @@ import * as db from 'database.js'
 /** @param {NS} ns */
 export async function main(ns) {
   ns.disableLog('ALL')
-  for(var file of ns.ls("home", "/db/*.txt")) 
+  for(var file of ns.ls("home", "/db/")) 
     ns.clear(file)
   db.dbLog(ns, "start", "Initial setup...")
   db.dbLog(ns, "start", "Starting auto-breach.js")

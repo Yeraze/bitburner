@@ -1,6 +1,7 @@
 import {getServerList} from 'reh.js'
 /** @param {NS} ns */
 export async function main(ns) {
+  /*
   ns.tprintf("Bitnode Multiplers:" )
   Object.keys(ns.getBitNodeMultipliers()).forEach(function(key,index) {
     // key: the name of the object key
@@ -15,5 +16,8 @@ export async function main(ns) {
     // key: the name of the object key
     // index: the ordinal position of the key within the object 
     ns.tprintf(" -> %s: %s", key, NFG_delta[key])
-  });
+  });*/
+
+  for(var file of ns.ls("home", "/db/")) 
+    ns.tprintf(file)
 }
