@@ -62,7 +62,7 @@ export async function main(ns) {
         }
         db.dbWrite(ns, "augment", record)
         rehprintf(ns, "Grinding up for %s from %s (%s)", 
-            record.aug, record.faction, record.progress)
+            record.augment, record.faction, record.progress)
         ns.spawn("singularity-factionjoin.js", {spawnDelay: 0}, faction)
     }
 

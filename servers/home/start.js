@@ -160,8 +160,8 @@ async function hackUntilTarget(ns, target, stopAtTarget) {
     }
 
     if (rekick) {
-      db.dbLog(ns, "start", "-> Restarting HWGW attack on %s (%s available ram)",
-        target, ns.formatRam(totalRamNow))
+      db.dbLog(ns, "start", ns.sprintf("-> Restarting HWGW attack on %s (%s available ram)",
+        target, ns.formatRam(totalRamNow)))
       // This isa bit messy, yes.. And can leave the target in an unprepped state
       // But it's the fastest way..
       await execAndWait(ns, "global-cleanup.js", "home", {threads:1, temporary:true}, "--super")

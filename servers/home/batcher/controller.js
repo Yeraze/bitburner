@@ -250,9 +250,16 @@ export async function main(ns) {
 		});
 		const ramNet = new RamNet(ns, servers);
 		const metrics = new Metrics(ns, target);
+
 		// metrics.log = logPort; // Uncomment for -LOGGING.
 		if (!isPrepped(ns, target)) await prep(ns, metrics, ramNet);
 		ns.clearLog();
+		
+		var record = {target : target,
+			greed: "??",
+			status: "Optimizing..."
+		}
+		db.dbWrite(ns, "batcher", record)
 		ns.print("Optimizing. This may take a few seconds...");
 
 		// Optimizer has changed again. Back to being synchronous, since the performance is much better.
