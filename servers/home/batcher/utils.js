@@ -1,7 +1,7 @@
 /*
   We've got a brand new class to look at, but the rest of the file remains unchanged.
 */
-
+import * as db from "/database.js"
 /** @param {NS} ns */
 export async function main(ns) {
 	ns.tprint("This is just a function library, it doesn't do anything.");
@@ -379,21 +379,30 @@ export async function prep(ns, values, ramNet) {
 		const tEnd = ((mode === 0 ? wEnd1 : wEnd2) - Date.now()) * batchCount + Date.now();
 		const timer = setInterval(() => {
 			ns.clearLog();
+			var msg = ""
 			switch (mode) {
 				case 0:
 					ns.print(`Weakening security on ${values.target}...`);
+					msg = "Weakening "
 					break;
 				case 1:
 					ns.print(`Maximizing money on ${values.target}...`);
+					msg = "Growing "
 					break;
 				case 2:
 					ns.print(`Finalizing preparation on ${values.target}...`);
+					msg = "Finalizing "
 			}
 			ns.print(`Security: +${ns.formatNumber(sec - minSec, 3)}`);
 			ns.print(`Money: \$${ns.formatNumber(money, 2)}/${ns.formatNumber(maxMoney, 2)}`);
 			const time = tEnd - Date.now();
 			ns.print(`Estimated time remaining: ${ns.tFormat(time)}`);
 			ns.print(`~${batchCount} ${(batchCount === 1) ? "batch" : "batches"}.`);
+			var record = {target : values.target,
+				greed: "??",
+				status: ns.sprintf("%s .. %s", msg, ns.tFormat(time))
+  			}
+  			db.dbWrite(ns, "batcher", record)
 		}, 200);
 		ns.atExit(() => clearInterval(timer));
 

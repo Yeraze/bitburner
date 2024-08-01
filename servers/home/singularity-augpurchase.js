@@ -1,4 +1,5 @@
 import {rehprintf} from 'reh.js'
+import * as db from 'database.js'
 /** @param {NS} ns */
 export async function main(ns) {
     const faction = ns.args[0]
@@ -14,7 +15,6 @@ export async function main(ns) {
         }
         return
     }
-
     // We couldn't buy it.. see if we can donate up to it..
     var boughtIt = false
 
@@ -56,10 +56,13 @@ export async function main(ns) {
                     favor + convFavor, faction)
             }
         }
-        
+        var record = {augment: aug,
+                      faction: faction,
+                      progress: ns.formatPercent( ns.singularity.getFactionRep(faction) / ns.singularity.getAugmentationRepReq(aug))
+        }
+        db.dbWrite(ns, "augment", record)
         rehprintf(ns, "Grinding up for %s from %s (%s)", 
-            aug, faction,
-            ns.formatPercent( ns.singularity.getFactionRep(faction) / ns.singularity.getAugmentationRepReq(aug)))
+            record.aug, record.faction, record.progress)
         ns.spawn("singularity-factionjoin.js", {spawnDelay: 0}, faction)
     }
 

@@ -19,7 +19,7 @@ as we can make them.
 
 // One new utility. A custom data structure for managing our schedule. You can see the details in utils.js
 import { getServers, copyScripts, checkTarget, isPrepped, prep, Deque } from "/batcher/utils.js";
-
+import * as db from "/database.js"
 const TYPES = ["hack", "weaken1", "grow", "weaken2"];
 const WORKERS = ["/batcher/tHack.js", "/batcher/tWeaken.js", "/batcher/tGrow.js"];
 const SCRIPTS = { hack: "/batcher/tHack.js", weaken1: "/batcher/tWeaken.js", grow: "/batcher/tGrow.js", weaken2: "/batcher/tWeaken.js" };
@@ -42,6 +42,7 @@ class ContinuousBatcher {
 	#dataPort;
 	#batchCount = 0;
 	#desyncs = 0; // This is mostly used for logging purposes, since the batcher is self-correcting.
+	#empties = 0;
 
 	// A capital M Map. We'll use this to keep track of active jobs.
 	#running = new Map();
@@ -130,6 +131,12 @@ class ContinuousBatcher {
 
 		// You'll see what this line's about in a moment.
 		if (this.#desyncs) ns.print(`Hacks cancelled by desync: ${this.#desyncs}`);
+		if (this.#empties) ns.print(`Empty Dataports: ${this.#empties}`)
+		var record = {target : metrics.target,
+			greed: `${Math.floor(metrics.greed * 1000) / 10}%`,
+			status: `Active jobs: ${this.#running.size}/${metrics.depth * 4}`
+		}
+		db.dbWrite(ns, "batcher", record)			
 	}
 
 	// The core loop of our batcher logic. Quite lean with everything neatly divided into functions, but there's still
@@ -143,6 +150,11 @@ class ContinuousBatcher {
 		this.log();
 		while (true) {
 			// Wait for the nextWrite, as usual.
+			if(dataPort.empty()) {
+				this.#empties ++
+				await this.#ns.sleep(1)
+				continue
+			}
 			await dataPort.nextWrite();
 
 			// Sometimes there's a delay and more than one job writes to the port at once.
@@ -225,6 +237,11 @@ export async function main(ns) {
 	const dataPort = ns.getPortHandle(ns.pid);
 	dataPort.clear();
 	let target = ns.args[0] ? ns.args[0] : "n00dles";
+	var record = {target : target,
+				  greed: "??",
+				  status: "INIT"
+	}
+	db.dbWrite(ns, "batcher", record)
 	while (true) {
 		const servers = getServers(ns, (server) => {
 			if (!ns.args[0]) target = checkTarget(ns, server, target, ns.fileExists("Formulas.exe", "home"));

@@ -1,5 +1,6 @@
 import {rehprintf} from 'reh.js'
 import * as CONST from 'reh-constants.js'
+import * as db from 'database.js'
 /** @param {NS} ns */
 export async function main(ns) {
   const augmentsIHave = ns.singularity.getOwnedAugmentations(true)
@@ -44,11 +45,23 @@ export async function main(ns) {
   var favAugment = ""
   var augsToBuy = []
   var savingUp = false
-
   var augsPurchased = augmentsIHave.filter( (A) => (ns.singularity.getOwnedAugmentations(false).indexOf(A) == -1))
   if (augsPurchased.length > 0) {
     ns.toast(ns.sprintf("%i purchased augments pending", augsPurchased.length), "info", 10000)
   }
+  var factionStats = []
+  for(var fac of ns.getPlayer().factions.concat(ns.singularity.checkFactionInvitations())) {
+    var record = { name : fac,
+                   rep : ns.singularity.getFactionRep(fac),
+                   favor : ns.singularity.getFactionFavor(fac),
+                   favorGain : ns.singularity.getFactionFavorGain(fac),
+                   status : (ns.getPlayer().factions.indexOf(fac) != -1),
+    }
+    factionStats.push(record)
+  }
+  db.dbWrite(ns, "factions", factionStats)
+
+
   // First search the list to see what the "lowest rep" aug is
   for(var aug of augmentsToBuy) {
     if (augmentsIHave.indexOf(aug) != -1) 
