@@ -18,6 +18,7 @@ export async function main(ns) {
         var factionList = db.dbRead(ns, "factions") || []
         var augment = db.dbRead(ns, "augment")
         var global = db.dbRead(ns, "global")
+        var home = db.dbRead(ns, "home")
         ns.clearLog()
         // Header line first, cash flow data
         var newCash = ns.getServerMoneyAvailable("home")
@@ -57,6 +58,18 @@ export async function main(ns) {
             )
         } else {
             ns.printf("Augment: <none>")
+        }
+        ns.printf("=== Home computer")
+        if (home) {
+            ns.printf(" * CPU Cores: %i  \t\t($%s to upgrade)", home.cores,
+                ns.formatNumber(home.coreUpgrade))
+            ns.printf(" * RAM: %s (%s free)\t($%s to upgrade)", 
+                ns.formatRam(home.ram),
+                ns.formatPercent((home.ram - home.ramUsed) / home.ram, 0),
+                ns.formatNumber(home.ramUpgrade))
+            
+        } else {
+            ns.printf("-> <unknown>")
         }
         var dtable = []
         var ctable = []

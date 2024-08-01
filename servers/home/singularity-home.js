@@ -1,4 +1,5 @@
 import {rehprintf} from 'reh.js'
+import * as db from 'database.js'
 /** @param {NS} ns */
 export async function main(ns) {
   var ramCost = ns.singularity.getUpgradeHomeRamCost()
@@ -18,4 +19,12 @@ export async function main(ns) {
           "success", null)      
     }
   }
+
+  var S = ns.getServer("home")
+  var record = { ram : S.maxRam,
+                 ramUsed: S.ramUsed,
+                 cores : S.cpuCores,
+                 ramUpgrade: ramCost,
+                 coreUpgrade: coreCost}
+  db.dbWrite(ns, "home", record)
 }
