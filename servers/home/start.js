@@ -12,7 +12,7 @@ export async function main(ns) {
   await execAnywhere(ns, ["s_crime.js"], 1, "Rob Store")
   //execAnywhereNoWait(ns, ["auto-breach.js", "reh.js", "reh-constants.js"], 1)
   execAnywhereNoWait(ns, ["pservs.js","reh.js", "reh-constants.js"], {threads:1, temporary:true})
-
+  ns.exec("dashboard.js", "home")
   // These scripts area bit "fat",so make sure we have ram
   if (ns.getServerMaxRam("home") < 128) {
     rehprintf(ns, "Looks like we're still earlygame, starting n00dle blast")
