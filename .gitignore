@@ -137,3 +137,5 @@ NetscriptDefinitions.d.ts
 mirror/
 build/
 node_modules/*
+
+*.txt

@@ -1,4 +1,5 @@
 import {rehprintf, execAndWait, execAnywhere} from 'reh.js'
+import * as db from 'database.js'
 
 var factionList = []
 /** @param {NS} ns */
@@ -61,6 +62,11 @@ export async function main(ns) {
       rehprintf(ns, "Averaging %s levels/min [%i strike(s) remaining]", 
           ns.formatNumber((ns.getHackingLevel() - playerLevel)/5, 2),
           3 - resetCount)
+      
+      var record = {velocity: ns.formatNumber((ns.getHackingLevel() - playerLevel)/5, 2),
+                    strikes: resetCount
+              }
+      db.dbWrite(ns, "global", record)
       
       playerLevel = ns.getHackingLevel()
 

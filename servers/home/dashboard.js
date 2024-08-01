@@ -17,6 +17,7 @@ export async function main(ns) {
         var faction = db.dbRead(ns, "faction")
         var factionList = db.dbRead(ns, "factions")
         var augment = db.dbRead(ns, "augment")
+        var global = db.dbRead(ns, "global")
         ns.clearLog()
         // Header line first, cash flow data
         var newCash = ns.getServerMoneyAvailable("home")
@@ -33,6 +34,10 @@ export async function main(ns) {
         ns.printf("Time of this run: %s", ns.tFormat(ns.getTimeSinceLastAug()))
         ns.printf("Money: $%s (+$%s/s)",
             ns.formatNumber(cash, 2), ns.formatNumber(cashRate, 2))
+        if(global.strikes > 0) 
+            ns.printf("Velocity: %s/min [%i strikes]", global.velocity, global.strikes)
+        else
+            ns.printf("Velocity: %s/min", global.velocity)
         ns.printf("Current target: %s", batcher.target)
         ns.printf("-> %s :: %s", batcher.greed, batcher.status)
         ns.printf("Augment: Saving for %s [%s] (%s)", 
