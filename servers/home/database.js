@@ -8,7 +8,12 @@ export function dbWrite(ns, table, object) {
 export function dbRead(ns, table) {
     var filename = `db/${table}.txt`
     if (ns.fileExists(filename, "home"))
-        return JSON.parse(ns.read(filename)) 
+        try {
+            return JSON.parse(ns.read(filename))            
+        } catch (error) {
+            ns.printf(`ERROR: ${table} corrupted`)
+            return null
+        }
     else    
         return null
 }
