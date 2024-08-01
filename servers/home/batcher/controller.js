@@ -220,7 +220,7 @@ class ContinuousBatcher {
 /** @param {NS} ns */
 export async function main(ns) {
 	ns.disableLog("ALL");
-	ns.tail();
+	// ns.tail();
 
 	/*
 	This commented out code is for a debugging tool that centralizes logs from the worker scripts into one place.

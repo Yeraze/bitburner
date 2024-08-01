@@ -116,8 +116,12 @@ export async function main(ns) {
         }
         table(ns, dtable, ctable)
 
+        if(ns.scriptRunning("pservs.js", "home")) {
+            ns.printf("=== Purchased Server Log: [running]")
+        } else {
+            ns.printf("=== Purchased Server Log: [done]")
+        }
         var lines = db.dbLogFetch(ns, "pserv", 5)
-        ns.printf("=== Purchased Server Log:")
         for(var l of lines)
             ns.print(l)
 
