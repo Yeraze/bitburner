@@ -49,6 +49,10 @@ export async function main(ns) {
   if (augsPurchased.length > 0) {
     ns.toast(ns.sprintf("%i purchased augments pending", augsPurchased.length), "info", 10000)
   }
+  var record = { augmentsInstalled: ns.singularity.getOwnedAugmentations(false).length,
+                 augmentsPurchased: augsPurchased.length}
+  db.dbWrite(ns, "augment-meta", record)
+  
   var factionStats = []
   for(var fac of ns.getPlayer().factions.concat(ns.singularity.checkFactionInvitations())) {
     var record = { name : fac,

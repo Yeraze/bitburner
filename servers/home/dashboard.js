@@ -19,6 +19,7 @@ export async function main(ns) {
         var augment = db.dbRead(ns, "augment")
         var global = db.dbRead(ns, "global")
         var home = db.dbRead(ns, "home")
+        var augMeta = db.dbRead(ns, "augment-meta")
         ns.clearLog()
         // Header line first, cash flow data
         var newCash = ns.getServerMoneyAvailable("home")
@@ -59,6 +60,12 @@ export async function main(ns) {
         } else {
             ns.printf("Augment: <none>")
         }
+        if(augMeta) {
+            ns.printf("-> %i Augments Installed, %i pending",
+                augMeta.augmentsInstalled, augMeta.augmentsPurchased)
+        } else {
+            ns.printf("-> Augments status <pending>")
+        }
         ns.printf("=== Home computer")
         if (home) {
             ns.printf(" * CPU Cores: %i  \t\t($%s to upgrade)", home.cores,
@@ -85,7 +92,7 @@ export async function main(ns) {
             ]
             colors = ["",
                 sleeve.shock > 0 ? color.fgRed : color.fgGreen,
-                sleeve.sync < 95 ? color.fgRed : color.fgGreen,
+                sleeve.sync < 99 ? color.fgRed : color.fgGreen,
                 ""
             ]
             dtable.push(row)
@@ -115,17 +122,20 @@ export async function main(ns) {
             ctable.push(colors)
         }
         table(ns, dtable, ctable)
-
+        
+        var lineCount = 5
         if(ns.scriptRunning("pservs.js", "home")) {
             ns.printf("=== Purchased Server Log: [running]")
+            var lines = db.dbLogFetch(ns, "pserv", 5)
+            for(var l of lines)
+                ns.print(l)
         } else {
+            lineCount = 10
             ns.printf("=== Purchased Server Log: [done]")
         }
-        var lines = db.dbLogFetch(ns, "pserv", 5)
-        for(var l of lines)
-            ns.print(l)
 
-        lines = db.dbLogFetch(ns, "start", 5)
+
+        lines = db.dbLogFetch(ns, "start", lineCount)
         ns.printf("=== Startup Log:")
         for(var l of lines)
             ns.print(l)

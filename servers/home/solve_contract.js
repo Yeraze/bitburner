@@ -1,4 +1,5 @@
 
+import * as db from 'database.js'
 //Silly human, you can't import a typescript module into a javascript (wouldn't that be slick though?)
 //import { codingContractTypesMetadata } from 'https://raw.githubusercontent.com/danielyxie/bitburner/master/src/data/codingcontracttypes.ts'
 
@@ -30,9 +31,9 @@ export async function main(ns) {
                 solvingResult = ns.codingcontract.attempt(answer, contractInfo.contract, contractInfo.hostname, { returnReward: true })
                 if (solvingResult) {
                     if (!quietSolve) {
-                        const message = `Solved ${contractInfo.contract} on ${contractInfo.hostname} (${contractInfo.type}). Reward: ${solvingResult}`;
+                        notice = `Solved ${contractInfo.contract} on ${contractInfo.hostname} (${contractInfo.type}). Reward: ${solvingResult}`;
                         ns.toast(message, 'success');
-                        ns.tprint(message);
+                        //ns.tprint(message);
                     }
                 } else {
                     notice = `ERROR: Wrong answer for contract type "${contractInfo.type}" (${contractInfo.contract} on ${contractInfo.hostname}):` +
@@ -58,6 +59,7 @@ export async function main(ns) {
             // Always print errors to scripts own tail window
             ns.print(notice + `\nContract Info: ${JSON.stringify(contractInfo)}`);
         }
+        db.dbLog(ns, "start", notice)
         await ns.sleep(10)
     }
     // Keep tabs of failed contracts
