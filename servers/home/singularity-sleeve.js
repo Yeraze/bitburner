@@ -27,7 +27,7 @@ export async function main(ns) {
             continue
         }
         // Put the sleeve to work
-        if(sleeveNum == 0) {
+        if(sleeveNum == 0) { // Sleeve 0 supports Player in faction grind
             var pWork = ns.singularity.getCurrentWork()
             if (pWork.type == "FACTION") {
                 var work = "hacking"
@@ -38,9 +38,11 @@ export async function main(ns) {
                     work = "field"
                 ns.sleeve.setToFactionWork(sleeveNum, 
                     pWork.factionName, work)
-            } 
+            } else {
+                ns.sleeve.setToCommitCrime(sleeveNum, "Traffick Arms")
+            }
         }
-        if(sleeveNum == 1) {
+        if(sleeveNum == 1) { // Sleeve 1 is the sniper
             ns.sleeve.setToCommitCrime(sleeveNum, "Assassination")
         } 
         var job = ns.sleeve.getTask(sleeveNum)

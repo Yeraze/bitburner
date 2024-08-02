@@ -52,7 +52,11 @@ export async function main(ns) {
             ns.printf("Current target: <unknown>")
             ns.printf("-> (no current target)")
         }
-
+        if(faction) {
+            ns.printf("Faction: %s for %s", faction.work, faction.faction)
+        } else {
+            ns.printf("Faction: <idle>")
+        }
         if(augment) {
             ns.printf("Augment: Saving for %s [%s] (%s)", 
                 augment.augment, augment.faction, augment.progress
@@ -60,6 +64,7 @@ export async function main(ns) {
         } else {
             ns.printf("Augment: <none>")
         }
+
         if(augMeta) {
             ns.printf("-> %i Augments Installed, %i pending",
                 augMeta.augmentsInstalled, augMeta.augmentsPurchased)
