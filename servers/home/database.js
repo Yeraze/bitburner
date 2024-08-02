@@ -54,7 +54,9 @@ export function dbLogFetch(ns, table, count) {
     var lines = []
     if (ns.fileExists(filename, "home")) 
         lines = dbRead(ns, `log_${table}`)
-   
+    if(lines == null) 
+        lines = []
+    
     while(lines.length < count)
         lines.push([])
 

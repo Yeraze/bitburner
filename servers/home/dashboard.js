@@ -20,6 +20,7 @@ export async function main(ns) {
         var global = db.dbRead(ns, "global")
         var home = db.dbRead(ns, "home")
         var augMeta = db.dbRead(ns, "augment-meta")
+        var ipvgo = db.dbRead(ns, "ipvgo")
         ns.clearLog()
         // Header line first, cash flow data
         var newCash = ns.getServerMoneyAvailable("home")
@@ -70,6 +71,16 @@ export async function main(ns) {
                 augMeta.augmentsInstalled, augMeta.augmentsPurchased)
         } else {
             ns.printf("-> Augments status <pending>")
+        }
+        if(ns.scriptRunning("ipvgo.js", "home")) {
+            ns.printf("=== IPvGO")
+            if(ipvgo) {
+                ns.printf("Iterations: %i (%s s per iteration)", 
+                    ipvgo.iteration, ns.formatNumber( ipvgo.avgTime / 1000 ))
+                ns.printf("Result: %s %s", ns.formatPercent(ipvgo.percent / 100), ipvgo.description)
+            } else {
+                ns.printf(" <pending>")
+            }
         }
         ns.printf("=== Home computer")
         if (home) {

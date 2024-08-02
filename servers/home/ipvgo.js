@@ -1,3 +1,4 @@
+import * as db from 'database.js'
 /** @param {NS} ns */
 export async function main(ns) {
     ns.disableLog('ALL')
@@ -5,15 +6,27 @@ export async function main(ns) {
     if(ns.args.length > 0) 
         iterations = ns.args[0]
 
+    var durations = []
     for(var n = 0; n < iterations; n++) {
         ns.printf("Game %i of %i", n, iterations)
-        await playAGame(ns)
+        var tStart = ns.getTimeSinceLastAug()
+        var [percent, description] = await playAGame(ns)
+        var tEnd = ns.getTimeSinceLastAug()
+        durations.push(tEnd - tStart)
+        var average = durations.reduce( (A, B) => (A + B), 0) / durations.length
+
+        var record = {
+            iteration: n,
+            avgTime: average,
+            percent: percent,
+            description: description
+        }
+        db.dbWrite(ns, "ipvgo", record)
     }
 }
 
 
 async function playAGame(ns) {
-    ns.tail()
     ns.go.resetBoardState("Daedalus", 7)
     let result;
     var move = 0
@@ -38,7 +51,7 @@ async function playAGame(ns) {
 
     var stats = ns.go.analysis.getStats()
     ns.printf("Game over: Result of %s %s", stats.Daedalus.bonusPercent, stats.Daedalus.bonusDescription)
-
+    return [stats.Daedalus.bonusPercent, stats.Daedalus.bonusDescription]
 }
 
 

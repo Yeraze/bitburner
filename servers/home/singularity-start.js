@@ -48,13 +48,17 @@ export async function main(ns) {
         var augsPurchased = ns.singularity.getOwnedAugmentations(true).filter( 
             (A) => (ns.singularity.getOwnedAugmentations(false).indexOf(A) == -1))
         if (augsPurchased.length == 0) {
-          db.dbLogf(ns, "WARN:-> Should be a reset, but wait for an augmentation purchase")
+          db.dbLogf(ns, "WARN: Run extend: no augmentation purchase")
         } else {
           resetCount++
           ns.toast(ns.sprintf("CONSIDERING RESET: %i of 3", resetCount), "warning", null)
           if(resetCount >= 3) {
-            ns.toast("RESETTING!!!", "warning", null)
-            ns.spawn("reset.js", 1)
+            if(ns.fileExists("extend.txt", "home")) {
+              ns.dbLogf(ns, "WARN: Run extended: extend.txt flag found")    
+            } else {
+              ns.toast("RESETTING!!!", "warning", null)
+              ns.spawn("reset.js", 1)
+            }
           }  
         }
       } else {

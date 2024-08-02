@@ -73,6 +73,7 @@ export async function main(ns) {
     ns.scriptKill("loop_weaken.js", "home")
     await execAndWait(ns, "global-cleanup.js", "home", 1, "--loop")
   }
+  execContinue(ns, "ipvgo.js", "home", {threads:1, temporary:true}, 1000)
   db.dbLog(ns, "start", "Beginning Singularity manager...")
   execContinue(ns, "singularity-start.js", "home", {threads:1, temporary:true})
 
