@@ -82,8 +82,14 @@ async function manageSleeves(ns) {
 }
 /** @param {NS} ns */
 async function manageAugments(ns) {
-  const pkg = ["singularity-augments.js", "reh.js", "reh-constants.js", "singularity-factionjoin.js", "singularity-augpurchase.js"]
-  await execAnywhere(ns, pkg, 1)
+  //const pkg = ["singularity-augments.js", "reh.js", "reh-constants.js", "singularity-factionjoin.js", "singularity-augpurchase.js"]
+  await execAndWait(ns, "aug-getOwnedAugmentations.js", "home", 1)
+  await execAndWait(ns, "checkFactionInvitations.js", "home", 1)
+  await execAndWait(ns, "aug-getAugmentationsFromFaction.js", "home", 1)
+  await execAndWait(ns, "aug-getAugmentationPreReq.js", "home", 1)
+  await execAndWait(ns, "aug-getCost.js", "home", 1)
+  await execAndWait(ns, "aug-getStats.js", "home", 1)
+  await execAndWait(ns, "singularity-augments.js", "home", 1)
 }
 
 /** @param {NS} ns */
