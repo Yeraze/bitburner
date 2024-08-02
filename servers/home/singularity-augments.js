@@ -87,6 +87,8 @@ export async function main(ns) {
         } else {
           // We got here by not having enough faction rep to buy it
           // So see if it's the "lowest" faction rep to get
+          if (aug == "NeuroFlux Governor")
+            continue // don't "grind" for NFG, just buy when convenient
           if(ns.singularity.getAugmentationRepReq(aug) - ns.singularity.getFactionRep(fac) < minRepValue) {
             minRepFaction = fac
             favAugment = aug

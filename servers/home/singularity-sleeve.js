@@ -34,7 +34,8 @@ export async function main(ns) {
                     var pWork = ns.singularity.getCurrentWork()
                     if (pWork.type == "FACTION") {
                         ns.sleeve.setToFactionWork(sleeveNum, 
-                            pWork.factionName, pWork.factionWorkType)
+                            pWork.factionName, 
+                            ns.singularity.getFactionWorkTypes(pWork.factionName)[0])
                     } 
                     break
                 case 1: // crime
@@ -46,31 +47,35 @@ export async function main(ns) {
             jobsToAssign ++
         } 
         var job = ns.sleeve.getTask(sleeveNum)
-        switch (job.type) {
-            case "FACTION":
-                sleeveRecord.job = ns.sprintf("F: %s for %s", job.factionWorkType, job.factionName)
-                break;
-            case "CRIME":
-                sleeveRecord.job = ns.sprintf("C: %s [%i cycles]", job.crimeType, job.tasksCompleted)
-                break;
-            case "SYNCHRO":
-                sleeveRecord.job = "Synchronizing"
-                break;
-            case "RECOVERY":
-                sleeveRecord.job = "Recovery"
-                break;
-            case "INFILTRATE":
-                sleeveRecord.job = "Infiltration"
-                break;
-            case "CLASS":
-                sleeveRecord.job = ns.sprintf("C: %s at %s", job.classType, job.location)
-                break;
-            case "SUPPORT":
-                sleeveRecord.job = "Support"
-                break;
-            default:
-                sleeveRecord.job = job.type
-        } 
+        if(job == null) {
+            sleeveRecord.job = "<idle>"
+        } else {
+            switch (job.type) {
+                case "FACTION":
+                    sleeveRecord.job = ns.sprintf("F: %s for %s", job.factionWorkType, job.factionName)
+                    break;
+                case "CRIME":
+                    sleeveRecord.job = ns.sprintf("C: %s [%i cycles]", job.crimeType, job.tasksCompleted)
+                    break;
+                case "SYNCHRO":
+                    sleeveRecord.job = "Synchronizing"
+                    break;
+                case "RECOVERY":
+                    sleeveRecord.job = "Recovery"
+                    break;
+                case "INFILTRATE":
+                    sleeveRecord.job = "Infiltration"
+                    break;
+                case "CLASS":
+                    sleeveRecord.job = ns.sprintf("C: %s at %s", job.classType, job.location)
+                    break;
+                case "SUPPORT":
+                    sleeveRecord.job = "Support"
+                    break;
+                default:
+                    sleeveRecord.job = job.type
+            } 
+        }
         records.push(sleeveRecord)
     }
     db.dbWrite(ns, "sleeves", records)
