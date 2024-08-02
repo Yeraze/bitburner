@@ -32,7 +32,7 @@ export async function main(ns) {
     manageDarkweb(ns)
     await installBackdoors(ns)
 
-    if (count % 5 == 0) {
+    if (counter % 5 == 0) {
       await manageFactions(ns)
       await manageHome(ns)
     }
