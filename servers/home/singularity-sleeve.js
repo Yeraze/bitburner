@@ -29,7 +29,7 @@ export async function main(ns) {
         // Put the sleeve to work
         if(sleeveNum == 0) { // Sleeve 0 supports Player in faction grind
             var pWork = ns.singularity.getCurrentWork()
-            if (pWork.type == "FACTION") {
+            if (pWork?.type == "FACTION") {
                 var work = "hacking"
                 // Prefer combat-stat work over Hacking, if available
                 if(ns.singularity.getFactionWorkTypes(pWork.factionName).includes("security"))

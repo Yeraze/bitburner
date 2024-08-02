@@ -13,9 +13,9 @@ export async function main(ns) {
     while(true) {
         await ns.sleep(1000)
         var batcher = db.dbRead(ns, "batcher")
-        var sleeves = db.dbRead(ns, "sleeves") || []
+        var sleeves = db.dbRead(ns, "sleeves") ?? []
         var faction = db.dbRead(ns, "faction") 
-        var factionList = db.dbRead(ns, "factions") || []
+        var factionList = db.dbRead(ns, "factions") ?? []
         var augment = db.dbRead(ns, "augment")
         var global = db.dbRead(ns, "global")
         var home = db.dbRead(ns, "home")
