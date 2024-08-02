@@ -39,12 +39,26 @@ export async function main(ns) {
   var maskBody = false
   var maskBladeburner = false
   switch(ns.getResetInfo().currentNode) {
+    case 2: // gangs
+      maskFaction = true; maskHack = true; maskBody = true; maskCrime = true; break;
+    case 3: // Corporations
+      maskHack = true; maskCompany = true; break;
     case 4: // Singularity
       maskFaction = true; maskHack = true; break;
     case 5: // Intelligence
       maskFaction = true; maskHack = true; break;
+    case 6: // Bladeburners
+    case 7:
+      maskFaction = true; maskHack = true; maskBladeburner = true; break;
+    case 9: // Hacknet Server
+      maskFaction = true; maskHack = true; maskHacknet = true; break;
     case 10: // Sleeves, need Body points to reach Covenant
       maskFaction = true; maskHack = true; maskBody = true; break;
+    case 12: // Recursion
+    case 11: // the big crash
+    case 13: // Church of Staken
+    case 8: // Wall Street
+    case 1: // default
     default:
       maskFaction = true; maskHack = true; break;
   }
