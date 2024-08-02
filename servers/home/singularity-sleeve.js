@@ -27,24 +27,21 @@ export async function main(ns) {
             continue
         }
         // Put the sleeve to work
-        if(ns.sleeve.getTask(sleeveNum) == null) {
-            // This sleeve is idle.. Find work!
-            switch (jobsToAssign) {
-                case 0: // Help main faction grind
-                    var pWork = ns.singularity.getCurrentWork()
-                    if (pWork.type == "FACTION") {
-                        ns.sleeve.setToFactionWork(sleeveNum, 
-                            pWork.factionName, 
-                            ns.singularity.getFactionWorkTypes(pWork.factionName)[0])
-                    } 
-                    break
-                case 1: // crime
-                    ns.sleeve.setToCommitCrime(sleeveNum, "Assassination")
-                    break;
-                default:
-                    // Dunno?
-            }
-            jobsToAssign ++
+        if(sleeveNum == 0) {
+            var pWork = ns.singularity.getCurrentWork()
+            if (pWork.type == "FACTION") {
+                var work = "hacking"
+                // Prefer combat-stat work over Hacking, if available
+                if(ns.singularity.getFactionWorkTypes(pWork.factionName).includes("security"))
+                    work = "security"
+                if(ns.singularity.getFactionWorkTypes(pWork.factionName).includes("field"))
+                    work = "field"
+                ns.sleeve.setToFactionWork(sleeveNum, 
+                    pWork.factionName, work)
+            } 
+        }
+        if(sleeveNum == 1) {
+            ns.sleeve.setToCommitCrime(sleeveNum, "Assassination")
         } 
         var job = ns.sleeve.getTask(sleeveNum)
         if(job == null) {
