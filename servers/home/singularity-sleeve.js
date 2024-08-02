@@ -3,6 +3,7 @@ import * as db from 'database.js'
 /** @param {NS} ns */
 export async function main(ns) {
     var records = []
+    var jobsToAssign = 0
     for(var sleeveNum =0; sleeveNum < ns.sleeve.getNumSleeves(); sleeveNum++) {
         var sleeve = ns.sleeve.getSleeve(sleeveNum)
         var sleeveRecord = { id: sleeveNum,
@@ -27,37 +28,49 @@ export async function main(ns) {
         }
         // Put the sleeve to work
         if(ns.sleeve.getTask(sleeveNum) == null) {
-            ns.sleeve.setToUniversityCourse(sleeveNum, "Rothman University", "Algorithms")
-            sleeveRecord.job = "Studying Algorithms"
-        } else {
-            var job = ns.sleeve.getTask(sleeveNum)
-            switch (job.type) {
-                case "FACTION":
-                    sleeveRecord.job = ns.sprintf("F: %s for %s", job.factionWorkType, job.factionName)
-                    break;
-                case "CRIME":
-                    sleeveRecord.job = ns.sprintf("C: %s [%i cycles]", job.crimeType, job.tasksCompleted)
-                    break;
-                case "SYNCHRO":
-                    sleeveRecord.job = "Synchronizing"
-                    break;
-                case "RECOVERY":
-                    sleeveRecord.job = "Recovery"
-                    break;
-                case "INFILTRATE":
-                    sleeveRecord.job = "Infiltration"
-                    break;
-                case "CLASS":
-                    sleeveRecord.job = ns.sprintf("C: %s at %s", job.classType, job.location)
-                    break;
-                case "SUPPORT":
-                    sleeveRecord.job = "Support"
+            // This sleeve is idle.. Find work!
+            switch (jobsToAssign) {
+                case 0: // Help main faction grind
+                    var pWork = ns.singularity.getCurrentWork()
+                    if (pWork.type == "FACTION") {
+                        ns.sleeve.setToFactionWork(sleeveNum, 
+                            pWork.factionName, pWork.factionWorkType)
+                    } 
+                    break
+                case 1: // crime
+                    ns.sleeve.setToCommitCrime(sleeveNum, "Assassination")
                     break;
                 default:
-                    sleeveRecord.job = job.type
-            } 
-            //sleeveRecord.job = ns.sleeve.getTask(sleeveNum).type
-        }
+                    // Dunno?
+            }
+            jobsToAssign ++
+        } 
+        var job = ns.sleeve.getTask(sleeveNum)
+        switch (job.type) {
+            case "FACTION":
+                sleeveRecord.job = ns.sprintf("F: %s for %s", job.factionWorkType, job.factionName)
+                break;
+            case "CRIME":
+                sleeveRecord.job = ns.sprintf("C: %s [%i cycles]", job.crimeType, job.tasksCompleted)
+                break;
+            case "SYNCHRO":
+                sleeveRecord.job = "Synchronizing"
+                break;
+            case "RECOVERY":
+                sleeveRecord.job = "Recovery"
+                break;
+            case "INFILTRATE":
+                sleeveRecord.job = "Infiltration"
+                break;
+            case "CLASS":
+                sleeveRecord.job = ns.sprintf("C: %s at %s", job.classType, job.location)
+                break;
+            case "SUPPORT":
+                sleeveRecord.job = "Support"
+                break;
+            default:
+                sleeveRecord.job = job.type
+        } 
         records.push(sleeveRecord)
     }
     db.dbWrite(ns, "sleeves", records)
