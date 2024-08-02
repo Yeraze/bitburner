@@ -39,11 +39,25 @@ export async function main(ns) {
                 ns.sleeve.setToFactionWork(sleeveNum, 
                     pWork.factionName, work)
             } else {
-                ns.sleeve.setToCommitCrime(sleeveNum, "Traffick Arms")
+
+                var job = ns.sleeve.getTask(sleeveNum)
+                if(job && job.type == "CRIME") {
+                    // Already doing crime, so don't change it.
+                } else {
+                    ns.sleeve.setToCommitCrime(sleeveNum, "Traffick Arms")
+                }
             }
         }
         if(sleeveNum == 1) { // Sleeve 1 is the sniper
-            ns.sleeve.setToCommitCrime(sleeveNum, "Assassination")
+            // We need a bit of extra logic here
+            // Because if we change the Crime type, even to the same thing that it already is
+            // We lose any progress and restart, which sucks for long ones 
+            var job = ns.sleeve.getTask(sleeveNum)
+            if(job && job.type == "CRIME") {
+                // Already doing crime, so don't change it.
+            } else {
+                ns.sleeve.setToCommitCrime(sleeveNum, "Assassination")
+            }
         } 
         var job = ns.sleeve.getTask(sleeveNum)
         if(job == null) {
