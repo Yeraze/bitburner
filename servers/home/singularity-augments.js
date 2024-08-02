@@ -67,11 +67,10 @@ export async function main(ns) {
 
 
   // First search the list to see what the "lowest rep" aug is
-  for(var aug of augmentsToBuy) {
-    if (augmentsIHave.indexOf(aug) != -1) 
-      continue // we already own this one
-
-    for(var fac of ns.getPlayer().factions) {
+  for(var fac of ns.getPlayer().factions.concat(ns.singularity.checkFactionInvitations())) {
+    for(var aug of ns.singularity.getAugmentationsFromFaction(fac)) {
+      if(augmentsIHave.includes(aug) && (aug != "NeuroFlux Governor")) 
+        continue; // We already have this
       if(ns.singularity.getAugmentationsFromFaction(fac).indexOf(aug) != -1) {
         if(ns.singularity.getAugmentationRepReq(aug) < ns.singularity.getFactionRep(fac)) {
           if(ns.singularity.getAugmentationPrice(aug) > ns.getServerMoneyAvailable("home")) {
@@ -94,52 +93,6 @@ export async function main(ns) {
             minRepValue = ns.singularity.getAugmentationRepReq(aug) - ns.singularity.getFactionRep(fac)
           }
         }
-      }
-    }
-  }
-  // If there are invitations I haven't accepted, maybe I should?
-  // We run this in a totally separate loop, so that we only consider
-  //. augments here that are cheaper than anything we could buy above
-  for(var aug of augmentsToBuy) {
-    if (augmentsIHave.indexOf(aug) != -1) 
-      continue // we already own this one
-    for(var fac of ns.singularity.checkFactionInvitations()) {
-      if(ns.singularity.getAugmentationsFromFaction(fac).indexOf(aug) != -1) {
-        if(ns.singularity.getAugmentationRepReq(aug) - ns.singularity.getFactionRep(fac)  < minRepValue) {
-          // So we found a "rep-cheaper" aug than anything we have access to already
-          // but it's offered by a faction we haven't joined yet.. So join up!
-          //  This isn't perfect.. if we have multiple outstanding fac invites 
-          // that conflict, we could choose poorly..But eventually it'll all work itself out
-          //
-          // This will automatically start grinding hacking, and we 
-          // can't buy it now anyway, since our current rep is 0
-          minRepFaction = fac
-          favAugment = aug
-          minRepValue = ns.singularity.getAugmentationRepReq(aug) - ns.singularity.getFactionRep(fac)
-
-          // Join the faction and start hacking for it
-          ns.spawn("singularity-factionjoin.js", {spawnDelay: 0}, fac)
-        }
-      }
-    }
-  }
-
-  // ok... If we got here then there's probably nothing to buy.
-  // so NFG it is!
-  // Unless we're saving up for something
-  if(savingUp == false) {
-    // NFG's are offered by every faction, so just check the 1st one
-    if(ns.getServerMoneyAvailable("home") > ns.singularity.getAugmentationPrice(aug)) {
-      for (var fac of ns.getPlayer().factions) {
-        var aug = "NeuroFlux Governor"
-
-        if(ns.singularity.getFactionRep(fac) < ns.singularity.getAugmentationRepReq(aug)) {
-          ns.tprintf("-> Next NFG requires %s rep", ns.formatNumber(ns.singularity.getAugmentationRepReq(aug)))
-        } else {
-          // If we got here, we should be able to afford it.
-          ns.spawn("singularity-augpurchase.js", {spawnDelay: 0}, fac, aug)      
-          // We never start grinding for NFG, we just buy it when it's available. 
-        } 
       }
     }
   }

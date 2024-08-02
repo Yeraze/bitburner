@@ -33,7 +33,7 @@ export async function main(ns) {
             var job = ns.sleeve.getTask(sleeveNum)
             switch (job.type) {
                 case "FACTION":
-                    sleeveRecord.job = ns.sprintf("F: %s for %s", job.factionName, job.factionWorkType)
+                    sleeveRecord.job = ns.sprintf("F: %s for %s", job.factionWorkType, job.factionName)
                     break;
                 case "CRIME":
                     sleeveRecord.job = ns.sprintf("C: %s [%i cycles]", job.crimeType, job.tasksCompleted)
