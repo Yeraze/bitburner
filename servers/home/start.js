@@ -98,12 +98,12 @@ async function hackUntilTarget(ns, target, stopAtTarget) {
       return
 
   // First wait until we have root & proper hacking level
-  db.dbLog(ns, "start", ns.sprintf("Waiting for root access on %s", target))
+  db.dbLogf(ns, "Waiting for root access on %s", target)
   while (ns.hasRootAccess(target) == false) {
     await ns.sleep(1000);
     await checkForBreaches(ns)
   }
-  db.dbLog(ns, "start", ns.sprintf("Waiting for Hack level on %s", target))
+  db.dbLogf(ns, "Waiting for Hack level on %s", target)
   while (ns.getHackingLevel() < ns.getServerRequiredHackingLevel(target)) {
     await checkForBreaches(ns)
     await ns.sleep(1000)
@@ -113,8 +113,8 @@ async function hackUntilTarget(ns, target, stopAtTarget) {
   var totalRam = getServerList(ns)
       .filter((S) => ns.hasRootAccess(S))
       .reduce((a, S) => (a + ns.getServerMaxRam(S)), 0)
-  db.dbLog(ns, "start", ns.sprintf("HWGW Attack on %s (%s available ram)", target, 
-      ns.formatRam(totalRam)))
+  db.dbLogf(ns, "HWGW Attack on %s (%s available ram)", target, 
+      ns.formatRam(totalRam))
 
   // and START
   ns.exec("batcher/controller.js", "home", {threads:1, temporary:true}, target)
@@ -140,7 +140,7 @@ async function hackUntilTarget(ns, target, stopAtTarget) {
     //    Itmight have crashed.. especially in very early-game, low ram
     if (ns.scriptRunning("batcher/controller.js", "home")== false) {
       rekick = true
-      db.dbLog(ns, "start", ns.sprintf("%s-> Looks like batcher crashed..", CONST.fgRed));
+      db.dbLogf(ns, "%s-> Looks like batcher crashed..", CONST.fgRed);
     }
 
 
@@ -151,8 +151,8 @@ async function hackUntilTarget(ns, target, stopAtTarget) {
       .filter((S) => ns.hasRootAccess(S))
       .reduce((a, S) => (a + ns.getServerMaxRam(S)), 0)
     if(totalRamNow!=spokenRam){
-      db.dbLog(ns, "start", ns.sprintf("Detected new ram: %s (+%s)", ns.formatRam(totalRamNow),
-        ns.formatPercent( (totalRamNow / totalRam) - 1.0)) )
+      db.dbLogf(ns, "Detected new ram: %s (+%s)", ns.formatRam(totalRamNow),
+        ns.formatPercent( (totalRamNow / totalRam) - 1.0)) 
       spokenRam= totalRamNow
     }
     if (totalRamNow > totalRam * 2.0) {
@@ -160,8 +160,8 @@ async function hackUntilTarget(ns, target, stopAtTarget) {
     }
 
     if (rekick) {
-      db.dbLog(ns, "start", ns.sprintf("-> Restarting HWGW attack on %s (%s available ram)",
-        target, ns.formatRam(totalRamNow)))
+      db.dbLogf(ns, "-> Restarting HWGW attack on %s (%s available ram)",
+        target, ns.formatRam(totalRamNow))
       // This isa bit messy, yes.. And can leave the target in an unprepped state
       // But it's the fastest way..
       await execAndWait(ns, "global-cleanup.js", "home", {threads:1, temporary:true}, "--super")
@@ -169,7 +169,7 @@ async function hackUntilTarget(ns, target, stopAtTarget) {
       totalRam = totalRamNow
     }
   }
-  db.dbLog(ns, "start", ns.sprintf("Ending attack on %s", target))
+  db.dbLogf(ns, "Ending attack on %s", target)
   await execAndWait(ns, "global-cleanup.js", "home", 1, "--super")
   ns.scriptKill("batcher/controller.js", "home")
 }
@@ -179,7 +179,7 @@ async function checkContracts(ns) {
   for (const S of serverList) {
     var contracts = ns.ls(S, ".cct")
     for (const C of contracts) {
-      db.dbLog(ns, "start", ns.sprintf("Found contract %s %s", S, C))
+      db.dbLogf(ns, "Found contract %s %s", S, C)
       await execAndWait(ns, "solve_contract.js", "home", 1, S, C)
     }
   }
@@ -212,7 +212,7 @@ async function checkForBreaches(ns) {
     if(ns.hasRootAccess(server))
       continue
 
-    db.dbLog(ns, "start", ns.sprintf("Breaching %s", server))
+    db.dbLogf(ns, "Breaching %s", server)
     await execAndWait(ns, "breach.js", "home", 1, server)
   }
 }

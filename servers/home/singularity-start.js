@@ -32,9 +32,11 @@ export async function main(ns) {
     manageDarkweb(ns)
     await installBackdoors(ns)
 
-    if (counter % 60 == 0) {
+    if (count % 5 == 0) {
       await manageFactions(ns)
       await manageHome(ns)
+    }
+    if (counter % 60 == 0) {
       await manageAugments(ns)
       await manageSleeves(ns)
     }
@@ -46,7 +48,7 @@ export async function main(ns) {
         var augsPurchased = ns.singularity.getOwnedAugmentations(true).filter( 
             (A) => (ns.singularity.getOwnedAugmentations(false).indexOf(A) == -1))
         if (augsPurchased.length == 0) {
-          db.dbLog(ns, "start", "WARN:-> Should be a reset, but wait for an augmentation purchase")
+          db.dbLogf(ns, "WARN:-> Should be a reset, but wait for an augmentation purchase")
         } else {
           resetCount++
           ns.toast(ns.sprintf("CONSIDERING RESET: %i of 3", resetCount), "warning", null)
@@ -104,7 +106,7 @@ function manageDarkweb(ns) {
         keepGoing = true
         continue
       }
-      db.dbLog(ns, "start", ns.sprintf("Buying program %s", prog))
+      db.dbLogf(ns, "Buying program %s", prog)
       ns.singularity.purchaseProgram(prog)
     }
   }
@@ -119,7 +121,8 @@ async function manageFactions(ns) {
 
 /** @param {NS} ns */
 async function installBackdoors(ns) {
-  const backdoorServers = ["CSEC", "avmnite-02h", "I.I.I.I", "run4theh111z", "w0r1d_d43m0n"]
+//  const backdoorServers = ["CSEC", "avmnite-02h", "I.I.I.I", "run4theh111z", "w0r1d_d43m0n"]
+  const backdoorServers = ["CSEC", "avmnite-02h", "I.I.I.I", "run4theh111z"]
   for(var S of backdoorServers) {
     // if we are of sufficient level to hack
     //    and have root access
@@ -135,7 +138,7 @@ async function installBackdoors(ns) {
     
     if(ns.getServer(S).backdoorInstalled)
       continue
-    db.dbLog(ns, "start", ns.sprintf("Backdooring %s", S))
+    db.dbLogf(ns, "Backdooring %s", S)
     await execAndWait(ns, "install-backdoor.js", "home", 1, S)
   }
 }

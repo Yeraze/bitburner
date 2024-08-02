@@ -88,7 +88,7 @@ export async function main(ns) {
             row = [ ns.sprintf("%s", sleeve.id), 
                     ns.formatNumber(sleeve.shock, 3),
                     ns.formatNumber(sleeve.sync, 3),
-                    sleeve.job
+                    ns.sprintf("%s", sleeve.job)
             ]
             colors = ["",
                 sleeve.shock > 0 ? color.fgRed : color.fgGreen,

@@ -32,7 +32,7 @@ export async function main(ns) {
                 if (solvingResult) {
                     if (!quietSolve) {
                         notice = `Solved ${contractInfo.contract} on ${contractInfo.hostname} (${contractInfo.type}). Reward: ${solvingResult}`;
-                        ns.toast(message, 'success');
+                        ns.toast(notice, 'success');
                         //ns.tprint(message);
                     }
                 } else {

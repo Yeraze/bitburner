@@ -30,7 +30,33 @@ export async function main(ns) {
             ns.sleeve.setToUniversityCourse(sleeveNum, "Rothman University", "Algorithms")
             sleeveRecord.job = "Studying Algorithms"
         } else {
-            sleeveRecord.job = ns.sleeve.getTask(sleeveNum).actionName
+            var job = ns.sleeve.getTask(sleeveNum)
+            switch (job.type) {
+                case "FACTION":
+                    sleeveRecord.job = ns.sprintf("F: %s for %s", job.factionName, job.factionWorkType)
+                    break;
+                case "CRIME":
+                    sleeveRecord.job = ns.sprintf("C: %s [%i cycles]", job.crimeType, job.tasksCompleted)
+                    break;
+                case "SYNCHRO":
+                    sleeveRecord.job = "Synchronizing"
+                    break;
+                case "RECOVERY":
+                    sleeveRecord.job = "Recovery"
+                    break;
+                case "INFILTRATE":
+                    sleeveRecord.job = "Infiltration"
+                    break;
+                case "CLASS":
+                    sleeveRecord.job = ns.sprintf("C: %s at %s", job.classType, job.location)
+                    break;
+                case "SUPPORT":
+                    sleeveRecord.job = "Support"
+                    break;
+                default:
+                    sleeveRecord.job = job.type
+            } 
+            //sleeveRecord.job = ns.sleeve.getTask(sleeveNum).type
         }
         records.push(sleeveRecord)
     }
@@ -43,8 +69,10 @@ export async function main(ns) {
         // Purchase any augments
         for(var aug of ns.sleeve.getSleevePurchasableAugs(sleeveNum)) {
             if(aug.cost < ns.getServerMoneyAvailable("home")) {
-                if(ns.sleeve.purchaseSleeveAug(sleeveNum, aug.name))
+                if(ns.sleeve.purchaseSleeveAug(sleeveNum, aug.name)) {
                     ns.toast(ns.sprintf("[SLEEVE:%i] Buying augment %s", sleeveNum, aug.name), "info", null)
+                    db.dbLogf(ns, "[SLEEVE:%i] Buying augment %s", sleeveNum, aug.name)
+                }
             }
         }     
     }

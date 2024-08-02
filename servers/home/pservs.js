@@ -13,7 +13,7 @@ async function buyServers(ns) {
   var limit = ns.getPurchasedServerLimit()
   var line = ns.sprintf("Preparing to buy %i servers : %iGB Ram", 
     limit, ram)
-  rehprintf(ns, line) 
+  //rehprintf(ns, line) 
   db.dbLog(ns, "pserv", line)
   while (ns.getPurchasedServers().length < limit) {
     // Check if we have enough money to purchase a server
@@ -26,7 +26,7 @@ async function buyServers(ns) {
         var hostname = ns.purchaseServer(
               "pserv-" + ns.getPurchasedServers().length, ram);
         var msg = ns.sprintf("Bought %s" , hostname)
-        rehprintf(ns, msg)
+        //rehprintf(ns, msg)
         db.dbLog(ns, "pserv", msg)
     } else {
       await ns.sleep(30 * 1000);
@@ -39,7 +39,7 @@ async function upgradeServers(ns, upgrade) {
   var keepgoing = true
   var line = ns.sprintf("Preparing to upgrade to %s Ram", 
     ns.formatRam(upgrade))
-  rehprintf(ns, line)
+  //rehprintf(ns, line)
   db.dbLog(ns, "pserv", line)
 
   while(keepgoing) {
@@ -72,14 +72,10 @@ async function upgradeServers(ns, upgrade) {
       // Nothing to do, nothing got upgraded...
     } else if (firstUpgrade == lastUpgrade) {
       // one server gotupgraded
-      rehprintf(ns, "Upgraded %s to %s RAM", firstUpgrade, 
-        ns.formatRam(upgrade))
       db.dbLog(ns, "pserv", ns.sprintf("Upgraded %s to %s RAM", firstUpgrade, 
         ns.formatRam(upgrade)))
     } else {
       // multiple servers got upgraded
-      rehprintf(ns, "Upgraded %s -> %s to %s RAM", firstUpgrade, lastUpgrade, 
-        ns.formatRam(upgrade))
       db.dbLog(ns, "pserv", ns.sprintf("Upgraded %s -> %s to %s RAM", firstUpgrade, lastUpgrade, 
         ns.formatRam(upgrade)))
     }
@@ -100,5 +96,6 @@ export async function main(ns) {
     size = size * 4
   }
   rehprintf(ns, "Finished with Purchased Servers!!")
+  db.dbLogf(ns, "Finished buying servers!")
   ns.closeTail()
 }

@@ -8,6 +8,7 @@ export async function main(ns) {
 
     if (ns.singularity.purchaseAugmentation(faction, aug)) {
         rehprintf(ns, "Purchased %s from %s", aug, faction)
+        db.dbLogf(ns, "Purchased %s from %s", aug, faction)
         ns.toast(ns.sprintf("Purchased %s", aug), "success", null)
         if(aug == "The Red Pill") {
             ns.toast("Restarting to ENDGAME!", "info", null)
@@ -26,11 +27,14 @@ export async function main(ns) {
         while((ns.getServerMoneyAvailable("home") > donation) && !boughtIt) {
             ns.singularity.donateToFaction(faction, donation)
             rehprintf(ns, "Donated $%s to %s", ns.formatNumber(donation), faction)
+            db.dbLogf(ns, "Donated $%s to %s", ns.formatNumber(donation), faction)
             if(ns.singularity.getAugmentationRepReq(aug) < ns.singularity.getFactionRep(faction)) {
                 boughtIt = true
                 rehprintf(ns, "-> Donations enabled purchasing %s from %s", aug, faction)
-                if(ns.singularity.purchaseAugmentation(faction, aug))
+                if(ns.singularity.purchaseAugmentation(faction, aug)) {
                     ns.toast(ns.sprintf("Purchased %s", aug), "success", null)
+                    db.dbLogf(ns, "Purchased %s from %s", aug, faction)
+                }
 
                 if(aug == "The Red Pill") {
                     ns.toast("Restarting to ENDGAME!", "info", null)
@@ -51,9 +55,6 @@ export async function main(ns) {
             if(favor + convFavor > 150) {
                 ns.toast(ns.sprintf("Restarting to enable DONATIONS for %s", faction), "info", null)
                 ns.spawn("reset.js")
-            } else {
-                ns.tprintf("INFO: Too early for reset, would only net %i favor (%s)",
-                    favor + convFavor, faction)
             }
         }
         var record = {augment: aug,
@@ -61,8 +62,6 @@ export async function main(ns) {
                       progress: ns.formatPercent( ns.singularity.getFactionRep(faction) / ns.singularity.getAugmentationRepReq(aug))
         }
         db.dbWrite(ns, "augment", record)
-        rehprintf(ns, "Grinding up for %s from %s (%s)", 
-            record.augment, record.faction, record.progress)
         ns.spawn("singularity-factionjoin.js", {spawnDelay: 0}, faction)
     }
 

@@ -27,6 +27,12 @@ export function formatTime(ns, time) {
         min % 60, seconds % 60,ms)
 
 }
+
+/** @param {NS} ns */
+export function dbLogf(ns, format, ...args) {
+    dbLog(ns, "start", ns.sprintf(format, ...args))
+}
+
 /** @param {NS} ns */
 export function dbLog(ns, table, line) {
     var filename = `db/log_${table}.txt`

@@ -1,4 +1,5 @@
 import {rehprintf} from 'reh.js'
+import * as db from 'database.js'
 /** @param {NS} ns */
 export async function main(ns) {
   // Check for travel reqs
@@ -29,6 +30,7 @@ export async function main(ns) {
             if (ns.singularity.travelToCity(faction.location))  {
               rehprintf(ns, "Traveling to %s, looking for %s", faction.location,
                 faction.faction)
+              db.dbLogf(ns, "Traveling to %s",faction.location)
               return
             }
           }

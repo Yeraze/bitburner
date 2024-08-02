@@ -52,7 +52,7 @@ export async function main(ns) {
   var record = { augmentsInstalled: ns.singularity.getOwnedAugmentations(false).length,
                  augmentsPurchased: augsPurchased.length}
   db.dbWrite(ns, "augment-meta", record)
-  
+
   var factionStats = []
   for(var fac of ns.getPlayer().factions.concat(ns.singularity.checkFactionInvitations())) {
     var record = { name : fac,
@@ -84,6 +84,7 @@ export async function main(ns) {
           }
           rehprintf(ns, "Purchasing %s from %s", aug, fac)
           ns.spawn("singularity-augpurchase.js", {spawnDelay: 0}, fac, aug)
+          db.dbLog(ns, "start", ns.sprintf("Purchasing %s from %s", aug, fac))
         } else {
           // We got here by not having enough faction rep to buy it
           // So see if it's the "lowest" faction rep to get
@@ -155,5 +156,5 @@ export async function main(ns) {
   //  a faction to grind
   // which kinda means "we're done?" with augments
 
-  rehprintf(ns, "Done with augments....")
+  //rehprintf(ns, "Done with augments....")
 }
