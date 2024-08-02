@@ -39,11 +39,8 @@ export async function main(ns) {
                 ns.sleeve.setToFactionWork(sleeveNum, 
                     pWork.factionName, work)
             } else {
-
                 var job = ns.sleeve.getTask(sleeveNum)
-                if(job && job.type == "CRIME") {
-                    // Already doing crime, so don't change it.
-                } else {
+                if(job == null) {  // This sleeve is idle.. 
                     ns.sleeve.setToCommitCrime(sleeveNum, "Traffick Arms")
                 }
             }

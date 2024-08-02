@@ -46,6 +46,7 @@ export async function main(ns) {
             ns.printf("Velocity: pending")
         }
 
+        ns.printf("=== Batcher ============================================")
         if(batcher) {
             ns.printf("Current target: %s", batcher.target)
             ns.printf("-> %s :: %s", batcher.greed, batcher.status)
@@ -53,27 +54,9 @@ export async function main(ns) {
             ns.printf("Current target: <unknown>")
             ns.printf("-> (no current target)")
         }
-        if(faction) {
-            ns.printf("Faction: %s for %s", faction.work, faction.faction)
-        } else {
-            ns.printf("Faction: <idle>")
-        }
-        if(augment) {
-            ns.printf("Augment: Saving for %s [%s] (%s)", 
-                augment.augment, augment.faction, augment.progress
-            )
-        } else {
-            ns.printf("Augment: <none>")
-        }
 
-        if(augMeta) {
-            ns.printf("-> %i Augments Installed, %i pending",
-                augMeta.augmentsInstalled, augMeta.augmentsPurchased)
-        } else {
-            ns.printf("-> Augments status <pending>")
-        }
         if(ns.scriptRunning("ipvgo.js", "home")) {
-            ns.printf("=== IPvGO")
+            ns.printf("=== IPvGO ============================================")
             if(ipvgo) {
                 ns.printf("Iterations: %i (%s s per iteration)", 
                     ipvgo.iteration, ns.formatNumber( ipvgo.avgTime / 1000 ))
@@ -82,7 +65,7 @@ export async function main(ns) {
                 ns.printf(" <pending>")
             }
         }
-        ns.printf("=== Home computer")
+        ns.printf("=== Home computer ============================================")
         if (home) {
             ns.printf(" * CPU Cores: %i  \t\t($%s to upgrade)", home.cores,
                 ns.formatNumber(home.coreUpgrade))
@@ -114,6 +97,7 @@ export async function main(ns) {
             dtable.push(row)
             ctable.push(colors)
         }
+        ns.printf("=== Sleeves ============================================")
         table(ns, dtable, ctable)
 
         dtable = []; ctable = []
@@ -137,22 +121,43 @@ export async function main(ns) {
             dtable.push(row)
             ctable.push(colors)
         }
+
+
+        ns.printf("=== Factions ============================================")
+        if(faction) {
+            ns.printf("Faction: %s for %s", faction.work, faction.faction)
+        } else {
+            ns.printf("Faction: <idle>")
+        }
+        if(augment) {
+            ns.printf("Augment: Saving for %s [%s] (%s)", 
+                augment.augment, augment.faction, augment.progress
+            )
+        } else {
+            ns.printf("Augment: <none>")
+        }
+
+        if(augMeta) {
+            ns.printf("-> %i Augments Installed, %i pending",
+                augMeta.augmentsInstalled, augMeta.augmentsPurchased)
+        } else {
+            ns.printf("-> Augments status <pending>")
+        }
         table(ns, dtable, ctable)
         
         var lineCount = 5
         if(ns.scriptRunning("pservs.js", "home")) {
-            ns.printf("=== Purchased Server Log: [running]")
+            ns.printf("=== Purchased Server Log: [running] ============================")
             var lines = db.dbLogFetch(ns, "pserv", 5)
             for(var l of lines)
                 ns.print(l)
         } else {
             lineCount = 10
-            ns.printf("=== Purchased Server Log: [done]")
         }
 
 
         lines = db.dbLogFetch(ns, "start", lineCount)
-        ns.printf("=== Startup Log:")
+        ns.printf("=== Startup Log: ============================================")
         for(var l of lines)
             ns.print(l)
 

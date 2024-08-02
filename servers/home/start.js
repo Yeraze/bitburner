@@ -122,6 +122,7 @@ async function hackUntilTarget(ns, target, stopAtTarget) {
   var spokenRam = totalRam
   var keepGoing =true 
 
+  var pservRunning = ns.scriptRunning("pservs.js", "home")
 
   while (keepGoing) {
     // See if we've hit the proper target level
@@ -144,6 +145,11 @@ async function hackUntilTarget(ns, target, stopAtTarget) {
       db.dbLogf(ns, "%s-> Looks like batcher crashed..", CONST.fgRed);
     }
 
+    if(ns.scriptRunning("pservs.js","home") != pservRunning) {
+      var pservRunning = ns.scriptRunning("pservs.js", "home")
+      rekick = true
+      db.dbLogf(ns, "Looks like pservs.js has changed state.")
+    }
 
     // Now look and see if we have new resources
     //  If we have doubled in available RAM since we started the batcher
