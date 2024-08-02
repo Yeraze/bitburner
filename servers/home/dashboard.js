@@ -39,7 +39,8 @@ export async function main(ns) {
             ns.formatNumber(cash, 2), ns.formatNumber(cashRate, 2))
         if(global) {
             if(global.strikes > 0) 
-                ns.printf("Velocity: %s/min [%i strikes]", global.velocity, global.strikes)
+                ns.printf("Velocity: %s/min [%i strikes] %s", global.velocity, global.strikes,
+                    ns.fileExists("extend.txt", "home") ? `${color.fgWhite}(FLAG)` : "" )
             else
                 ns.printf("Velocity: %s/min", global.velocity)
         } else {

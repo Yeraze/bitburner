@@ -54,7 +54,7 @@ export async function main(ns) {
           ns.toast(ns.sprintf("CONSIDERING RESET: %i of 3", resetCount), "warning", null)
           if(resetCount >= 3) {
             if(ns.fileExists("extend.txt", "home")) {
-              ns.dbLogf(ns, "WARN: Run extended: extend.txt flag found")    
+              db.dbLogf(ns, "WARN: Run extended: extend.txt flag found")    
             } else {
               ns.toast("RESETTING!!!", "warning", null)
               ns.spawn("reset.js", 1)
