@@ -150,11 +150,6 @@ class ContinuousBatcher {
 		this.log();
 		while (true) {
 			// Wait for the nextWrite, as usual.
-			if(dataPort.empty()) {
-				this.#empties ++
-				await this.#ns.sleep(1)
-				continue
-			}
 			await dataPort.nextWrite();
 
 			// Sometimes there's a delay and more than one job writes to the port at once.
