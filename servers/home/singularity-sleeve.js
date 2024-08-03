@@ -53,7 +53,7 @@ export async function main(ns) {
             if(job && job.type == "CRIME") {
                 // Already doing crime, so don't change it.
             } else {
-                ns.sleeve.setToCommitCrime(sleeveNum, "Assassination")
+                ns.sleeve.setToCommitCrime(sleeveNum, "Kidnap")
             }
         } 
         var job = ns.sleeve.getTask(sleeveNum)

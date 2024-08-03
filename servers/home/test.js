@@ -1,4 +1,4 @@
-import {getServerList} from 'reh.js'
+import {getServerList, doCommand} from 'reh.js'
 import * as db from 'database.js'
 /** @param {NS} ns */
 export async function main(ns) {
@@ -19,10 +19,6 @@ export async function main(ns) {
     ns.tprintf(" -> %s: %s", key, NFG_delta[key])
   });*/
 
-  for(var file of ns.ls("home", "/db/")) 
-    ns.tprintf(file)
+  await doCommand(ns, `ns.singularity.joinFaction("The Black Hand")`)
 
-  var augPrereqs = db.dbRead(ns, "aug-prereqs")
-  var T = []
-  ns.tprintf("%s", augPrereqs.find((A) => A.augment == "Embedded Netburner Module Core Implant"))
 }

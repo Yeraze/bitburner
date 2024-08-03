@@ -1,6 +1,21 @@
 import * as CONST from "reh-constants.js"
 
 /** @param {NS} ns */
+export async function doCommand(ns, command) {
+  var random = Math.floor(Math.random() * 100000000)
+  var filename = `/tmp/${random}.js`
+
+  if (ns.fileExists(filename))
+    ns.clear(filename)
+  ns.write(filename, "export async function main(ns) {", "a")
+  ns.write(filename, command, "a")
+  ns.write(filename, "}", "a")
+
+  await execAndWait(ns, filename, "home")
+  //ns.rm(filename)
+} 
+
+/** @param {NS} ns */
 export function execContinue(ns, script, host, ...cmdArgs) {
   if (ns.scriptRunning(script, host) == false) {
     ns.tprintf("Launching [%s]:%s...", host, script)

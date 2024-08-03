@@ -1,4 +1,4 @@
-import {rehprintf} from 'reh.js'
+import {doCommand, rehprintf} from 'reh.js'
 import * as db from 'database.js'
 /** @param {NS} ns */
 export async function main(ns) {
@@ -25,11 +25,9 @@ export async function main(ns) {
         //  each donation is 100e9 = $100B
         const donation = 100e9
         while((ns.getServerMoneyAvailable("home") > donation) && !boughtIt) {
-            ns.singularity.joinFaction(faction)
-            if(!ns.singularity.donateToFaction(faction, donation)) {
-                ns.printf("Dunno why, but unable to donate")
-                return
-            }
+            await doCommand(ns, `ns.singularity.joinFaction("${faction}")`)
+            await doCommand(ns, `ns.singularity.donateToFaction("${faction}", ${donation})`)
+
             rehprintf(ns, "Donated $%s to %s", ns.formatNumber(donation), faction)
             db.dbLogf(ns, "Donated $%s to %s", ns.formatNumber(donation), faction)
             if(ns.singularity.getAugmentationRepReq(aug) < ns.singularity.getFactionRep(faction)) {

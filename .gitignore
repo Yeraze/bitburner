@@ -139,3 +139,4 @@ build/
 node_modules/*
 
 *.txt
+servers/home/tmp/*
