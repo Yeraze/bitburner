@@ -9,7 +9,9 @@ export async function main(ns) {
     let avgMoneyIncrease = [ns.getServerMoneyAvailable("home")]
     var cash = 0
  
-
+    var oldFactionList = []
+    var factionRates = []
+    var factionListTimes = [Date.now(), Date.now()]
     while(true) {
         await ns.sleep(1000)
         var batcher = db.dbRead(ns, "batcher")
@@ -103,19 +105,45 @@ export async function main(ns) {
         ns.printf("=== Sleeves ============================================")
         table(ns, dtable, ctable)
 
+
+        ns.printf("=== Factions ============================================")
         dtable = []; ctable = []
-        row = ["Faction", "Rep", "Favor"]
+        row = ["Faction", "Rep", "Rate/s", "Favor"]
         var colors = [color.fgWhite, color.fgWhite, color.fgWhite]
         dtable.push(row)
-        ctable.push(colors)       
+        ctable.push(colors)   
 
+        var totalRep = factionList.reduce((A,B) => (A + B.rep), 0)
+        var oldTotalRep = oldFactionList.reduce((A,B) => (A+B.rep),0)
+        if (totalRep != oldTotalRep) {
+            // Ok, there was an update
+            factionListTimes[1] = factionListTimes[0]
+            factionListTimes[0] = Date.now()
+            factionRates = [] // nuke it
+            for(var fac of factionList) {
+                var prev = oldFactionList.find((A) => (A.name == fac.name))
+                var rate = 0
+                if (prev) { 
+                     rate = (fac.rep - prev.rep) / 
+                        ((factionListTimes[0] - factionListTimes[1]) / 1000)
+                }
+                factionRates.push( { name: fac.name, rate: rate})
+            }
+            oldFactionList = factionList
+        }
         for(var fac of factionList.filter((A) => (A.status))) {
+            var rateEntry = factionRates.find((A) => (A.name == fac.name))
+            var rate = 0
+            if (rateEntry)
+                rate = rateEntry.rate
             row = [ fac.name, 
                     ns.formatNumber(fac.rep),
+                    ns.formatNumber( rate, 2),
                     ns.sprintf("%s (+%s)", ns.formatNumber(fac.favor,1), 
                         ns.formatNumber(fac.favorGain, 1))
             ]
             colors = [fac.status ? color.fgGreen : "",
+                "",
                 "",
                 fac.favor > 150 ? color.fgGreen : ""
             ]
@@ -123,7 +151,6 @@ export async function main(ns) {
             ctable.push(colors)
         }
 
-        ns.printf("=== Factions ============================================")
         if(faction) {
             ns.printf("Faction: %s for %s", faction.work, faction.faction)
         } else {
@@ -148,7 +175,6 @@ export async function main(ns) {
         for (var fac of factionList.filter((A) => (!A.status)) )
             invites.push(fac.name)
         ns.printf("Invitations: %s", invites.join(','))
-
 
         var lineCount = 5
         if(ns.scriptRunning("pservs.js", "home")) {
