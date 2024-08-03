@@ -68,11 +68,17 @@ export async function main(ns) {
                     `ns.sleeve.setToFactionWork(${sleeveNum}, "${faction.name}", "${work}")`)               
             } else {
                 var C = crimeList.shift()
-                if (C) 
-                    await doCommand(ns, `ns.sleeve.setToCommitCrime(${sleeveNum}, "${C}")`)
-                else 
+                if (C) {
+                    var job = ns.sleeve.getTask(sleeveNum)
+                    if (job && (job.type == "CRIME") && (job.crimeType == C)) {
+                        // Nothing to do.. we're already doing it.
+                    } else {
+                        await doCommand(ns, `ns.sleeve.setToCommitCrime(${sleeveNum}, "${C}")`)
+                    }
+                } else { 
                     await doCommand(ns, 
                         `ns.sleeve.setToUniversityCourse(${sleeveNum}, "Rothman University", "Algorithms")`)
+                }
             }
         }
         var job = ns.sleeve.getTask(sleeveNum)
