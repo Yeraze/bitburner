@@ -6,6 +6,11 @@ export async function main(ns) {
     var jobsToAssign = 0
     const sleeveCount = await doCommand(ns, "ns.sleeve.getNumSleeves()")
 
+    const hourOffset = Math.floor((Date.now() - ns.getResetInfo().lastNodeReset) / (1000 * 3600)) 
+    var factionList =  db.dbRead(ns, "factions") ?? []
+    var augment = db.dbRead(ns, "augment")
+    var eligibleList = factionList.filter((A) => (A.status && (A.name != augment?.faction)))
+    var crimeList = ["Traffick Arms", "Kidnap", "Deal Drugs"]
     for(var sleeveNum =0; sleeveNum < sleeveCount; sleeveNum++) {
         var sleeve = ns.sleeve.getSleeve(sleeveNum)
         var sleeveRecord = { id: sleeveNum,
@@ -30,9 +35,8 @@ export async function main(ns) {
             continue
         }
         // Put the sleeve to work
-        if(sleeveNum == 0) { // Sleeve 0 supports Player in faction grind
+        if((sleeveNum + hourOffset) % sleeveCount == 0) { // Sleeve 0 supports Player in faction grind
             // var pWork = await doCommand(ns, "ns.singularity.getCurrentWork()")
-            var augment = db.dbRead(ns, "augment")
             if (augment) {
                 var work = "hacking"
                 // Prefer combat-stat work over Hacking, if available
@@ -45,26 +49,36 @@ export async function main(ns) {
             } else {
                 var job = ns.sleeve.getTask(sleeveNum)
                 if(job == null) {  // This sleeve is idle.. 
-                    await doCommand(ns, `ns.sleeve.setToCommitCrime(${sleeveNum}, "Traffick Arms")`)
+                    var C = crimeList.shift()
+                    await doCommand(ns, `ns.sleeve.setToCommitCrime(${sleeveNum}, "${C}")`)
                 }
             }
-        }
-        if(sleeveNum == 1) { // Sleeve 1 is the sniper
-            // We need a bit of extra logic here
-            // Because if we change the Crime type, even to the same thing that it already is
-            // We lose any progress and restart, which sucks for long ones 
-            var job = ns.sleeve.getTask(sleeveNum)
-            if(job && job.type == "CRIME") {
-                // Already doing crime, so don't change it.
+        } else {
+            // Here we try and assist with other faction grinds
+            // Otherwise we fall back on University studies for that INT 
+            var fac = eligibleList.shift()
+            if (fac) {
+                var work = "hacking"
+                // Prefer combat-stat work over Hacking, if available
+                if(ns.singularity.getFactionWorkTypes(fac.name).includes("security"))
+                    work = "security"
+                if(ns.singularity.getFactionWorkTypes(fac.name).includes("field"))
+                    work = "field"
+                await doCommand(ns, 
+                    `ns.sleeve.setToFactionWork(${sleeveNum}, "${faction.name}", "${work}")`)               
             } else {
-                await doCommand(ns, `ns.sleeve.setToCommitCrime(${sleeveNum}, "Kidnap")`)
+                var C = crimeList.shift()
+                if (C) 
+                    await doCommand(ns, `ns.sleeve.setToCommitCrime(${sleeveNum}, "${C}")`)
+                else 
+                    await doCommand(ns, 
+                        `ns.sleeve.setToUniversityCourse(${sleeveNum}, "Rothman University", "Algorithms")`)
             }
-        } 
-
+        }
         var job = ns.sleeve.getTask(sleeveNum)
         if(job == null) {
             await doCommand(ns, 
-                `ns.sleeve.setToUniversityCourse(${sleeveNum}, "Rothman University", "Computer Science")`)
+                `ns.sleeve.setToUniversityCourse(${sleeveNum}, "Rothman University", "Algorithms")`)
         }
 
         job = ns.sleeve.getTask(sleeveNum)
@@ -90,7 +104,7 @@ export async function main(ns) {
                     sleeveRecord.job = "Infiltration"
                     break;
                 case "CLASS":
-                    sleeveRecord.job = ns.sprintf("C: %s at %s", job.classType, job.location)
+                    sleeveRecord.job = ns.sprintf("U: %s at %s", job.classType, job.location)
                     break;
                 case "SUPPORT":
                     sleeveRecord.job = "Support"
