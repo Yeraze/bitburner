@@ -3,7 +3,9 @@ import * as CONST from 'reh-constants.js'
 import * as db from 'database.js'
 /** @param {NS} ns */
 export async function main(ns) {
+  ns.printf("Reading aug-all")
   const augmentsIHave = db.dbRead(ns, "aug-all")
+  ns.printf("Reading aug-installed")
   const augmentsInstalled = db.dbRead(ns, "aug-installed")
 
   var augsToBuy = ["The Red Pill"] // We always want this one
@@ -19,15 +21,21 @@ export async function main(ns) {
                  augmentsPurchased: augsPurchased.length}
   db.dbWrite(ns, "augment-meta", record)
 
+  ns.printf("Loading factions")
   var factionData = db.dbRead(ns, "factions")
   var factionList = []
   for(var fac of factionData)
     factionList.push(fac.name)
 
+  ns.printf("%i factions known", factionList.length)
 
+  ns.printf("Loading augs-from-faction")
   var augsFromFaction = db.dbRead(ns, "augs-from-faction")
+  ns.printf("Loading aug-prereqs")
   var augPrereqs = db.dbRead(ns, "aug-prereqs")
+  ns.printf("Loading aug-cost")
   var augCosts = db.dbRead(ns, "aug-cost")
+  ns.printf("Loading aug-stats")
   var augStats = db.dbRead(ns, "aug-stats")
 
   // First build the list of Augments to Buy
@@ -38,6 +46,8 @@ export async function main(ns) {
   var maskCrime = false
   var maskBody = false
   var maskBladeburner = false
+  ns.printf("In bitnode %i", ns.getResetInfo().currentNode)
+
   switch(ns.getResetInfo().currentNode) {
     case 2: // gangs
       maskFaction = true; maskHack = true; maskBody = true; maskCrime = true; break;
@@ -100,20 +110,24 @@ export async function main(ns) {
     }
   }
 
+  ns.printf("%i eligible augments", augsToBuy.length)
 
   // First search the list to see what the "lowest rep" aug is
   for(var _fac of augsFromFaction) {
     fac = _fac.faction
-    for(var aug of _fac.augments) {  
+    var fData = factionData.find((A) => (A.name == fac))
+    for(var aug of _fac.augments) { 
+
+ 
       if(augmentsIHave.includes(aug) && (aug != "NeuroFlux Governor")) 
         continue; // We already have this
       if(augsToBuy.indexOf(aug) == -1)
         continue; // We don't want this augment
-
+      ns.printf("[%s] %s", fac, aug)
       var augCost = augCosts.find((A) => (A.augment == aug))
-      if(augCost.rep < factionData.find((A) => (A.name == fac)).rep) {
+      if(augCost.rep < fData.rep) {
         if(augCost.cost > ns.getServerMoneyAvailable("home")) {
-          ns.tprintf("%s-> Qualify for %s, but too expensive (%s)",
+          ns.printf("%s-> Qualify for %s, but too expensive (%s)",
               CONST.fgYellow, aug, 
               ns.formatPercent(ns.getServerMoneyAvailable("home")/ augCost.cost)
           )
@@ -128,18 +142,20 @@ export async function main(ns) {
         // So see if it's the "lowest" faction rep to get
         if (aug == "NeuroFlux Governor")
           continue // don't "grind" for NFG, just buy when convenient
-        if(augCost.rep - factionData.find((A) => (A.name == fac)).rep < minRepValue) {
+        if(augCost.rep - fData.rep < minRepValue) {
           minRepFaction = fac
           favAugment = aug
-          minRepValue = augCost.rep - factionData.find((A) => (A.name == fac)).rep
+          minRepValue = augCost.rep - fData.rep
         }
       }
     }
   }
 
+  ns.printf("End of main loop")
   if (minRepFaction != "NONE") {
     // So there is an augment available to buy.
     // But we don't have sufficient Faction Rep.. so start grinding!
+    ns.printf("Attempting to purchase %s from %s", favAugment, minRepFaction)
     ns.spawn("singularity-augpurchase.js", {spawnDelay: 0}, minRepFaction, favAugment)
   }
 
@@ -150,4 +166,5 @@ export async function main(ns) {
   // which kinda means "we're done?" with augments
 
   //rehprintf(ns, "Done with augments....")
+  ns.printf("Done!")
 }

@@ -3,7 +3,7 @@ import * as db from 'database.js'
 
 /** @param {NS} ns */
 export async function main(ns) {
-    ns.disableLog('ALL')
+   // ns.disableLog('ALL')
     var augsFromFaction = db.dbRead(ns, "augs-from-faction")
 
     var records = []

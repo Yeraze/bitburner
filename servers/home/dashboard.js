@@ -34,7 +34,7 @@ export async function main(ns) {
             (partial, a) => (partial +a), 0 ) / avgMoneyIncrease.length
         
 
-        ns.printf("Time of this run: %s", ns.tFormat(ns.getTimeSinceLastAug()))
+        ns.printf("Time of this run: %s", ns.tFormat(ns.getResetInfo().lastAugReset))
         ns.printf("Money: $%s (+$%s/s)",
             ns.formatNumber(cash, 2), ns.formatNumber(cashRate, 2))
         if(global) {
@@ -114,10 +114,10 @@ export async function main(ns) {
                     ns.sprintf("%s (+%s)", ns.formatNumber(fac.favor,1), 
                         ns.formatNumber(fac.favorGain, 1))
             ]
-            colors = ["",
+            colors = [fac.status ? color.fgGreen : "",
                 "",
-                fac.favor > 150 ? color.fgGreen : "",
-                ""
+                "",
+                fac.favor > 150 ? color.fgGreen : ""
             ]
             dtable.push(row)
             ctable.push(colors)

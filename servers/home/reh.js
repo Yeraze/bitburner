@@ -29,14 +29,14 @@ export async function execAnywhereNoWait(ns, scripts, threads, ...cmdArgs) {
     if(candidateServers.indexOf("home") > -1) 
       host = "home"
     ns.scp(scripts, host, "home")
-    //ns.printf("Launching %s on %s", scripts[0], host)
+    ns.printf("Launching %s on %s", scripts[0], host)
     var pid = ns.exec(scripts[0], host, threads, ...cmdArgs)
     if (pid == 0) {
       ns.printf("-> %s LAUNCH FAILED [%s on %s]", CONST.fgRed, scripts[0], host)
       return
     }
   } else {
-    //ns.printf("Cannot find RAM for %s", scripts[0])
+    ns.printf("Cannot find RAM for %s", scripts[0])
   }
 }
 
@@ -53,7 +53,7 @@ export async function execAnywhere(ns, scripts, threads, ...cmdArgs) {
     if(candidateServers.indexOf("home") > -1) 
       host = "home"
     ns.scp(scripts, host, "home")
-    //ns.printf("Launching %s on %s", scripts[0], host)
+    ns.printf("Launching %s on %s", scripts[0], host)
     var pid = ns.exec(scripts[0], host, threads, ...cmdArgs)
     if (pid == 0) {
       ns.printf("-> %s LAUNCH FAILED [%s on %s]", CONST.fgRed, scripts[0], host)
@@ -62,7 +62,7 @@ export async function execAnywhere(ns, scripts, threads, ...cmdArgs) {
     while (ns.isRunning(pid, host)) {
       await ns.sleep(500)
     }
-    //ns.printf("Finished %s on %s", scripts[0], host)
+    ns.printf("Finished %s on %s", scripts[0], host)
   } else {
     ns.printf("-> %s Cannot find RAM for [%s]", CONST.fgRed, scripts[0])
   }
@@ -70,7 +70,7 @@ export async function execAnywhere(ns, scripts, threads, ...cmdArgs) {
 
 /** @param {NS} ns */
 export async function execAndWait(ns, script, host, ...cmdArgs) {
-  //ns.tprintf("Launching [%s]:%s and waiting...", host, script)
+  ns.printf("Launching [%s]:%s and waiting...", host, script)
   var pid= ns.exec(script, host, ...cmdArgs)
   if(pid == 0) {
     ns.printf("-> %s LAUNCH FAILED [%s on HOME]", CONST.fgRed, script)
@@ -79,7 +79,7 @@ export async function execAndWait(ns, script, host, ...cmdArgs) {
   while (ns.isRunning(pid, host)) {
     await ns.sleep(500)
   }
-  //ns.tprintf("-> [%s]:%s Finished...", host, script)
+  ns.printf("-> [%s]:%s Finished...", host, script)
 }
 
 

@@ -25,7 +25,11 @@ export async function main(ns) {
         //  each donation is 100e9 = $100B
         const donation = 100e9
         while((ns.getServerMoneyAvailable("home") > donation) && !boughtIt) {
-            ns.singularity.donateToFaction(faction, donation)
+            ns.singularity.joinFaction(faction)
+            if(!ns.singularity.donateToFaction(faction, donation)) {
+                ns.printf("Dunno why, but unable to donate")
+                return
+            }
             rehprintf(ns, "Donated $%s to %s", ns.formatNumber(donation), faction)
             db.dbLogf(ns, "Donated $%s to %s", ns.formatNumber(donation), faction)
             if(ns.singularity.getAugmentationRepReq(aug) < ns.singularity.getFactionRep(faction)) {
@@ -34,6 +38,7 @@ export async function main(ns) {
                 if(ns.singularity.purchaseAugmentation(faction, aug)) {
                     ns.toast(ns.sprintf("Purchased %s", aug), "success", null)
                     db.dbLogf(ns, "Purchased %s from %s", aug, faction)
+                    return
                 }
 
                 if(aug == "The Red Pill") {
