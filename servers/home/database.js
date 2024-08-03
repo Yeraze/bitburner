@@ -37,7 +37,7 @@ export function dbLogf(ns, format, ...args) {
 export function dbLog(ns, table, line) {
     var filename = `db/log_${table}.txt`
     var logline = ns.sprintf("[%s] %s",
-        formatTime(ns, ns.getTimeSinceLastAug()), line)
+        formatTime(ns, Date.now() - ns.getResetInfo().lastAugReset), line)
     var lines = dbRead(ns, `log_${table}`)
     if (lines == null)
         lines = []

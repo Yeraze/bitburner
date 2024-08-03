@@ -35,6 +35,7 @@ export async function main(ns) {
         
 
         ns.printf("Time of this run: %s", ns.tFormat(Date.now() - ns.getResetInfo().lastAugReset))
+        ns.printf("Time in this node: %s", ns.tFormat(Date.now() - ns.getResetInfo().lastNodeReset))
         ns.printf("Money: $%s (+$%s/s)",
             ns.formatNumber(cash, 2), ns.formatNumber(cashRate, 2))
         if(global) {

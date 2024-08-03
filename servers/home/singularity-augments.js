@@ -46,6 +46,7 @@ export async function main(ns) {
   var maskCrime = false
   var maskBody = false
   var maskBladeburner = false
+  var maskCharisma = false
   ns.printf("In bitnode %i", ns.getResetInfo().currentNode)
 
   switch(ns.getResetInfo().currentNode) {
@@ -93,18 +94,19 @@ export async function main(ns) {
                   (stats.hacknet_node_money != 1.0) || (stats.hacknet_node_purchase_cost != 1.0) ||
                   (stats.hacknet_node_ram_cost != 1.0)
       var fCrime = (stats.crime_money != 1.0) || (stats.crime_success != 1.0)
-      var fBody = (stats.charisma != 1.0) || (stats.charisma_exp != 1.0) ||
-                  (stats.defense != 1.0) || (stats.defense_exp != 1.0) ||
+      var fBody = (stats.defense != 1.0) || (stats.defense_exp != 1.0) ||
                   (stats.dexterity != 1.0) || (stats.dexterity_exp != 1.0) ||
                   (stats.strength != 1.0) || (stats.strength_exp != 1.0) ||
                   (stats.agility != 1.0) || (stats.agility_exp != 1.0)
+      var fCharisma = (stats.charisma != 1.0) || (stats.charisma_exp != 1.0) 
       var fBladeburner = (stats.bladeburner_analysis != 1.0) ||
                   (stats.bladeburner_max_stamina != 1.0) || (stats.bladeburner_stamina_gain != 1.0) ||
                   (stats.bladeburner_success_chance != 1.0)
       if ( (maskHack && fHack) || (maskFaction && fFaction) ||
             (maskCompany && fCompany) || (maskHacknet && fHacknet) ||
             (maskCrime && fCrime) || (maskBody && fBody) ||
-            (maskBladeburner && fBladeburner)) {
+            (maskBladeburner && fBladeburner) || 
+            (maskCharisma && fCharisma)) {
         augsToBuy.push(aug)
       }
     }
