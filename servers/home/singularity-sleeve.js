@@ -58,8 +58,17 @@ export async function main(ns) {
                 await doCommand(ns, `ns.sleeve.setToCommitCrime(${sleeveNum}, "Kidnap")`)
             }
         } 
+
         var job = ns.sleeve.getTask(sleeveNum)
         if(job == null) {
+            await doCommand(ns, 
+                `ns.sleeve.setToUniversityCourse(${sleeveNum}, "Rothman University", "Computer Science")`)
+        }
+
+        job = ns.sleeve.getTask(sleeveNum)
+
+        if(job == null) {
+            // This should never happen, due to statement above
             sleeveRecord.job = "<idle>"
         } else {
             switch (job.type) {
