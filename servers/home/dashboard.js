@@ -34,27 +34,28 @@ export async function main(ns) {
             (partial, a) => (partial +a), 0 ) / avgMoneyIncrease.length
         
 
-        ns.printf("Time of this run: %s", ns.tFormat(Date.now() - ns.getResetInfo().lastAugReset))
-        ns.printf("Time in this node: %s", ns.tFormat(Date.now() - ns.getResetInfo().lastNodeReset))
-        ns.printf("Money: $%s (+$%s/s)",
-            ns.formatNumber(cash, 2), ns.formatNumber(cashRate, 2))
+        ns.printf("[RUN] %s\t\t[NODE] %s", 
+                db.formatTime(ns, Date.now() - ns.getResetInfo().lastAugReset),
+                db.formatTime(ns, Date.now() - ns.getResetInfo().lastNodeReset))
+        var vMsg = ""
         if(global) {
             if(global.strikes > 0) 
-                ns.printf("Velocity: %s/min [%i strikes] %s", global.velocity, global.strikes,
+                vMsg = ns.sprintf("Velocity: %s/min [%i strikes] %s", global.velocity, global.strikes,
                     ns.fileExists("extend.txt", "home") ? `${color.fgWhite}(FLAG)` : "" )
             else
-                ns.printf("Velocity: %s/min", global.velocity)
+                vMsg = ns.sprintf("Velocity: %s/min", global.velocity)
         } else {
-            ns.printf("Velocity: pending")
+            vMsg = "Vel: pending"
         }
+        ns.printf("Money: $%s (+$%s/s)\t%s",
+            ns.formatNumber(cash, 2), ns.formatNumber(cashRate, 2), vMsg)
 
         ns.printf("=== Batcher ============================================")
         if(batcher) {
-            ns.printf("Current target: %s", batcher.target)
-            ns.printf("-> %s :: %s", batcher.greed, batcher.status)
+            ns.printf("Target: %-20s\t%s :: %s", batcher.target,
+                    batcher.greed, batcher.status)
         } else {
-            ns.printf("Current target: <unknown>")
-            ns.printf("-> (no current target)")
+            ns.printf("Target: <unknown>")
         }
 
         if(ns.scriptRunning("ipvgo.js", "home")) {
@@ -103,27 +104,24 @@ export async function main(ns) {
         table(ns, dtable, ctable)
 
         dtable = []; ctable = []
-        row = ["Faction", "Status", "Rep", "Favor"]
-        var colors = [color.fgWhite, color.fgWhite, color.fgWhite, color.fgWhite]
+        row = ["Faction", "Rep", "Favor"]
+        var colors = [color.fgWhite, color.fgWhite, color.fgWhite]
         dtable.push(row)
         ctable.push(colors)       
 
-        for(var fac of factionList) {
+        for(var fac of factionList.filter((A) => (A.status))) {
             row = [ fac.name, 
-                    fac.status ? "Member" : "Invited",
                     ns.formatNumber(fac.rep),
                     ns.sprintf("%s (+%s)", ns.formatNumber(fac.favor,1), 
                         ns.formatNumber(fac.favorGain, 1))
             ]
             colors = [fac.status ? color.fgGreen : "",
                 "",
-                "",
                 fac.favor > 150 ? color.fgGreen : ""
             ]
             dtable.push(row)
             ctable.push(colors)
         }
-
 
         ns.printf("=== Factions ============================================")
         if(faction) {
@@ -146,7 +144,12 @@ export async function main(ns) {
             ns.printf("-> Augments status <pending>")
         }
         table(ns, dtable, ctable)
-        
+        var invites = []
+        for (var fac of factionList.filter((A) => (!A.status)) )
+            invites.push(fac.name)
+        ns.printf("Invitations: %s", invites.join(','))
+
+
         var lineCount = 5
         if(ns.scriptRunning("pservs.js", "home")) {
             ns.printf("=== Purchased Server Log: [running] ============================")
