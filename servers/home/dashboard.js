@@ -34,7 +34,7 @@ export async function main(ns) {
             (partial, a) => (partial +a), 0 ) / avgMoneyIncrease.length
         
 
-        ns.printf("Time of this run: %s", ns.tFormat(ns.getResetInfo().lastAugReset))
+        ns.printf("Time of this run: %s", ns.tFormat(Date.now() - ns.getResetInfo().lastAugReset))
         ns.printf("Money: $%s (+$%s/s)",
             ns.formatNumber(cash, 2), ns.formatNumber(cashRate, 2))
         if(global) {
