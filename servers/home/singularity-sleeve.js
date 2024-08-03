@@ -11,6 +11,7 @@ export async function main(ns) {
         var sleeveRecord = { id: sleeveNum,
                              sync: sleeve.sync,
                              shock: sleeve.shock,
+                             int: sleeve.skills.intelligence,
                              job: ''
          }
         // If this sleeve has Shock, drive it to 0

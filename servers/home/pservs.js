@@ -89,6 +89,7 @@ export async function main(ns) {
   ns.disableLog('ALL')
 
   rehprintf(ns, "Beginning with basic 8GB Nodes")
+  db.dbLogf(ns, "Beginning with basic 8GB Nodes")
   await buyServers(ns)
   var size = 64
   while (size <= 1024*1024) {

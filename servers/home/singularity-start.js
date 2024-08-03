@@ -15,11 +15,6 @@ export async function main(ns) {
     }
   }
 
-  db.dbLog(ns, "start", "Waiting for $250k...")
-  while(ns.getServerMoneyAvailable("home") < 250000) {
-    await ns.sleep(1000);
-  }
-
   var keepGoing = true
   var counter = 59
   db.dbLog(ns, "start","Entering main loop...")
@@ -36,7 +31,7 @@ export async function main(ns) {
       await manageFactions(ns)
       await manageHome(ns)
     }
-    if (counter % 60 == 0) {
+    if (counter % 30 == 0) {
       await manageAugments(ns)
       await manageSleeves(ns)
     }

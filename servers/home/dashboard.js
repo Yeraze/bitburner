@@ -174,12 +174,12 @@ export async function main(ns) {
         var invites = []
         for (var fac of factionList.filter((A) => (!A.status)) )
             invites.push(fac.name)
-        ns.printf("Invitations: %s", invites.join(','))
+        ns.printf("Invitations: %s", invites.join(', '))
 
         var lineCount = 5
         if(ns.scriptRunning("pservs.js", "home")) {
             ns.printf("=== Purchased Server Log: [running] ============================")
-            var lines = db.dbLogFetch(ns, "pserv", 5)
+            var lines = db.dbLogFetch(ns, "pserv", 3)
             for(var l of lines)
                 ns.print(l)
         } else {

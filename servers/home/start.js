@@ -7,6 +7,10 @@ export async function main(ns) {
   ns.disableLog('ALL')
   for(var file of ns.ls("home", "/db/")) 
     ns.clear(file)
+  for(var file of ns.ls("home", "/tmp/")
+    ns.rm(file)
+
+  
   db.dbLog(ns, "start", "Initial setup...")
   db.dbLog(ns, "start", "Starting auto-breach.js")
   await execAnywhere(ns, ["s_crime.js"], 1, "Rob Store")
