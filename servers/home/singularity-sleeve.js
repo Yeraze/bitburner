@@ -30,16 +30,17 @@ export async function main(ns) {
         }
         // Put the sleeve to work
         if(sleeveNum == 0) { // Sleeve 0 supports Player in faction grind
-            var pWork = await doCommand(ns, "ns.singularity.getCurrentWork()")
-            if (pWork?.type == "FACTION") {
+            // var pWork = await doCommand(ns, "ns.singularity.getCurrentWork()")
+            var augment = db.dbRead(ns, "augment")
+            if (augment) {
                 var work = "hacking"
                 // Prefer combat-stat work over Hacking, if available
-                if(ns.singularity.getFactionWorkTypes(pWork.factionName).includes("security"))
+                if(ns.singularity.getFactionWorkTypes(augment.faction).includes("security"))
                     work = "security"
-                if(ns.singularity.getFactionWorkTypes(pWork.factionName).includes("field"))
+                if(ns.singularity.getFactionWorkTypes(augment.faction).includes("field"))
                     work = "field"
                 await doCommand(ns, 
-                    `ns.sleeve.setToFactionWork(${sleeveNum}, "${pWork.factionName}", "${work}")`)
+                    `ns.sleeve.setToFactionWork(${sleeveNum}, "${augment.faction}", "${work}")`)
             } else {
                 var job = ns.sleeve.getTask(sleeveNum)
                 if(job == null) {  // This sleeve is idle.. 

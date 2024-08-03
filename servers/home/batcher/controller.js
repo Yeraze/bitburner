@@ -169,7 +169,7 @@ class ContinuousBatcher {
 				}
 
 				// If it's a W2, we've got an opening to do some work.
-				if (data.startsWith("weaken2")) {
+				if (data && data.startsWith("weaken2")) {
 
 					// Recalculate times. Threads too, but only if prepped (the logic is in the function itself).
 					this.#metrics.calculate(this.#ns);

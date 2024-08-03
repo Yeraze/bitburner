@@ -49,6 +49,8 @@ export async function main(ns) {
             (A) => (ns.singularity.getOwnedAugmentations(false).indexOf(A) == -1))
         if (augsPurchased.length == 0) {
           db.dbLogf(ns, "WARN: Run extend: no augmentation purchase")
+        } else if (ns.singularity.getCurrentWork().type == "GRAFTING") {
+          db.dbLogf(ns, "WARN: Run extend: Waiting on graft..")
         } else {
           resetCount++
           ns.toast(ns.sprintf("CONSIDERING RESET: %i of 3", resetCount), "warning", null)
@@ -84,7 +86,6 @@ async function manageSleeves(ns) {
 async function manageAugments(ns) {
   //const pkg = ["singularity-augments.js", "reh.js", "reh-constants.js", "singularity-factionjoin.js", "singularity-augpurchase.js"]
   await execAndWait(ns, "aug-getOwnedAugmentations.js", "home", 1)
-  await execAndWait(ns, "checkFactionInvitations.js", "home", 1)
   await execAndWait(ns, "aug-getAugmentationsFromFaction.js", "home", 1)
   await execAndWait(ns, "aug-getAugmentationPreReq.js", "home", 1)
   await execAndWait(ns, "aug-getCost.js", "home", 1)
@@ -125,8 +126,8 @@ function manageDarkweb(ns) {
 
 /** @param {NS} ns */
 async function manageFactions(ns) {
-  const pkg = ["singularity-factions.js","reh.js", "reh-constants.js", "singularity-factionjoin.js"]
-  await execAnywhere(ns, pkg, 1)
+  await execAndWait(ns, "singularity-factions.js", "home", 1)
+  await execAndWait(ns, "checkFactionInvitations.js", "home", 1)
 }
 
 /** @param {NS} ns */
