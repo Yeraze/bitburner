@@ -29,6 +29,9 @@ async function buyServers(ns) {
         //rehprintf(ns, msg)
         db.dbLog(ns, "pserv", msg)
     } else {
+      db.dbLog(ns, "pserv", ns.sprintf("Purchase of server costs $%s", 
+        ns.formatNumber(ns.getPurchasedServerCost(ram)))) 
+
       await ns.sleep(30 * 1000);
     }
   }
@@ -90,6 +93,7 @@ export async function main(ns) {
 
   rehprintf(ns, "Beginning with basic 8GB Nodes")
   db.dbLogf(ns, "Beginning with basic 8GB Nodes")
+  db.dbLog(ns, "pserv", "Beginning 8GB Server purchase!")
   await buyServers(ns)
   var size = 64
   while (size <= 1024*1024) {
