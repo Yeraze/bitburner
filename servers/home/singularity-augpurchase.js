@@ -6,7 +6,7 @@ export async function main(ns) {
     const aug = ns.args[1]
     // If we have the NMI we can background the hacking
 
-    if (ns.singularity.purchaseAugmentation(faction, aug)) {
+    if (await doCommand(ns, `ns.singularity.purchaseAugmentation("${faction}", "${aug}")`)) {
         rehprintf(ns, "Purchased %s from %s", aug, faction)
         db.dbLogf(ns, "Purchased %s from %s", aug, faction)
         ns.toast(ns.sprintf("Purchased %s", aug), "success", null)
@@ -33,7 +33,7 @@ export async function main(ns) {
             if(ns.singularity.getAugmentationRepReq(aug) < ns.singularity.getFactionRep(faction)) {
                 boughtIt = true
                 rehprintf(ns, "-> Donations enabled purchasing %s from %s", aug, faction)
-                if(ns.singularity.purchaseAugmentation(faction, aug)) {
+                if(await doCommand(ns, `ns.singularity.purchaseAugmentation("${faction}", "${aug}")`)) {
                     ns.toast(ns.sprintf("Purchased %s", aug), "success", null)
                     db.dbLogf(ns, "Purchased %s from %s", aug, faction)
                     return

@@ -4,15 +4,25 @@ import * as CONST from "reh-constants.js"
 export async function doCommand(ns, command) {
   var random = Math.floor(Math.random() * 100000000)
   var filename = `/tmp/${random}.js`
+  var resultFile = `/tmp/${random}.txt`
 
   if (ns.fileExists(filename))
     ns.clear(filename)
   ns.write(filename, "export async function main(ns) {", "a")
-  ns.write(filename, command, "a")
+  ns.write(filename, `var result = ${command};`, "a")
+  ns.write(filename, `ns.write("${resultFile}", JSON.stringify(result), "w");`)
   ns.write(filename, "}", "a")
 
   await execAndWait(ns, filename, "home")
-  //ns.rm(filename)
+  ns.rm(filename)
+
+  if (ns.fileExists(resultFile)) {
+    var result = JSON.parse(ns.read(resultFile))
+    ns.rm(resultFile)
+    return result
+  } else {
+    return null
+  }
 } 
 
 /** @param {NS} ns */

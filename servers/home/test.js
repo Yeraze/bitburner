@@ -19,6 +19,6 @@ export async function main(ns) {
     ns.tprintf(" -> %s: %s", key, NFG_delta[key])
   });*/
 
-  await doCommand(ns, `ns.singularity.joinFaction("The Black Hand")`)
+  ns.printf(await doCommand(ns, `ns.singularity.getAugmentationRepReq("NeuroFlux Governor")`))
 
 }
