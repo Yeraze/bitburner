@@ -67,6 +67,11 @@ class ContinuousBatcher {
 	scheduleBatches(batches = this.#metrics.depth) {
 		while (this.#schedule.size < batches * 4) {
 			++this.#batchCount;
+			/*
+			this.#ns.write("batcher-log.txt", 
+				`Scheduling batch ${this.#batchCount} of ${this.#schedule.size}\n`,
+				"a")
+				*/
 			for (const type of TYPES) {
 				this.#metrics.end += this.#metrics.spacer;
 				const job = new Job(type, this.#metrics, this.#batchCount);

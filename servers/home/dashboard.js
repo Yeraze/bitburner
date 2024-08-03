@@ -84,17 +84,19 @@ export async function main(ns) {
         }
         var dtable = []
         var ctable = []
-        var row = ["Sleeve", "Shock", "Sync", "Status"]
-        var colors = [color.fgWhite, color.fgWhite, color.fgWhite, color.fgWhite]
+        var row = ["Sleeve", "Int", "Shock", "Sync", "Status"]
+        var colors = [color.fgWhite, color.fgWhite, color.fgWhite, color.fgWhite, color.fgWhite]
         dtable.push(row)
         ctable.push(colors)
         for(var sleeve of sleeves) {
             row = [ ns.sprintf("%s", sleeve.id), 
-                    ns.formatNumber(sleeve.shock, 3),
-                    ns.formatNumber(sleeve.sync, 3),
+                    ns.sprintf("%3s", sleeve.int),
+                    ns.sprintf("%7s", ns.formatNumber(sleeve.shock, 2)),
+                    ns.sprintf("%6s", ns.formatNumber(sleeve.sync, 2)),
                     ns.sprintf("%s", sleeve.job)
             ]
             colors = ["",
+                "",
                 sleeve.shock > 0 ? color.fgRed : color.fgGreen,
                 sleeve.sync < 99 ? color.fgRed : color.fgGreen,
                 ""
@@ -137,9 +139,9 @@ export async function main(ns) {
             if (rateEntry)
                 rate = rateEntry.rate
             row = [ fac.name, 
-                    ns.formatNumber(fac.rep),
-                    ns.formatNumber( rate, 2),
-                    ns.sprintf("%s (+%s)", ns.formatNumber(fac.favor,1), 
+                    ns.sprintf("%7s", ns.formatNumber(fac.rep,2)),
+                    ns.sprintf("%7s", ns.formatNumber( rate, 2)),
+                    ns.sprintf("%3s (+%s)", ns.formatNumber(fac.favor,1), 
                         ns.formatNumber(fac.favorGain, 1))
             ]
             colors = [fac.status ? color.fgGreen : "",
