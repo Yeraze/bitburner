@@ -1,4 +1,4 @@
-import {rehprintf} from 'reh.js'
+import {doCommand, rehprintf} from 'reh.js'
 import * as db from 'database.js'
 /** @param {NS} ns */
 export async function main(ns) {
@@ -27,7 +27,7 @@ export async function main(ns) {
       if(currentFactions.indexOf(faction.faction) == -1) {
         if(faction.location != "") {
           if (ns.getPlayer().city != faction.location) {
-            if (ns.singularity.travelToCity(faction.location))  {
+            if (await doCommand(ns, `ns.singularity.travelToCity("${faction.location}")`))  {
               rehprintf(ns, "Traveling to %s, looking for %s", faction.location,
                 faction.faction)
               db.dbLogf(ns, "Traveling to %s",faction.location)
