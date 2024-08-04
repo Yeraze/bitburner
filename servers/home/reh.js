@@ -8,19 +8,20 @@ export async function doCommand(ns, command) {
 
   if (ns.fileExists(filename))
     ns.clear(filename)
-  ns.write(filename, "export async function main(ns) {", "a")
-  ns.write(filename, `var result = ${command};`, "a")
-  ns.write(filename, `ns.write("${resultFile}", JSON.stringify(result), "w");`)
+  ns.write(filename, "export async function main(ns) {\n", "a")
+  ns.write(filename, `  var result = ${command};\n`, "a")
+  ns.write(filename, `  ns.write("${resultFile}", JSON.stringify(result), "w");\n`)
   ns.write(filename, "}", "a")
 
   await execAndWait(ns, filename, "home")
   ns.rm(filename)
 
   if (ns.fileExists(resultFile)) {
+    var data = ns.read(resultFile)
+    ns.rm(resultFile)
+
     try {
-      var result = JSON.parse(ns.read(resultFile))
-      ns.rm(resultFile)
-      return result
+      return JSON.parse(data)
     } catch {
       return null
     }
