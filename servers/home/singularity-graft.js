@@ -34,10 +34,11 @@ export async function main(ns) {
     const interestedAugs = []
     for(var aug of augList) {
         var stats = ns.singularity.getAugmentationStats(aug)
-
-        if(!qualifyAugment(ns, stats))
+        // See if this augment hits our BN qualifications as useful
+        //   And the violet entropy virus aug is always interesting
+        if((qualifyAugment(ns, stats)==false) && (aug.includes("violet") == false))
             continue
-
+        // See if this is available for purchase directly
         if(factionAugs.includes(aug))
             continue
 
@@ -45,6 +46,7 @@ export async function main(ns) {
         interestedAugs.push( {aug: aug,
                               cost: ns.grafting.getAugmentationGraftPrice(aug) } )
     }
+
 
     if (interestedAugs.length == 0) {
         db.dbLogf(ns, "GRAFT: No augments available...")

@@ -6,7 +6,6 @@ export async function main(ns) {
     var jobsToAssign = 0
     const sleeveCount = await doCommand(ns, "ns.sleeve.getNumSleeves()")
 
-    const hourOffset = Math.floor((Date.now() - ns.getResetInfo().lastNodeReset) / (1000 * 3600)) 
     var factionList =  db.dbRead(ns, "factions") ?? []
     var augment = db.dbRead(ns, "augment")
     var eligibleList = factionList.filter((A) => (A.status && (A.name != augment?.faction)))
@@ -46,7 +45,7 @@ export async function main(ns) {
             continue
         }
         // Put the sleeve to work
-        if((sleeveNum + hourOffset) % sleeveCount == 0) { // Sleeve 0 supports Player in faction grind
+        if(sleeveNum == 0) { // Sleeve 0 supports Player in faction grind
             // var pWork = await doCommand(ns, "ns.singularity.getCurrentWork()")
             if (augment) {
                 var work = "hacking"
