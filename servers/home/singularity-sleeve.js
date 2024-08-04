@@ -26,6 +26,9 @@ export async function main(ns) {
                              sync: sleeve.sync,
                              shock: sleeve.shock,
                              int: sleeve.skills.intelligence,
+                             stats: [sleeve.skills.strength, sleeve.skills.defense, 
+                                     sleeve.skills.dexterity, sleeve.skills.agility, 
+                                     sleeve.skills.charisma],                            
                              job: ''
          }
         // If this sleeve has Shock, drive it to 0

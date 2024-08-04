@@ -84,13 +84,14 @@ export async function main(ns) {
         }
         var dtable = []
         var ctable = []
-        var row = ["Sleeve", "Int", "Shock", "Sync", "Status"]
+        var row = ["ID", "Int", "S/D/D/A/C", "Shock", "Sync", "Status"]
         var colors = [color.fgWhite, color.fgWhite, color.fgWhite, color.fgWhite, color.fgWhite]
         dtable.push(row)
         ctable.push(colors)
         for(var sleeve of sleeves) {
-            row = [ ns.sprintf("%s", sleeve.id), 
+            row = [ ns.sprintf("%s", sleeve.id+1), 
                     ns.sprintf("%3s", sleeve.int),
+                    sleeve.stats.join('/'),
                     ns.sprintf("%7s", ns.formatNumber(sleeve.shock, 2)),
                     ns.sprintf("%6s", ns.formatNumber(sleeve.sync, 2)),
                     ns.sprintf("%s", sleeve.job)

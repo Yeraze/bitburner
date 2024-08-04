@@ -14,9 +14,7 @@ export async function main(ns) {
   var favAugment = ""
   var savingUp = false
   var augsPurchased = augmentsIHave.filter( (A) => (augmentsInstalled.indexOf(A) == -1))
-  if (augsPurchased.length > 0) {
-    ns.toast(ns.sprintf("%i purchased augments pending", augsPurchased.length), "info", 10000)
-  }
+
   var record = { augmentsInstalled: augmentsInstalled.length,
                  augmentsPurchased: augsPurchased.length}
   db.dbWrite(ns, "augment-meta", record)
