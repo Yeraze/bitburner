@@ -126,7 +126,7 @@ async function manageDarkweb(ns) {
         continue
       }
       db.dbLogf(ns, "Buying program %s", prog)
-      await doCommand(ns, `ns.singularity.purchaseProgram(${prog})`)
+      await doCommand(ns, `ns.singularity.purchaseProgram("${prog}")`)
     }
   }
   return keepGoing

@@ -46,6 +46,11 @@ export async function main(ns) {
                               cost: ns.grafting.getAugmentationGraftPrice(aug) } )
     }
 
+    if (interestedAugs.length == 0) {
+        db.dbLogf(ns, "GRAFT: No augments available...")
+        return
+    }
+
     interestedAugs.sort((A,B) => (A.cost - B.cost)).reverse()
 
     try { 
@@ -55,6 +60,6 @@ export async function main(ns) {
             db.dbLogf(ns, "GRAFT: Failed to start graft of %s", interestedAugs[0].aug)
         }
     } catch (error) {
-        db.dbLogf(ns, "ERROR: FAiled to start graft of %s: %s", interestedAugs[0].aug, error)
+        db.dbLogf(ns, "ERROR: Failed to start graft of %s: %s", interestedAugs[0].aug, error)
     }
 }

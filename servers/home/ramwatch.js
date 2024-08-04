@@ -18,7 +18,7 @@ export async function main(ns) {
     var tColor= []
     tData.push(["File", "Size"])
     tColor.push(["",""])
-    for(var file of fileList) {
+    for(var file of fileList.filter((A) => (! A.file.startsWith("tmp/")))) {
         var row = [file.file, ns.formatRam(file.size)]
         tData.push(row)
         tColor.push( ["", ""])
