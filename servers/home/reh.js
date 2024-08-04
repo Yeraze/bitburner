@@ -17,9 +17,13 @@ export async function doCommand(ns, command) {
   ns.rm(filename)
 
   if (ns.fileExists(resultFile)) {
-    var result = JSON.parse(ns.read(resultFile))
-    ns.rm(resultFile)
-    return result
+    try {
+      var result = JSON.parse(ns.read(resultFile))
+      ns.rm(resultFile)
+      return result
+    } catch {
+      return null
+    }
   } else {
     return null
   }
@@ -102,7 +106,7 @@ export async function execAndWait(ns, script, host, ...cmdArgs) {
     return
   }
   while (ns.isRunning(pid, host)) {
-    await ns.sleep(500)
+    await ns.sleep(100)
   }
   ns.printf("-> [%s]:%s Finished...", host, script)
 }

@@ -12,6 +12,15 @@ export async function main(ns) {
     var eligibleList = factionList.filter((A) => (A.status && (A.name != augment?.faction)))
     var crimeList = ["Traffick Arms", "Kidnap", "Deal Drugs"]
     for(var sleeveNum =0; sleeveNum < sleeveCount; sleeveNum++) {
+        // Remove all faction participation
+        // Sothat we don't run into conflicts
+        var job = ns.sleeve.getTask(sleeveNum)
+        if(job && job.type == "FACTION") {
+            await doCommand(ns, `ns.sleeve.setToIdle(${sleeveNum})`)
+        }
+
+    }
+    for(var sleeveNum =0; sleeveNum < sleeveCount; sleeveNum++) {
         var sleeve = ns.sleeve.getSleeve(sleeveNum)
         var sleeveRecord = { id: sleeveNum,
                              sync: sleeve.sync,
@@ -58,6 +67,7 @@ export async function main(ns) {
             // Otherwise we fall back on University studies for that INT 
             var fac = eligibleList.shift()
             if (fac) {
+                // Prioritize reputation grind for any other joined factions
                 var work = "hacking"
                 // Prefer combat-stat work over Hacking, if available
                 if(ns.singularity.getFactionWorkTypes(fac.name).includes("security"))
@@ -65,8 +75,9 @@ export async function main(ns) {
                 if(ns.singularity.getFactionWorkTypes(fac.name).includes("field"))
                     work = "field"
                 await doCommand(ns, 
-                    `ns.sleeve.setToFactionWork(${sleeveNum}, "${faction.name}", "${work}")`)               
+                    `ns.sleeve.setToFactionWork(${sleeveNum}, "${fac.name}", "${work}")`)               
             } else {
+                // Next run some crimes
                 var C = crimeList.shift()
                 if (C) {
                     var job = ns.sleeve.getTask(sleeveNum)
@@ -76,6 +87,7 @@ export async function main(ns) {
                         await doCommand(ns, `ns.sleeve.setToCommitCrime(${sleeveNum}, "${C}")`)
                     }
                 } else { 
+                    // As a last resort, study
                     await doCommand(ns, 
                         `ns.sleeve.setToUniversityCourse(${sleeveNum}, "Rothman University", "Algorithms")`)
                 }
