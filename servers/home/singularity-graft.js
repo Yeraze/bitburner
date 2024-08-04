@@ -1,0 +1,60 @@
+import {rehprintf, doCommand} from 'reh.js'
+import * as db from 'database.js'
+import { qualifyAugment } from './reh'
+/** @param {NS} ns */
+export async function main(ns) {
+    // Only bother with grafting if we have cash
+    const cash = ns.getServerMoneyAvailable("home")
+    if(cash < 1000000000) {
+        ns.printf("EXITING: Insufficient funds")
+        return
+    }
+
+    // If we're already grafting then don't bother
+    if(ns.singularity.getCurrentWork().type == "GRAFTING") {
+        ns.printf("EXITING: Already grafting")
+        return
+    }
+
+    var factionAugs = []
+    for(var fac in db.dbRead(ns, "augs-from-faction")) {
+        factionAugs = factionAugs.concat( fac.augments )
+    }
+
+    // const augList = doCommand(ns, "ns.grafting.getGraftableAugmentations()")
+    const augList = ns.grafting.getGraftableAugmentations()
+    if(augList == null) {
+        ns.printf("ERROR: No augments")
+        return
+    }
+
+    const affordableAugs = augList.filter((A) => (
+        ns.grafting.getAugmentationGraftPrice(A) < cash
+    ))
+    const interestedAugs = []
+    for(var aug of augList) {
+        var stats = ns.singularity.getAugmentationStats(aug)
+
+        if(!qualifyAugment(ns, stats))
+            continue
+
+        if(factionAugs.includes(aug))
+            continue
+
+        ns.printf("Possible augment: %s", aug)
+        interestedAugs.push( {aug: aug,
+                              cost: ns.grafting.getAugmentationGraftPrice(aug) } )
+    }
+
+    interestedAugs.sort((A,B) => (A.cost - B.cost)).reverse()
+
+    try { 
+        if(ns.grafting.graftAugmentation(interestedAugs[0].aug)) {
+            db.dbLogf(ns, "GRAFT: Starting graft for %s",interestedAugs[0].aug)
+        } else {
+            db.dbLogf(ns, "GRAFT: Failed to start graft of %s", interestedAugs[0].aug)
+        }
+    } catch (error) {
+        db.dbLogf(ns, "ERROR: FAiled to start graft of %s: %s", interestedAugs[0].aug, error)
+    }
+}

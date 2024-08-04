@@ -1,4 +1,4 @@
-import {rehprintf, execAndWait, execAnywhere} from 'reh.js'
+import {rehprintf, execAndWait, execAnywhere, doCommand} from 'reh.js'
 import * as db from 'database.js'
 
 var factionList = []
@@ -9,7 +9,7 @@ export async function main(ns) {
   if (ns.getHackingLevel() < 10) {
     db.dbLog(ns, "start", "Starting CS to hit level 10...")
     rehprintf(ns, "Starting CS to hit level 10...")
-    ns.singularity.universityCourse("rothman university", "computer science", true);
+    await doCommand(ns, 'ns.singularity.universityCourse("rothman university", "computer science", true)');
     while (ns.getHackTime() < 10) {
       await ns.sleep(1000);
     }
@@ -24,7 +24,7 @@ export async function main(ns) {
     await ns.sleep(1000)
     counter++
     
-    manageDarkweb(ns)
+    await manageDarkweb(ns)
     await installBackdoors(ns)
 
     if (counter % 5 == 0) {
@@ -35,13 +35,19 @@ export async function main(ns) {
       await manageAugments(ns)
       await manageSleeves(ns)
     }
+    // every 10 minutes or so
+    if (counter % 600 == 0) {
+      await manageGraft(ns)
+    }
+
     // every 5 minutes or so (300 cycles)
     if (counter % 300 == 0) {
       // If the average Hacking Levels per Second drops under 2
       //  Since this happens every 5 minutes, check for 10 levels
       if(ns.getHackingLevel() - playerLevel < 10) {
-        var augsPurchased = ns.singularity.getOwnedAugmentations(true).filter( 
-            (A) => (ns.singularity.getOwnedAugmentations(false).indexOf(A) == -1))
+        var augMeta = db.dbRead(ns, "augment-meta")
+        var augsPurchased = augMeta?.augsPurchased ?? 0
+
         if (augsPurchased.length == 0) {
           db.dbLogf(ns, "WARN: Run extend: no augmentation purchase")
         } else if (ns.singularity.getCurrentWork().type == "GRAFTING") {
@@ -73,6 +79,13 @@ export async function main(ns) {
 
   }
 }
+/** @param {NS} ns */
+async function manageGraft(ns) {
+  const cash = ns.getServerMoneyAvailable("home")
+  if(cash > 1000000000) {
+    ns.exec("singularity-graft.js", "home", {temporary: true, threads: 1})
+  }
+}
 
 async function manageSleeves(ns) {
   await execAndWait(ns, "singularity-sleeve.js", "home", 1)
@@ -95,12 +108,12 @@ async function manageHome(ns) {
 }
 
 /** @param {NS} ns */
-function manageDarkweb(ns) {
+async function manageDarkweb(ns) {
   var keepGoing = false
   if ( ns.singularity.getDarkwebPrograms().length == 0) {
     if(ns.getServerMoneyAvailable("home") > 200000) {
       db.dbLog(ns, "start", "Buying TOR router...")
-      ns.singularity.purchaseTor();
+      await doCommand(ns, `ns.singularity.purchaseTor()`);
     } else {
       return false
     }
@@ -113,7 +126,7 @@ function manageDarkweb(ns) {
         continue
       }
       db.dbLogf(ns, "Buying program %s", prog)
-      ns.singularity.purchaseProgram(prog)
+      await doCommand(ns, `ns.singularity.purchaseProgram(${prog})`)
     }
   }
   return keepGoing

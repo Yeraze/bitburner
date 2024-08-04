@@ -14,11 +14,15 @@ export async function doCommand(ns, command) {
   ns.write(filename, "}", "a")
 
   await execAndWait(ns, filename, "home")
-  ns.rm(filename)
+  if(!ns.rm(filename)) {
+    dbLogf(ns, "ERROR: Unable to rm %s", filename)
+  }
 
   if (ns.fileExists(resultFile)) {
     var data = ns.read(resultFile)
-    ns.rm(resultFile)
+    if(!ns.rm(resultFile)) {
+      dbLogf(ns, "ERROR: Unable to rm %s", resultFile)
+    }
 
     try {
       return JSON.parse(data)
@@ -139,6 +143,7 @@ export function getServerList(ns) {
   return serverList;
 }
 
+/** @param {NS} ns */
 export function getSortedServerList(ns) {
   var startingList = getServerList(ns)
   var levelList= []
@@ -154,6 +159,7 @@ export function getSortedServerList(ns) {
   return endingList;
 }
 
+/** @param {NS} ns */
 export function parsearg(ns, flag, default_value) {
   if (ns.args.indexOf(flag) == -1) {
     return default_value
@@ -215,3 +221,62 @@ export function table(ns, data, colours) {
     ns.print(downString);
 }
 
+/** @param {NS} ns */
+export function qualifyAugment(ns, stats) {
+  var maskHack = false
+  var maskFaction = false
+  var maskCompany = false
+  var maskHacknet = false
+  var maskCrime = false
+  var maskBody = false
+  var maskBladeburner = false
+  var maskCharisma = false
+  
+  switch(ns.getResetInfo().currentNode) {
+    case 2: // gangs
+      maskFaction = true; maskHack = true; maskBody = true; maskCrime = true; break;
+    case 3: // Corporations
+      maskHack = true; maskCompany = true; break;
+    case 4: // Singularity
+      maskFaction = true; maskHack = true; break;
+    case 5: // Intelligence
+      maskFaction = true; maskHack = true; break;
+    case 6: // Bladeburners
+    case 7:
+      maskFaction = true; maskHack = true; maskBladeburner = true; break;
+    case 9: // Hacknet Server
+      maskFaction = true; maskHack = true; maskHacknet = true; break;
+    case 10: // Sleeves, need Body points to reach Covenant
+      maskFaction = true; maskHack = true; maskBody = true; break;
+    case 12: // Recursion
+    case 11: // the big crash
+    case 13: // Church of Staken
+    case 8: // Wall Street
+    case 1: // default
+    default:
+      maskFaction = true; maskHack = true; break;
+  }
+  var fHack = (stats.hacking != 1.0) || (stats.hacking_chance != 1.0) || 
+              (stats.hacking_exp != 1.0) || (stats.hacking_grow != 1.0) ||
+              (stats.hacking_money != 1.0) || (stats.hacking_speed != 1.0)
+  var fFaction =  (stats.faction_rep != 1.0)
+  var fCompany =  (stats.company_rep != 1.0) || (stats.work_money != 1.0)
+  var fHacknet = (stats.hacknet_node_core_cost != 1.0) || (stats.hacknet_node_level_cost != 1.0) ||
+              (stats.hacknet_node_money != 1.0) || (stats.hacknet_node_purchase_cost != 1.0) ||
+              (stats.hacknet_node_ram_cost != 1.0)
+  var fCrime = (stats.crime_money != 1.0) || (stats.crime_success != 1.0)
+  var fBody = (stats.defense != 1.0) || (stats.defense_exp != 1.0) ||
+              (stats.dexterity != 1.0) || (stats.dexterity_exp != 1.0) ||
+              (stats.strength != 1.0) || (stats.strength_exp != 1.0) ||
+              (stats.agility != 1.0) || (stats.agility_exp != 1.0)
+  var fCharisma = (stats.charisma != 1.0) || (stats.charisma_exp != 1.0) 
+  var fBladeburner = (stats.bladeburner_analysis != 1.0) ||
+              (stats.bladeburner_max_stamina != 1.0) || (stats.bladeburner_stamina_gain != 1.0) ||
+              (stats.bladeburner_success_chance != 1.0)
+  
+  return (maskHack && fHack) || (maskFaction && fFaction) ||
+        (maskCompany && fCompany) || (maskHacknet && fHacknet) ||
+        (maskCrime && fCrime) || (maskBody && fBody) ||
+        (maskBladeburner && fBladeburner) || 
+        (maskCharisma && fCharisma)
+}

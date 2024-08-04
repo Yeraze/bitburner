@@ -142,7 +142,7 @@ export async function main(ns) {
             row = [ fac.name, 
                     ns.sprintf("%7s", ns.formatNumber(fac.rep,2)),
                     ns.sprintf("%7s", ns.formatNumber( rate, 2)),
-                    ns.sprintf("%3s (+%s)", ns.formatNumber(fac.favor,1), 
+                    ns.sprintf("%5s (+%s)", ns.formatNumber(fac.favor,1), 
                         ns.formatNumber(fac.favorGain, 1))
             ]
             colors = [fac.status ? color.fgGreen : "",

@@ -18,7 +18,6 @@ export async function main(ns) {
         if(job && job.type == "FACTION") {
             await doCommand(ns, `ns.sleeve.setToIdle(${sleeveNum})`)
         }
-
     }
     for(var sleeveNum =0; sleeveNum < sleeveCount; sleeveNum++) {
         var sleeve = ns.sleeve.getSleeve(sleeveNum)
@@ -40,7 +39,7 @@ export async function main(ns) {
         }
 
         // If this sleeve is not synchronized, then synchronize it
-        if(sleeve.sync < 99) {
+        if(sleeve.sync < 100) {
             await doCommand(ns, `ns.sleeve.setToSynchronize(${sleeveNum})`)
             sleeveRecord.job = "Synchronize"
             records.push(sleeveRecord)
