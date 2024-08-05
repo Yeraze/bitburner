@@ -1,4 +1,4 @@
-import {rehprintf, execAndWait, doCommand} from 'reh.js'
+import {rehprintf, execAndWait, doCommand, execContinue} from 'reh.js'
 import * as db from 'database.js'
 
 var factionList = []
@@ -15,6 +15,10 @@ export async function main(ns) {
     }
   }
 
+  if(ns.getResetInfo().currentNode == 13) {
+    db.dbLog(ns, "Initializing Stanek's gift")
+    execContinue(ns, "singularity-stanek.js", "home", {temporary: true; threads:10})
+  }
   
   var keepGoing = true
   var counter = 59

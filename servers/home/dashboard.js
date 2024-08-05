@@ -112,7 +112,7 @@ export async function main(ns) {
                     ns.sprintf("%6s", ns.formatNumber(sleeve.sync, 2)),
                     ns.sprintf("%s", sleeve.job)
             ]
-            colors = ["",
+            colors = ["", "",
                 sleeve.shock > 0 ? color.fgRed : color.fgGreen,
                 sleeve.sync < 99 ? color.fgRed : color.fgGreen,
                 ""

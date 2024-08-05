@@ -34,6 +34,9 @@ export async function main(ns) {
               db.dbLogf(ns, "Traveling to %s",faction.location)
               return
             }
+          } else if (!currentFactions.includes(faction.faction)) {
+            ns.printf("Waiting, haven't received invitation from %s yet", faction.faction)
+            return
           }
         }
       }

@@ -10,7 +10,7 @@ export async function main(ns) {
     }
     while(true) {
         await ns.sleep(10)
-        ns.printf("[%s] Beginning charge loop...", db.formatTime(ns, Date.now() - ns.getResetInfo().lastAugReset))
+        ns.printf("Beginning charge loop...")
         for(var fragment of ns.stanek.activeFragments()) {
             ns.printf("-> [%i] %i,%i - %i", fragment.id, fragment.x, fragment.y, fragment.highestCharge)
             try {
