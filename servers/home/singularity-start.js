@@ -119,7 +119,7 @@ async function manageAugments(ns) {
 /** @param {NS} ns */
 async function manageHome(ns) {
   //const pkg = ["singularity-home.js", "reh.js", "reh-constants.js"]
-  await execAndWait(ns, "singularity-home.js", {temporary: true, threads: 1})
+  await execAndWait(ns, "singularity-home.js", "home", {temporary: true, threads: 1})
 }
 
 /** @param {NS} ns */

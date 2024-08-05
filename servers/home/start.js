@@ -12,9 +12,9 @@ export async function main(ns) {
 
 
   db.dbLog(ns, "start", "Initial setup...")
-  await doCommand(ns, `ns.singularity.commitCrime("Homocide")`)
+  await doCommand(ns, `ns.singularity.commitCrime("Homicide")`)
 
-  execContinue(ns, ["pservs.js","reh.js", "reh-constants.js"], {threads:1, temporary:true})
+  execContinue(ns, "pservs.js", "home", {threads:1, temporary:true})
   ns.exec("dashboard.js", "home")
   // These scripts area bit "fat",so make sure we have ram
   if (ns.getServerMaxRam("home") < 128) {

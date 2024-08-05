@@ -6,6 +6,8 @@ import * as color from 'reh-constants.js'
 export async function main(ns) {
     ns.disableLog('ALL')
     ns.tail()
+    ns.moveTail(800,0)
+    ns.resizeTail(650, 900)
     let avgMoneyIncrease = [ns.getServerMoneyAvailable("home")]
     var cash = 0
  
@@ -104,8 +106,8 @@ export async function main(ns) {
             ctable.push(colors)
         }
         ns.printf("=== Sleeves ============================================")
-        ns.printf("Stats: %s", sleeves[0].stats.join(' / '),
-    )
+        if(sleeves.length > 0)
+            ns.printf("Stats: %s", sleeves[0].stats?.join(' / ') )
         table(ns, dtable, ctable)
 
 
