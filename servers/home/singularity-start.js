@@ -16,8 +16,8 @@ export async function main(ns) {
   }
 
   if(ns.getResetInfo().currentNode == 13) {
-    db.dbLog(ns, "Initializing Stanek's gift")
-    execContinue(ns, "singularity-stanek.js", "home", {temporary: true, threads:10})
+    db.dbLog(ns,"start",  "Initializing Stanek's gift")
+    execContinue(ns, "singularity-stanek.js", "home", {temporary: true, threads:4})
   }
   
   var keepGoing = true
@@ -53,7 +53,7 @@ export async function main(ns) {
         var augMeta = db.dbRead(ns, "augment-meta")
         var augsPurchased = augMeta?.augsPurchased ?? 0
 
-        if (augsPurchased.length == 0) {
+        if (augsPurchased == 0) {
           db.dbLogf(ns, "WARN: Run extend: no augmentation purchase")
         } else if (ns.singularity.getCurrentWork().type == "GRAFTING") {
           db.dbLogf(ns, "WARN: Run extend: Waiting on graft..")
