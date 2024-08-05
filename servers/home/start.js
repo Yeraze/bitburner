@@ -1,4 +1,4 @@
-import {rehprintf, execContinue, execAnywhere, execAndWait, execAnywhereNoWait, getServerList} from 'reh.js'
+import {rehprintf, execContinue, execAnywhere, execAndWait, execAnywhereNoWait, getServerList, doCommand} from 'reh.js'
 import * as CONST from 'reh-constants.js'
 import { getServers } from './batcher/utils'
 import * as db from 'database.js'
@@ -77,6 +77,7 @@ export async function main(ns) {
     ns.scriptKill("loop_weaken.js", "home")
     await execAndWait(ns, "global-cleanup.js", "home", 1, "--loop")
   }
+  await doCommand(ns, `ns.singularity.commitCrime("Homocide")`)
   execContinue(ns, "ipvgo.js", "home", {threads:1, temporary:true}, 1000)
   db.dbLog(ns, "start", "Beginning Singularity manager...")
   execContinue(ns, "singularity-start.js", "home", {threads:1, temporary:true})

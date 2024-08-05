@@ -13,7 +13,7 @@ export async function doCommand(ns, command) {
   ns.write(filename, `  ns.write("${resultFile}", JSON.stringify(result), "w");\n`)
   ns.write(filename, "}", "a")
 
-  await execAndWait(ns, filename, "home")
+  await execAndWait(ns, filename, "home", {temporary: true, threads: 1})
   if(!ns.rm(filename)) {
     dbLogf(ns, "ERROR: Unable to rm %s", filename)
   }

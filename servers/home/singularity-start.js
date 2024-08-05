@@ -15,6 +15,7 @@ export async function main(ns) {
     }
   }
 
+  
   var keepGoing = true
   var counter = 59
   db.dbLog(ns, "start","Entering main loop...")
@@ -35,8 +36,8 @@ export async function main(ns) {
       await manageAugments(ns)
       await manageSleeves(ns)
     }
-    // every 10 minutes or so
-    if (counter % 600 == 0) {
+    // every 20 minutes or so
+    if (counter % 1100 == 0) {
       await manageGraft(ns)
     }
 
@@ -82,9 +83,23 @@ export async function main(ns) {
 /** @param {NS} ns */
 async function manageGraft(ns) {
   const cash = ns.getServerMoneyAvailable("home")
-  if(cash > 1000000000) {
-    ns.exec("singularity-graft.js", "home", {temporary: true, threads: 1})
+
+  if(cash < 1000000000) {
+    return
   }
+
+  var augsStartedWith = ns.getResetInfo().ownedAugs
+  var augmentsInstalled = db.dbRead(ns, "aug-installed") ?? []
+
+  var delta = augmentsInstalled.filter((A) => (!augsStartedWith.includes(A))
+
+  if (delta.length > 0) {
+    // We've already grafted once this run.
+    return
+  }
+
+  ns.exec("singularity-graft.js", "home", {temporary: true, threads: 1})
+
 }
 
 async function manageSleeves(ns) {

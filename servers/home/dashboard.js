@@ -84,20 +84,18 @@ export async function main(ns) {
         }
         var dtable = []
         var ctable = []
-        var row = ["ID", "Int", "S/D/D/A/C", "Shock", "Sync", "Status"]
-        var colors = [color.fgWhite, color.fgWhite, color.fgWhite, color.fgWhite, color.fgWhite]
+        var row = ["ID", "Int", "Shock", "Sync", "Status"]
+        var colors = [color.fgWhite, color.fgWhite, color.fgWhite, color.fgWhite]
         dtable.push(row)
         ctable.push(colors)
         for(var sleeve of sleeves) {
             row = [ ns.sprintf("%s", sleeve.id+1), 
                     ns.sprintf("%3s", sleeve.int),
-                    sleeve.stats.join('/'),
                     ns.sprintf("%7s", ns.formatNumber(sleeve.shock, 2)),
                     ns.sprintf("%6s", ns.formatNumber(sleeve.sync, 2)),
                     ns.sprintf("%s", sleeve.job)
             ]
             colors = ["",
-                "",
                 sleeve.shock > 0 ? color.fgRed : color.fgGreen,
                 sleeve.sync < 99 ? color.fgRed : color.fgGreen,
                 ""
@@ -106,6 +104,8 @@ export async function main(ns) {
             ctable.push(colors)
         }
         ns.printf("=== Sleeves ============================================")
+        ns.printf("Stats: %s", sleeves[0].stats.join(' / '),
+    )
         table(ns, dtable, ctable)
 
 
