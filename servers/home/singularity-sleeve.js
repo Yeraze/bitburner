@@ -6,10 +6,15 @@ export async function main(ns) {
     var jobsToAssign = 0
     const sleeveCount = await doCommand(ns, "ns.sleeve.getNumSleeves()")
 
-    var factionList =  db.dbRead(ns, "factions") ?? []
+    var factionList =  []
+    for(var fac of (db.dbRead(ns, "factions") ?? [])) {
+        if(ns.singularity.getFactionFavor(fac.name) > 150) 
+            continue; // We don't need to grind when we can just Donate/buy
+        factionList.push(fac)
+    }
     var augment = db.dbRead(ns, "augment")
     var eligibleList = factionList.filter((A) => (A.status && (A.name != augment?.faction)))
-    var crimeList = ["Traffick Arms", "Kidnap", "Deal Drugs"]
+    var crimeList = ["Traffick Arms", "Kidnap", "Deal Drugs", "Homicide"]
     for(var sleeveNum =0; sleeveNum < sleeveCount; sleeveNum++) {
         // Remove all faction participation
         // Sothat we don't run into conflicts
@@ -145,7 +150,7 @@ export async function main(ns) {
         for(var aug of ns.sleeve.getSleevePurchasableAugs(sleeveNum)) {
             if(aug.cost < ns.getServerMoneyAvailable("home")) {
                 if(await doCommand(ns, `ns.sleeve.purchaseSleeveAug(${sleeveNum}, "${aug.name}")`)) {
-                    ns.toast(ns.sprintf("[SLEEVE:%i] Buying augment %s", sleeveNum, aug.name), "info", null)
+                    ns.toast(ns.sprintf("[SLEEVE:%i] Buying augment %s", sleeveNum, aug.name), "info")
                     db.dbLogf(ns, "[SLEEVE:%i] Buying augment %s", sleeveNum, aug.name)
                 }
             }

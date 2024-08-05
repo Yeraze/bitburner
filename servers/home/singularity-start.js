@@ -55,7 +55,7 @@ export async function main(ns) {
           db.dbLogf(ns, "WARN: Run extend: Waiting on graft..")
         } else {
           resetCount++
-          ns.toast(ns.sprintf("CONSIDERING RESET: %i of 3", resetCount), "warning", null)
+          ns.toast(ns.sprintf("CONSIDERING RESET: %i of 3", resetCount), "warning", 60000)
           if(resetCount >= 3) {
             if(ns.fileExists("extend.txt", "home")) {
               db.dbLogf(ns, "WARN: Run extended: extend.txt flag found")    

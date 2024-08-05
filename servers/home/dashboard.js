@@ -14,6 +14,7 @@ export async function main(ns) {
     var oldFactionList = []
     var factionRates = []
     var factionListTimes = [Date.now(), Date.now()]
+    var augProgress = []
     while(true) {
         await ns.sleep(1000)
         var batcher = db.dbRead(ns, "batcher")
@@ -173,8 +174,18 @@ export async function main(ns) {
             ns.printf("Faction: <idle>")
         }
         if(augment) {
-            ns.printf("Augment: Saving for %s [%s] (%s)", 
-                augment.augment, augment.faction, augment.progress
+            var eta = ""
+            if(augProgress = "") 
+                augProgress = [augment.augment, augment.progress, Date.now()]           
+            if(augment.augment != augProgress[0]) 
+                augProgress = [augment.augment, augment.progress, Date.now()]
+            if(augment.progress != augProgress[1]) {
+
+            }
+
+
+            ns.printf("Augment: Saving for %s [%s] (%s) %s", 
+                augment.augment, augment.faction, augment.progress, eta
             )
         } else {
             ns.printf("Augment: <none>")

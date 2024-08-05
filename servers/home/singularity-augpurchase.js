@@ -56,8 +56,12 @@ export async function main(ns) {
             var convFavor = ns.singularity.getFactionFavorGain(faction)
 
             if(favor + convFavor > 150) {
-                ns.toast(ns.sprintf("Restarting to enable DONATIONS for %s", faction), "info", null)
-                ns.spawn("reset.js")
+                if(await doCommand(ns, `ns.singularity.getCurrentWork().type`) == "GRAFTING") {
+                    db.dbLogf(ns, "WARN: Donations could be enabled for %s, but awaiting Graft", faction)
+                } else {
+                    ns.toast(ns.sprintf("Restarting to enable DONATIONS for %s", faction), "info", null)
+                    ns.spawn("reset.js")
+                }
             }
         }
         var record = {augment: aug,
