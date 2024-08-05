@@ -42,6 +42,17 @@ export async function main(ns) {
         if(factionAugs.includes(aug))
             continue
 
+        // Check for pre-requisite augments
+        var preReq = ns.singularity.getAugmentationPrereq(aug)
+        var myAugs= ns.singularity.getOwnedAugmentations()
+        var meetsPreReq = true
+        for(var req of preReq) {
+            if(!myAugs.includes(req)) 
+                meetsPreReq = false
+        }
+        if (!meetsPreReq)
+            continue
+
         ns.printf("Possible augment: %s", aug)
         interestedAugs.push( {aug: aug,
                               cost: ns.grafting.getAugmentationGraftPrice(aug) } )
