@@ -69,6 +69,7 @@ export async function main(ns) {
     try { 
         if(ns.grafting.graftAugmentation(interestedAugs[0].aug)) {
             db.dbLogf(ns, "GRAFT: Starting graft for %s",interestedAugs[0].aug)
+            ns.write("/tmp/grafted.txt", interestedAugs[0].aug, "w")
         } else {
             db.dbLogf(ns, "GRAFT: Failed to start graft of %s", interestedAugs[0].aug)
         }

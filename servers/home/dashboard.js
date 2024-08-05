@@ -60,7 +60,11 @@ export async function main(ns) {
         ns.printf("Kills: %s\t\t\tKarma: %s",
             ns.formatNumber(ns.getPlayer().numPeopleKilled,0),
             ns.formatNumber(ns.getPlayer().karma))
-
+        if(faction) {
+            ns.printf("Work: %s for %s", faction.work, faction.faction)
+        } else {
+            ns.printf("Work: <pending>")
+        }
         ns.printf("=== Batcher ============================================")
         if(batcher) {
             ns.printf("Target: %-20s\t%s%s%s :: %s%s", batcher.target,
@@ -168,11 +172,7 @@ export async function main(ns) {
             ctable.push(colors)
         }
 
-        if(faction) {
-            ns.printf("Faction: %s for %s", faction.work, faction.faction)
-        } else {
-            ns.printf("Faction: <idle>")
-        }
+
         if(augment) {
             var eta = ""
             if(augProgress = "") 

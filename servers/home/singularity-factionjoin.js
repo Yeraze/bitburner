@@ -9,7 +9,7 @@ export async function main(ns) {
     // If we have the NMI we can background the hacking
 
     if (ns.singularity.getCurrentWork()?.type == "GRAFTING") {
-        var record = { faction: "GRAFTING", work: ns.singularity.getCurrentWork().augmentation}
+        var record = { work: "GRAFTING", faction: ns.singularity.getCurrentWork().augmentation}
         db.dbWrite(ns, "faction", record)
         return
     }

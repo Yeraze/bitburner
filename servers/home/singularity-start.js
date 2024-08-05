@@ -88,15 +88,10 @@ async function manageGraft(ns) {
     return
   }
 
-  var augsStartedWith = ns.getResetInfo().ownedAugs
-  var augmentsInstalled = db.dbRead(ns, "aug-installed") ?? []
-
-  var delta = augmentsInstalled.filter((A) => (!augsStartedWith.has(A)))
-
-  if (delta.length > 0) {
-    // We've already grafted once this run.
+  if(ns.fileExists("/tmp/grafted.txt", "home")) {
     return
   }
+
 
   ns.exec("singularity-graft.js", "home", {temporary: true, threads: 1})
 
