@@ -56,6 +56,10 @@ export async function main(ns) {
         ns.printf("Money: $%s (+$%s/s)\t%s",
             ns.formatNumber(cash, 2), ns.formatNumber(cashRate, 2), vMsg)
 
+        ns.printf("Kills: %s\t\t\tKarma: %s",
+            ns.formatNumber(ns.getPlayer().numPeopleKilled,0),
+            ns.formatNumber(ns.getPlayer().karma))
+
         ns.printf("=== Batcher ============================================")
         if(batcher) {
             ns.printf("Target: %-20s\t%s%s%s :: %s%s", batcher.target,
