@@ -19,6 +19,12 @@ export async function main(ns) {
     ns.tprintf(" -> %s: %s", key, NFG_delta[key])
   });*/
 
-  ns.printf(await doCommand(ns, `ns.singularity.getAugmentationRepReq("NeuroFlux Governor")`))
+  //ns.printf(await doCommand(ns, `ns.singularity.getAugmentationRepReq("NeuroFlux Governor")`))
+
+  var augsStartedWith = ns.getResetInfo().ownedAugs
+  var augmentsInstalled = db.dbRead(ns, "aug-installed") ?? []
+
+  var delta = augmentsInstalled.filter((A) => (!augsStartedWith.has(A)))
+  ns.tprint(delta)
 
 }
