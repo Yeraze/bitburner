@@ -1,4 +1,4 @@
-import {rehprintf, execAndWait, execAnywhere, doCommand} from 'reh.js'
+import {rehprintf, execAndWait, doCommand} from 'reh.js'
 import * as db from 'database.js'
 
 var factionList = []
@@ -103,23 +103,23 @@ async function manageGraft(ns) {
 }
 
 async function manageSleeves(ns) {
-  await execAndWait(ns, "singularity-sleeve.js", "home", 1)
+  await execAndWait(ns, "singularity-sleeve.js", "home", {temporary:true})
 }
 /** @param {NS} ns */
 async function manageAugments(ns) {
   //const pkg = ["singularity-augments.js", "reh.js", "reh-constants.js", "singularity-factionjoin.js", "singularity-augpurchase.js"]
-  await execAndWait(ns, "aug-getOwnedAugmentations.js", "home", 1)
-  await execAndWait(ns, "aug-getAugmentationsFromFaction.js", "home", 1)
-  await execAndWait(ns, "aug-getAugmentationPreReq.js", "home", 1)
-  await execAndWait(ns, "aug-getCost.js", "home", 1)
-  await execAndWait(ns, "aug-getStats.js", "home", 1)
-  await execAndWait(ns, "singularity-augments.js", "home", 1)
+  await execAndWait(ns, "aug-getOwnedAugmentations.js", "home", {temporary:true})
+  await execAndWait(ns, "aug-getAugmentationsFromFaction.js", "home", {temporary:true})
+  await execAndWait(ns, "aug-getAugmentationPreReq.js", "home", {temporary:true})
+  await execAndWait(ns, "aug-getCost.js", "home", {temporary:true})
+  await execAndWait(ns, "aug-getStats.js", "home", {temporary:true})
+  await execAndWait(ns, "singularity-augments.js", "home", {temporary:true})
 }
 
 /** @param {NS} ns */
 async function manageHome(ns) {
-  const pkg = ["singularity-home.js", "reh.js", "reh-constants.js"]
-  await execAnywhere(ns, pkg, 1)
+  //const pkg = ["singularity-home.js", "reh.js", "reh-constants.js"]
+  await execAndWait(ns, "singularity-home.js", {temporary: true, threads: 1})
 }
 
 /** @param {NS} ns */
@@ -149,8 +149,8 @@ async function manageDarkweb(ns) {
 
 /** @param {NS} ns */
 async function manageFactions(ns) {
-  await execAndWait(ns, "singularity-factions.js", "home", 1)
-  await execAndWait(ns, "checkFactionInvitations.js", "home", 1)
+  await execAndWait(ns, "singularity-factions.js", "home", {temporary:true})
+  await execAndWait(ns, "checkFactionInvitations.js", "home", {temporary:true})
 }
 
 /** @param {NS} ns */
@@ -173,6 +173,6 @@ async function installBackdoors(ns) {
     if(ns.getServer(S).backdoorInstalled)
       continue
     db.dbLogf(ns, "Backdooring %s", S)
-    await execAndWait(ns, "install-backdoor.js", "home", 1, S)
+    await execAndWait(ns, "install-backdoor.js", "home", {temporary: true, threads: 1}, S)
   }
 }

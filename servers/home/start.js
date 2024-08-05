@@ -1,4 +1,4 @@
-import {rehprintf, execContinue, execAnywhere, execAndWait, execAnywhereNoWait, getServerList, doCommand} from 'reh.js'
+import {execContinue, execAndWait, getServerList, doCommand} from 'reh.js'
 import * as CONST from 'reh-constants.js'
 import { getServers } from './batcher/utils'
 import * as db from 'database.js'
@@ -12,10 +12,9 @@ export async function main(ns) {
 
 
   db.dbLog(ns, "start", "Initial setup...")
-  db.dbLog(ns, "start", "Starting auto-breach.js")
-  await execAnywhere(ns, ["s_crime.js"], 1, "Rob Store")
-  //execAnywhereNoWait(ns, ["auto-breach.js", "reh.js", "reh-constants.js"], 1)
-  execAnywhereNoWait(ns, ["pservs.js","reh.js", "reh-constants.js"], {threads:1, temporary:true})
+  await doCommand(ns, `ns.singularity.commitCrime("Homocide")`)
+
+  execContinue(ns, ["pservs.js","reh.js", "reh-constants.js"], {threads:1, temporary:true})
   ns.exec("dashboard.js", "home")
   // These scripts area bit "fat",so make sure we have ram
   if (ns.getServerMaxRam("home") < 128) {
@@ -45,7 +44,7 @@ export async function main(ns) {
     ns.scriptKill("loop_hack.js", "home")
     ns.scriptKill("loop_grow.js", "home")
     ns.scriptKill("loop_weaken.js", "home")
-    await execAndWait(ns, "global-cleanup.js", "home", 1, "--loop")
+    await execAndWait(ns, "global-cleanup.js", "home", {temporary:true}, "--loop")
     await ns.sleep(5000)
 
     db.dbLog(ns, "start", "Looks like we're still earlygame, starting joesguns blast")
@@ -62,7 +61,7 @@ export async function main(ns) {
         ns.scriptKill("loop_grow.js", "home")
         ns.scriptKill("loop_weaken.js", "home")
       }
-      await execAndWait(ns, "singularity-home.js", "home", 1)
+      await execAndWait(ns, "singularity-home.js", "home", {temporary:true})
       var totalRamNow = getServerList(ns)
         .filter((S) => ns.hasRootAccess(S))
         .reduce((a, S) => (a + ns.getServerMaxRam(S)), 0)
@@ -75,9 +74,8 @@ export async function main(ns) {
     ns.scriptKill("loop_hack.js", "home")
     ns.scriptKill("loop_grow.js", "home")
     ns.scriptKill("loop_weaken.js", "home")
-    await execAndWait(ns, "global-cleanup.js", "home", 1, "--loop")
+    await execAndWait(ns, "global-cleanup.js", "home", {temporary:true}, "--loop")
   }
-  await doCommand(ns, `ns.singularity.commitCrime("Homocide")`)
   execContinue(ns, "ipvgo.js", "home", {threads:1, temporary:true}, 1000)
   db.dbLog(ns, "start", "Beginning Singularity manager...")
   execContinue(ns, "singularity-start.js", "home", {threads:1, temporary:true})
@@ -182,7 +180,7 @@ async function hackUntilTarget(ns, target, stopAtTarget) {
     }
   }
   db.dbLogf(ns, "Ending attack on %s", target)
-  await execAndWait(ns, "global-cleanup.js", "home", 1, "--super")
+  await execAndWait(ns, "global-cleanup.js", "home", {temporary: true}, "--super")
   ns.scriptKill("batcher/controller.js", "home")
 }
 
@@ -192,7 +190,7 @@ async function checkContracts(ns) {
     var contracts = ns.ls(S, ".cct")
     for (const C of contracts) {
       db.dbLogf(ns, "Found contract %s %s", S, C)
-      await execAndWait(ns, "solve_contract.js", "home", 1, S, C)
+      await execAndWait(ns, "solve_contract.js", "home", {temporary: true}, S, C)
     }
   }
 }
@@ -225,6 +223,6 @@ async function checkForBreaches(ns) {
       continue
 
     db.dbLogf(ns, "Breaching %s", server)
-    await execAndWait(ns, "breach.js", "home", 1, server)
+    await execAndWait(ns, "breach.js", "home", {temporary: true}, server)
   }
 }
