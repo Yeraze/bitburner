@@ -64,8 +64,10 @@ export async function main(ns) {
                     `ns.sleeve.setToFactionWork(${sleeveNum}, "${augment.faction}", "${work}")`)
             } else {
                 var job = ns.sleeve.getTask(sleeveNum)
-                if(job == null) {  // This sleeve is idle.. 
-                    var C = crimeList.shift()
+                var C = crimeList.shift()
+                if (job && (job.type == "CRIME") && (job.crimeType == C)) {
+                    // We're already doing it...
+                } else {
                     await doCommand(ns, `ns.sleeve.setToCommitCrime(${sleeveNum}, "${C}")`)
                 }
             }

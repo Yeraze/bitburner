@@ -36,7 +36,6 @@ export async function main(ns) {
                 if(await doCommand(ns, `ns.singularity.purchaseAugmentation("${faction}", "${aug}")`)) {
                     ns.toast(ns.sprintf("Purchased %s", aug), "success", null)
                     db.dbLogf(ns, "Purchased %s from %s", aug, faction)
-                    return
                 }
 
                 if(aug == "The Red Pill") {
