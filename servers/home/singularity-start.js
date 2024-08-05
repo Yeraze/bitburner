@@ -91,7 +91,7 @@ async function manageGraft(ns) {
   var augsStartedWith = ns.getResetInfo().ownedAugs
   var augmentsInstalled = db.dbRead(ns, "aug-installed") ?? []
 
-  var delta = augmentsInstalled.filter((A) => (!augsStartedWith.includes(A))
+  var delta = augmentsInstalled.filter((A) => (!augsStartedWith.includes(A)))
 
   if (delta.length > 0) {
     // We've already grafted once this run.
