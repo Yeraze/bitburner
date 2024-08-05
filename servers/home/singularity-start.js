@@ -17,7 +17,7 @@ export async function main(ns) {
 
   if(ns.getResetInfo().currentNode == 13) {
     db.dbLog(ns, "Initializing Stanek's gift")
-    execContinue(ns, "singularity-stanek.js", "home", {temporary: true; threads:10})
+    execContinue(ns, "singularity-stanek.js", "home", {temporary: true, threads:10})
   }
   
   var keepGoing = true
