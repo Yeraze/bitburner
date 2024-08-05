@@ -17,7 +17,7 @@ export async function main(ns) {
     }
 
     var factionAugs = []
-    for(var fac in db.dbRead(ns, "augs-from-faction")) {
+    for(var fac of db.dbRead(ns, "augs-from-faction")) {
         factionAugs = factionAugs.concat( fac.augments )
     }
 

@@ -21,10 +21,9 @@ export async function main(ns) {
 
   //ns.printf(await doCommand(ns, `ns.singularity.getAugmentationRepReq("NeuroFlux Governor")`))
 
-  var augsStartedWith = ns.getResetInfo().ownedAugs
-  var augmentsInstalled = db.dbRead(ns, "aug-installed") ?? []
-
-  var delta = augmentsInstalled.filter((A) => (!augsStartedWith.has(A)))
-  ns.tprint(delta)
-
+  var factionAugs = []
+  for(var fac of db.dbRead(ns, "augs-from-faction")) {
+      factionAugs = factionAugs.concat( fac.augments )
+  }
+  ns.tprint(factionAugs.join(","))
 }
