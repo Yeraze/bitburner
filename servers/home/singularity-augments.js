@@ -39,19 +39,24 @@ export async function main(ns) {
   // First build the list of Augments to Buy
 
   for(var _fac of augsFromFaction) {
-    fac = _fac.faction
+    var fac = _fac.faction
     for(var aug of _fac.augments) {  
       // See if we meet the prereq's
+      var meetsPrereqs = true
       for(var preReq of augPrereqs.find((A) => (A.augment == aug)).prereqs ) {
         if (augmentsIHave.indexOf(preReq) == -1) {
-          continue
+          ns.printf("ERROR: Missing prereq %s for %s", preReq, aug)
+          var meetsPrereqs = false
         }
       }
+      if(!meetsPrereqs)
+        continue
+      
       // Attempt to "categorize" the aug
       var stats = augStats.find((A) => (A.augment == aug)).stats
-
       if(qualifyAugment(ns, stats)) {
-        augsToBuy.push(aug)
+        if(!augsToBuy.includes(aug))
+          augsToBuy.push(aug)
       }
     }
   }
@@ -69,7 +74,8 @@ export async function main(ns) {
         continue; // We already have this
       if(augsToBuy.indexOf(aug) == -1)
         continue; // We don't want this augment
-      ns.printf("[%s] %s", fac, aug)
+
+      ns.printf("[%s] %s (%i)", fac, aug, augsToBuy.indexOf(aug))
       var augCost = augCosts.find((A) => (A.augment == aug))
       if(augCost.rep < fData.rep) {
         if(augCost.cost > ns.getServerMoneyAvailable("home")) {
