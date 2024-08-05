@@ -43,11 +43,13 @@ export async function main(ns) {
                 db.formatTime(ns, Date.now() - ns.getResetInfo().lastNodeReset))
         var vMsg = ""
         if(global) {
-            if(global.strikes > 0) 
-                vMsg = ns.sprintf("Velocity: %s/min [%i strikes] %s", global.velocity, global.strikes,
-                    ns.fileExists("extend.txt", "home") ? `${color.fgWhite}(FLAG)` : "" )
-            else
-                vMsg = ns.sprintf("Velocity: %s/min", global.velocity)
+            vMsg = ns.sprintf("Velocity: %s%s/min%s", 
+                global.velocity > 2.0 ? color.fgGreen : color.fgRed, 
+                global.velocity, color.reset)
+            if(global.strikes > 0)
+                vMsg = ns.sprintf("%s [%i strikes]", vMsg, global.strikes)
+            if (ns.fileExists("extend.txt","home"))
+                vMsg = ns.sprintf("%s %s(FLAG)", vMsg, color.fgWhite)
         } else {
             vMsg = "Vel: pending"
         }
@@ -56,8 +58,12 @@ export async function main(ns) {
 
         ns.printf("=== Batcher ============================================")
         if(batcher) {
-            ns.printf("Target: %-20s\t%s :: %s", batcher.target,
-                    batcher.greed, batcher.status)
+            ns.printf("Target: %-20s\t%s%s%s :: %s%s", batcher.target,
+                    (batcher.greed == "95%") ? color.fgCyan : "",
+                    batcher.greed, 
+                    color.reset,
+                    (batcher.status.includes("Active")) ? "" : color.fgRed,
+                    batcher.status)
         } else {
             ns.printf("Target: <unknown>")
         }
@@ -150,7 +156,8 @@ export async function main(ns) {
             colors = [fac.status ? color.fgGreen : "",
                 "",
                 "",
-                fac.favor > 150 ? color.fgGreen : ""
+                fac.favor > 150 ? color.fgGreen : 
+                    (fac.favor + fac.favorGain > 150) ? color.fgCyan : ""
             ]
             dtable.push(row)
             ctable.push(colors)
@@ -170,8 +177,12 @@ export async function main(ns) {
         }
 
         if(augMeta) {
-            ns.printf("-> %i Augments Installed, %i pending",
-                augMeta.augmentsInstalled, augMeta.augmentsPurchased)
+            ns.printf("-> %s%i Augments Installed%s, %s%i pending",
+                augMeta.augmentsInstalled >= 30 ? color.fgGreen : color.reset,
+                augMeta.augmentsInstalled, 
+                color.reset,
+                augMeta.augmentsPurchased > 0 ? color.fgCyan : color.reset,
+                augMeta.augmentsPurchased)
         } else {
             ns.printf("-> Augments status <pending>")
         }
