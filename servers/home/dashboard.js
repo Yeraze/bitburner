@@ -65,14 +65,14 @@ export async function main(ns) {
         } else {
             ns.printf("Work: <pending>")
         }
-        ns.printf("%s[START-]%s\t%s[SINGUL]%s\t%s[STANEK]%s",
+        ns.printf("%s[START-]%s\t%s[SINGUL]%s\t%s[STANEK]%s\t%s[BATCH]",
             ns.scriptRunning("start.js", "home")? color.fgGreen : color.fgRed,
             color.reset,
             ns.scriptRunning("singularity-start.js", "home")? color.fgGreen : color.fgRed,
             color.reset,
             ns.scriptRunning("singularity-stanek.js", "home")? color.fgGreen : color.fgRed,
             color.reset,
-
+            ns.scriptRunning("batcher/controller.js", "home")? color.fgGreen : color.fgRed
         )
         ns.printf("=== Batcher ============================================")
         if(batcher) {

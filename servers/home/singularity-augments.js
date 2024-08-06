@@ -12,7 +12,7 @@ export async function main(ns) {
   //  These augments don't have Stats in the traditional sense, so they
   //  don't pass our auto-classifier.. So just hard-code them here.
   var augsToBuy = ["The Red Pill", "CashRoot Starter Kit", "Neuroreceptor Management Implant"] 
-  var priorityAugs = augsToBuy
+  var priorityAugs = ["The Red Pill", "CashRoot Starter Kit", "Neuroreceptor Management Implant"]
   var minRepFaction = "NONE"
   var minRepValue = 10e9
   var favAugment = ""

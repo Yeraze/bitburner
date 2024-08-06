@@ -241,7 +241,7 @@ async function checkForBreaches(ns) {
     if(ns.hasRootAccess(server))
       continue
 
-    db.dbLogf(ns, "Breaching %s", server)
+    db.dbLogf(ns, "Rooting %s", server)
     await execAndWait(ns, "breach.js", "home", {temporary: true}, server)
   }
 }

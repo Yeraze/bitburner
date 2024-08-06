@@ -25,7 +25,7 @@ export async function main(ns) {
   if (ns.args.length >1) {
     if (ns.args[1] == "backdoor") {
       ns.printf("Installing backdoor on %s", target)
-      ns.exec("install-backdoor.js", "home", 1, target)
+      ns.spawn("install-backdoor.js", {spawnDelay: 0}, target)
     }
   }
 }
