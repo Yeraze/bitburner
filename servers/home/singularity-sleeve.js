@@ -28,19 +28,27 @@ export async function main(ns) {
     var jobsToAssign = 0
     const sleeveCount = await doCommand(ns, "ns.sleeve.getNumSleeves()")
     crimeList = ["Traffick Arms", "Kidnap", "Deal Drugs", "Homicide"]
+
+    // Get the list of factions we can Grind on 
+    // no sense grinding when we can just donate/buy whatever Rep we need
     var factionList =  []
     for(var fac of (db.dbRead(ns, "factions") ?? [])) {
         if(ns.singularity.getFactionFavor(fac.name) > 150) 
             continue; // We don't need to grind when we can just Donate/buy
         factionList.push(fac)
     }
+
+    // Get the current Augment we're working on 
     var augment = db.dbRead(ns, "augment")
+    // Get the list of factions _not_ part of the Augment
     var eligibleList = factionList.filter((A) => (A.status && (A.name != augment?.faction)))
     ns.printf("Eligible Factions:")
     for(var A of eligibleList) ns.printf(" -> %s", A.name)
+
+    // Reset any sleeve doing Faction work to Idle.
+    //  This is so that later when we start assigning work, we don't wind up with
+    //  errors about trying to have 2 do work for the same faction
     for(var sleeveNum =0; sleeveNum < sleeveCount; sleeveNum++) {
-        // Remove all faction participation
-        // Sothat we don't run into conflicts
         var job = ns.sleeve.getTask(sleeveNum)
         if(job && job.type == "FACTION") {
             await doCommand(ns, `ns.sleeve.setToIdle(${sleeveNum})`)
@@ -53,6 +61,7 @@ export async function main(ns) {
 
     for(var sleeveNum =0; sleeveNum < sleeveCount; sleeveNum++) {
         var sleeve = ns.sleeve.getSleeve(sleeveNum)
+        // Build the prototype object for our JSON storage later
         var sleeveRecord = { id: sleeveNum,
                              sync: sleeve.sync,
                              shock: sleeve.shock,
@@ -63,6 +72,7 @@ export async function main(ns) {
                                      sleeve.skills.charisma],                            
                              job: ''
          }
+
         // If this sleeve has Shock, drive it to 0
         if(sleeve.shock > 0) {
             await doCommand(ns, `ns.sleeve.setToShockRecovery(${sleeveNum})`)
@@ -81,6 +91,8 @@ export async function main(ns) {
         // Put the sleeve to work
         if(sleeveNum == 0) { // Sleeve 0 supports Player in faction grind
             // var pWork = await doCommand(ns, "ns.singularity.getCurrentWork()")
+            // for Sleeve 0, since it's assisting the player in the grind for an augment
+            // pick the fastest action, Hacking preferred.
             if (augment) {
                 var work = ""
                 if(ns.singularity.getFactionWorkTypes(augment.faction).includes("security"))
@@ -89,12 +101,14 @@ export async function main(ns) {
                     work = "field"
                 if(ns.singularity.getFactionWorkTypes(augment.faction).includes("hacking"))
                     work = "hacking"  
-                if(work == "") 
+                if(work == "") // No work we can do here, so resort to CRIME!
                     await doCrime(ns, sleeveNum, univCourse)
                 else
                     await doCommand(ns, 
                         `ns.sleeve.setToFactionWork(${sleeveNum}, "${augment.faction}", "${work}")`)   
             } else {
+                // Player isn't working on an augment, so just do Crime
+                // or as a last resort educate yourself (Int grind)
                 await doCrime(ns, sleeveNum, univCourse)
             }
         } else {
@@ -123,6 +137,8 @@ export async function main(ns) {
         }
         var job = ns.sleeve.getTask(sleeveNum)
         if(job == null) {
+            // If we got here and the sleeve is _still_ idle, then something went pretty wrong..
+            // Try one last time to enroll in university
             await doCommand(ns, 
                 `ns.sleeve.setToUniversityCourse(${sleeveNum}, "Rothman University", "${univCourse}")`)
         }
@@ -161,8 +177,10 @@ export async function main(ns) {
         }
         records.push(sleeveRecord)
     }
+    // Save the sleeve status to disk
     db.dbWrite(ns, "sleeves", records)
 
+    // Now buy any augments we can
     for(var sleeveNum =0; sleeveNum < sleeveCount; sleeveNum++) {
         var sleeve = ns.sleeve.getSleeve(sleeveNum)
         if (sleeve.shock > 0)

@@ -83,6 +83,7 @@ export async function main(ns) {
       var augCost = augCosts.find((A) => (A.augment == aug))
       if(augCost.rep < fData.rep) {
         if(augCost.cost > ns.getServerMoneyAvailable("home")) {
+          // We have the Rep for this augment, but not the cash
           ns.printf("%s-> Qualify for %s, but too expensive (%s)",
               CONST.fgYellow, aug, 
               ns.formatPercent(ns.getServerMoneyAvailable("home")/ augCost.cost)
@@ -90,9 +91,10 @@ export async function main(ns) {
           savingUp = true
           continue // too expensive
         }
+        // we can afford this, so buy it
         rehprintf(ns, "Purchasing %s from %s", aug, fac)
-        ns.spawn("singularity-augpurchase.js", {spawnDelay: 0}, fac, aug)
         db.dbLog(ns, "start", ns.sprintf("Purchasing %s from %s", aug, fac))
+        ns.spawn("singularity-augpurchase.js", {spawnDelay: 0}, fac, aug)
       } else {
         // We got here by not having enough faction rep to buy it
         // So see if it's the "lowest" faction rep to get
