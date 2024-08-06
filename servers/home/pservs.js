@@ -40,8 +40,15 @@ async function buyServers(ns) {
 /** @param {NS} ns */
 async function upgradeServers(ns, upgrade) {
   var keepgoing = true
-  var line = ns.sprintf("Preparing to upgrade to %s Ram", 
-    ns.formatRam(upgrade))
+  
+  var cost = ns.getPurchasedServerUpgradeCost(ns.getPurchasedServers()[0], upgrade)
+  if(cost == Infinity) {
+    rehprintf(ns, "ERROR: There isn't one!  We're done!")
+    return
+  }
+  
+  var line = ns.sprintf("Upgrade to %s Ram: $%s/node", 
+    ns.formatRam(upgrade), ns.formatNumber(cost))
   //rehprintf(ns, line)
   db.dbLog(ns, "pserv", line)
 
@@ -49,12 +56,6 @@ async function upgradeServers(ns, upgrade) {
     keepgoing = false
     var firstUpgrade = ""
     var lastUpgrade = ""
-
-    var cost = ns.getPurchasedServerUpgradeCost(ns.getPurchasedServers()[0], upgrade)
-    if(cost == Infinity) {
-      rehprintf(ns, "ERROR: There isn't one!  We're done!")
-      return
-    }
 
     while(ns.getServerMoneyAvailable("home") < cost * 5.5) {
       await ns.sleep(30 * 1000)
