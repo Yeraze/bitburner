@@ -1,11 +1,33 @@
 import {doCommand, rehprintf} from 'reh.js'
 import * as db from 'database.js'
+
+let crimeList = ["Traffick Arms", "Kidnap", "Deal Drugs", "Homicide"]
+
+async function doCrime(ns, sleeveNum, univCourse) {
+    var C = crimeList.shift()
+    if (C) {
+        ns.printf("Setting sleeve %i to crime %s", sleeveNum, C)
+        var job = ns.sleeve.getTask(sleeveNum)
+        if (job && (job.type == "CRIME") && (job.crimeType == C)) {
+            // Nothing to do.. we're already doing it.
+        } else {
+            await doCommand(ns, `ns.sleeve.setToCommitCrime(${sleeveNum}, "${C}")`)
+        }
+    } else { 
+        ns.printf("No crimes, setting %i to study %s", sleeveNum, univCourse)
+
+        // As a last resort, study
+        await doCommand(ns, 
+            `ns.sleeve.setToUniversityCourse(${sleeveNum}, "Rothman University", "${univCourse}")`)
+    }
+}
+
 /** @param {NS} ns */
 export async function main(ns) {
     var records = []
     var jobsToAssign = 0
     const sleeveCount = await doCommand(ns, "ns.sleeve.getNumSleeves()")
-
+    crimeList = ["Traffick Arms", "Kidnap", "Deal Drugs", "Homicide"]
     var factionList =  []
     for(var fac of (db.dbRead(ns, "factions") ?? [])) {
         if(ns.singularity.getFactionFavor(fac.name) > 150) 
@@ -14,7 +36,8 @@ export async function main(ns) {
     }
     var augment = db.dbRead(ns, "augment")
     var eligibleList = factionList.filter((A) => (A.status && (A.name != augment?.faction)))
-    var crimeList = ["Traffick Arms", "Kidnap", "Deal Drugs", "Homicide"]
+    ns.printf("Eligible Factions:")
+    for(var A of eligibleList) ns.printf(" -> %s", A.name)
     for(var sleeveNum =0; sleeveNum < sleeveCount; sleeveNum++) {
         // Remove all faction participation
         // Sothat we don't run into conflicts
@@ -24,6 +47,8 @@ export async function main(ns) {
         }
     }
     
+    // If we have cash on hand, take the Algorithms course
+    // If not, take the free computer Science course
     var univCourse = ns.getServerMoneyAvailable("home") > 1000000 ? "Algorithms" : "Computer Science"
 
     for(var sleeveNum =0; sleeveNum < sleeveCount; sleeveNum++) {
@@ -57,22 +82,21 @@ export async function main(ns) {
         if(sleeveNum == 0) { // Sleeve 0 supports Player in faction grind
             // var pWork = await doCommand(ns, "ns.singularity.getCurrentWork()")
             if (augment) {
-                var work = "hacking"
+                var work = ""
+                if(ns.singularity.getFactionWorkTypes(augment.faction).includes("hacking"))
+                    work = "hacking"               
                 // Prefer combat-stat work over Hacking, if available
                 if(ns.singularity.getFactionWorkTypes(augment.faction).includes("security"))
                     work = "security"
                 if(ns.singularity.getFactionWorkTypes(augment.faction).includes("field"))
                     work = "field"
-                await doCommand(ns, 
-                    `ns.sleeve.setToFactionWork(${sleeveNum}, "${augment.faction}", "${work}")`)
+                if(work == "") 
+                    await doCrime(ns, sleeveNum, univCourse)
+                else
+                    await doCommand(ns, 
+                        `ns.sleeve.setToFactionWork(${sleeveNum}, "${augment.faction}", "${work}")`)   
             } else {
-                var job = ns.sleeve.getTask(sleeveNum)
-                var C = crimeList.shift()
-                if (job && (job.type == "CRIME") && (job.crimeType == C)) {
-                    // We're already doing it...
-                } else {
-                    await doCommand(ns, `ns.sleeve.setToCommitCrime(${sleeveNum}, "${C}")`)
-                }
+                await doCrime(ns, sleeveNum, univCourse)
             }
         } else {
             // Here we try and assist with other faction grinds
@@ -80,29 +104,22 @@ export async function main(ns) {
             var fac = eligibleList.shift()
             if (fac) {
                 // Prioritize reputation grind for any other joined factions
-                var work = "hacking"
+                var work = ""
+                if(ns.singularity.getFactionWorkTypes(fac.name).includes("hacking"))
+                    work = "hacking"               
                 // Prefer combat-stat work over Hacking, if available
                 if(ns.singularity.getFactionWorkTypes(fac.name).includes("security"))
                     work = "security"
                 if(ns.singularity.getFactionWorkTypes(fac.name).includes("field"))
                     work = "field"
-                await doCommand(ns, 
-                    `ns.sleeve.setToFactionWork(${sleeveNum}, "${fac.name}", "${work}")`)               
-            } else {
-                // Next run some crimes
-                var C = crimeList.shift()
-                if (C) {
-                    var job = ns.sleeve.getTask(sleeveNum)
-                    if (job && (job.type == "CRIME") && (job.crimeType == C)) {
-                        // Nothing to do.. we're already doing it.
-                    } else {
-                        await doCommand(ns, `ns.sleeve.setToCommitCrime(${sleeveNum}, "${C}")`)
-                    }
-                } else { 
-                    // As a last resort, study
+                if(work == "") 
+                    await doCrime(ns, sleeveNum, univCourse)
+                else
                     await doCommand(ns, 
-                        `ns.sleeve.setToUniversityCourse(${sleeveNum}, "Rothman University", "${univCourse}")`)
-                }
+                        `ns.sleeve.setToFactionWork(${sleeveNum}, "${fac.name}", "${work}")`)               
+            } else {
+                // No more factions, Next run some crimes
+                await doCrime(ns, sleeveNum, univCourse)
             }
         }
         var job = ns.sleeve.getTask(sleeveNum)

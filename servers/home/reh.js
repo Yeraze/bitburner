@@ -8,6 +8,7 @@ export async function doCommand(ns, command) {
 
   if (ns.fileExists(filename))
     ns.clear(filename)
+  ns.printf("Executing '%s'", command)
   ns.write(filename, "export async function main(ns) {\n", "a")
   ns.write(filename, `  var result = ${command};\n`, "a")
   ns.write(filename, `  ns.write("${resultFile}", JSON.stringify(result), "w");\n`)
@@ -25,6 +26,7 @@ export async function doCommand(ns, command) {
     }
 
     try {
+      ns.printf("-> Returning %s", data)
       return JSON.parse(data)
     } catch {
       return null
