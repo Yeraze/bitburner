@@ -4,7 +4,6 @@ import { getServers } from './batcher/utils'
 import * as db from 'database.js'
 /** @param {NS} ns */
 export async function main(ns) {
-  ns.disableLog('ALL')
   for(var file of ns.ls("home", "/db/")) 
     ns.clear(file)
   for(var file of ns.ls("home", "/tmp/"))
@@ -15,7 +14,7 @@ export async function main(ns) {
   await doCommand(ns, `ns.singularity.commitCrime("Homicide")`)
 
   execContinue(ns, "pservs.js", "home", {threads:1, temporary:true})
-  ns.exec("dashboard.js", "home")
+  ns.exec("dashboard.js", "home", {temporary: true, threads:1})
   // These scripts area bit "fat",so make sure we have ram
   if (ns.getServerMaxRam("home") < 128) {
     db.dbLog(ns, "start", "Looks like we're still earlygame, starting n00dle blast")

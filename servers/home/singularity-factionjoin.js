@@ -31,7 +31,6 @@ export async function main(ns) {
         // Do nothing, we're already doing it.
     } else {
         ns.singularity.workForFaction(faction, work, focus)
-
     }
     if(ns.scriptRunning("ipvgo.js", "home") == false) {
         db.dbLogf(ns, "Launching ipvgo")

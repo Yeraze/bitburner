@@ -60,11 +60,13 @@ export async function main(ns) {
         ns.printf("Kills: %s\t\t\tKarma: %s",
             ns.formatNumber(ns.getPlayer().numPeopleKilled,0),
             ns.formatNumber(ns.getPlayer().karma))
+        var workString = "<pending>"
         if(faction) {
-            ns.printf("Work: %s for %s", faction.work, faction.faction)
-        } else {
-            ns.printf("Work: <pending>")
+            ns.sprintf("%s for %s", faction.work, faction.faction)
         }
+        ns.printf("Work: %s\t%s", workString,
+            (ns.singularity.exportGameBonus() ? color.fgCyan +"[BONUS]" : "")
+        )
         ns.printf("%s[START-]%s\t%s[SINGUL]%s\t%s[STANEK]%s\t%s[BATCH]",
             ns.scriptRunning("start.js", "home")? color.fgGreen : color.fgRed,
             color.reset,
