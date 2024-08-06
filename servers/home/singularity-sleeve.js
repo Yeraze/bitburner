@@ -83,13 +83,12 @@ export async function main(ns) {
             // var pWork = await doCommand(ns, "ns.singularity.getCurrentWork()")
             if (augment) {
                 var work = ""
-                if(ns.singularity.getFactionWorkTypes(augment.faction).includes("hacking"))
-                    work = "hacking"               
-                // Prefer combat-stat work over Hacking, if available
                 if(ns.singularity.getFactionWorkTypes(augment.faction).includes("security"))
                     work = "security"
                 if(ns.singularity.getFactionWorkTypes(augment.faction).includes("field"))
                     work = "field"
+                if(ns.singularity.getFactionWorkTypes(augment.faction).includes("hacking"))
+                    work = "hacking"  
                 if(work == "") 
                     await doCrime(ns, sleeveNum, univCourse)
                 else

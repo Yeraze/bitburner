@@ -24,7 +24,8 @@ export async function main(ns) {
     var work = ns.singularity.getFactionWorkTypes(faction)[0]
     if (ns.singularity.getFactionWorkTypes(faction).includes("hacking"))
         work = "hacking"
-    if((ns.singularity.getCurrentWork().type == "FACTION") && 
+    if(ns.singularity.getCurrentWork() && 
+       (ns.singularity.getCurrentWork().type == "FACTION") && 
        (ns.singularity.getCurrentWork().factionName == faction) &&
        (ns.singularity.getCurrentWork().factionWorkType == work)) {
         // Do nothing, we're already doing it.

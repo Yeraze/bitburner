@@ -52,7 +52,7 @@ export async function main(ns) {
 
         if (augsPurchased == 0) {
           db.dbLogf(ns, "WARN: Run extend: no augmentation purchase")
-        } else if (ns.singularity.getCurrentWork().type == "GRAFTING") {
+        } else if (ns.singularity.getCurrentWork()?.type == "GRAFTING") {
           db.dbLogf(ns, "WARN: Run extend: Waiting on graft..")
         } else {
           resetCount++

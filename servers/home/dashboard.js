@@ -65,6 +65,15 @@ export async function main(ns) {
         } else {
             ns.printf("Work: <pending>")
         }
+        ns.printf("%s[START-]%s\t%s[SINGUL]%s\t%s[STANEK]%s",
+            ns.scriptRunning("start.js", "home")? color.fgGreen : color.fgRed,
+            color.reset,
+            ns.scriptRunning("singularity-start.js", "home")? color.fgGreen : color.fgRed,
+            color.reset,
+            ns.scriptRunning("singularity-stanek.js", "home")? color.fgGreen : color.fgRed,
+            color.reset,
+
+        )
         ns.printf("=== Batcher ============================================")
         if(batcher) {
             ns.printf("Target: %-20s\t%s%s%s :: %s%s", batcher.target,
