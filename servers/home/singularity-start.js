@@ -48,7 +48,7 @@ export async function main(ns) {
         var augMeta = db.dbRead(ns, "augment-meta")
         var augsPurchased = 0
         if (augMeta) 
-          augsPurchased = augMeta.augsPurchased
+          augsPurchased = augMeta.augmentsPurchased
 
         if (augsPurchased == 0) {
           db.dbLogf(ns, "WARN: Run extend: no augmentation purchase")

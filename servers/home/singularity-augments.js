@@ -8,7 +8,11 @@ export async function main(ns) {
   ns.printf("Reading aug-installed")
   const augmentsInstalled = db.dbRead(ns, "aug-installed")
 
-  var augsToBuy = ["The Red Pill"] // We always want this one
+  // We always want this one
+  //  These augments don't have Stats in the traditional sense, so they
+  //  don't pass our auto-classifier.. So just hard-code them here.
+  var augsToBuy = ["The Red Pill", "CashRoot Starter Kit", "Neuroreceptor Management Implant"] 
+  var priorityAugs = augsToBuy
   var minRepFaction = "NONE"
   var minRepValue = 10e9
   var favAugment = ""
@@ -103,6 +107,22 @@ export async function main(ns) {
     }
   }
 
+  // If we got here, there was nothing we could buy right now
+  // So we're going to just start a Grind for something later.
+  // In that case, let's check the Priority Augment list and see
+  // if we can get that going.
+  for(var aug of priorityAugs) {
+    if(augmentsIHave.includes(aug))
+      continue; // we already have it
+    for(var _fac of augsFromFaction) {
+      fac = _fac.faction
+      //var fData = factionData.find((A) => (A.name == fac))
+      if(_fac.augments.includes(aug)) {
+        ns.printf("Found priority aug %s at %s", aug, fac)
+        ns.spawn("singularity-augpurchase.js", {spawnDelay: 0}, fac, aug)
+      }
+    }
+  }
   ns.printf("End of main loop")
   if (minRepFaction != "NONE") {
     // So there is an augment available to buy.
