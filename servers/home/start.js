@@ -76,7 +76,14 @@ export async function main(ns) {
     ns.scriptKill("loop_weaken.js", "home")
     await execAndWait(ns, "global-cleanup.js", "home", {temporary:true}, "--loop")
   }
-  execContinue(ns, "ipvgo.js", "home", {threads:1, temporary:true}, 1000)
+  if(ns.getResetInfo().currentNode == 13) {
+    db.dbLog(ns,"start",  "Initializing Stanek's gift")
+    execContinue(ns, "singularity-stanek.js", "home", {temporary: true, threads:4})
+  } else {
+    db.dbLog(ns, "start", "Initializing IPvGO Game")
+    execContinue(ns, "ipvgo.js", "home", {threads:1, temporary:true}, 1000)
+  }
+  
   db.dbLog(ns, "start", "Beginning Singularity manager...")
   execContinue(ns, "singularity-start.js", "home", {threads:1, temporary:true})
 

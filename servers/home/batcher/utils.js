@@ -407,7 +407,7 @@ export async function prep(ns, values, ramNet) {
 		ns.atExit(() => clearInterval(timer));
 
 		// Wait for the last weaken to finish.
-		do await dataPort.nextWrite(); while (!dataPort.read().startsWith("pWeaken"));
+		do await dataPort.nextWrite(); while (!dataPort.read()?.startsWith("pWeaken"));
 		clearInterval(timer);
 		await ns.sleep(100);
 

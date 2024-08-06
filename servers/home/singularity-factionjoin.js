@@ -24,7 +24,13 @@ export async function main(ns) {
     var work = ns.singularity.getFactionWorkTypes(faction)[0]
     if (ns.singularity.getFactionWorkTypes(faction).includes("hacking"))
         work = "hacking"
-    ns.singularity.workForFaction(faction, work, focus)
+    if((ns.singularity.getCurrentWork().type == "FACTION") && 
+       (ns.singularity.getCurrentWork().factionName == faction) &&
+       (ns.singularity.getCurrentWork().factionWorkType == work)) {
+        // Do nothing, we're already doing it.
+    } else {
+        ns.singularity.workForFaction(faction, work, focus)
+    }
     var record = { faction: faction, work: work}
     db.dbWrite(ns, "faction", record)
 }

@@ -14,11 +14,6 @@ export async function main(ns) {
       await ns.sleep(1000);
     }
   }
-
-  if(ns.getResetInfo().currentNode == 13) {
-    db.dbLog(ns,"start",  "Initializing Stanek's gift")
-    execContinue(ns, "singularity-stanek.js", "home", {temporary: true, threads:4})
-  }
   
   var keepGoing = true
   var counter = 59
