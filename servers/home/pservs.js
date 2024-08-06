@@ -50,7 +50,12 @@ async function upgradeServers(ns, upgrade) {
     var firstUpgrade = ""
     var lastUpgrade = ""
 
-    var cost = ns.getPurchasedServerUpgradeCost(S, upgrade)
+    var cost = ns.getPurchasedServerUpgradeCost(ns.getPurchasedServers()[0], upgrade)
+    if(cost == Infinity) {
+      rehprintf(ns, "ERROR: There isn't one!  We're done!")
+      return
+    }
+
     while(ns.getServerMoneyAvailable("home") < cost * 5.5) {
       await ns.sleep(30 * 1000)
     }
@@ -61,10 +66,6 @@ async function upgradeServers(ns, upgrade) {
       }
       if(keepgoing)
         continue
-      if(ns.getPurchasedServerUpgradeCost(S, upgrade) == Infinity) {
-        rehprintf(ns, "ERROR: There isn't one!  We're done!")
-        return
-      }
 
       if(ns.getServerMoneyAvailable("home") > cost) {
         lastUpgrade= S
@@ -91,7 +92,6 @@ async function upgradeServers(ns, upgrade) {
 }
 /** @param {NS} ns */
 export async function main(ns) {
-  ns.disableLog('ALL')
 
   rehprintf(ns, "Beginning with basic 8GB Nodes")
   db.dbLogf(ns, "Beginning with basic 8GB Nodes")
@@ -109,7 +109,7 @@ export async function main(ns) {
     // Once we've bought all our servers, we can stop buying
     // hacknet features.
     db.dbLog(ns, "pserv", "Terminating Hacknet")
-    ns.scriptKill("pservs.js", "home")
+    ns.scriptKill("hacknet.js", "home")
   }
   while (size <= 1024*1024) {
     await upgradeServers(ns, size)

@@ -46,7 +46,9 @@ export async function main(ns) {
       //  Since this happens every 5 minutes, check for 10 levels
       if(ns.getHackingLevel() - playerLevel < 10) {
         var augMeta = db.dbRead(ns, "augment-meta")
-        var augsPurchased = augMeta?.augsPurchased ?? 0
+        var augsPurchased = 0
+        if (augMeta) 
+          augsPurchased = augMeta.augsPurchased
 
         if (augsPurchased == 0) {
           db.dbLogf(ns, "WARN: Run extend: no augmentation purchase")
