@@ -8,9 +8,14 @@ export async function main(ns) {
   ns.resizeTail(420, 110)
 
   var revenue = 0
+  var sim = parsearg(ns, "--dryrun", 0)
+  var cash = ns.getServerMoneyAvailable("home")
   while(!stop) {
-    var cash = ns.getServerMoneyAvailable("home")
-
+    if (sim) {
+      ns.printf("New cash value: $%s", ns.formatNumber(cash))
+    } else {
+      cash = ns.getServerMoneyAvailable("home")
+    }
     if(ns.hacknet.numNodes() == 0) {
       // There are no nodes.. So buy the first one
       ns.hacknet.purchaseNode()
@@ -103,30 +108,60 @@ export async function main(ns) {
         }
       }
     }
-    upgrades.sort(((a, b) => (a.ratio - b.ratio)))
-    var upgrade = upgrades.pop()
+
+    var upgrade
+    switch(parsearg(ns, "--model", "roi")) {
+      case "windfall":
+        // This finds the single biggest cash-maker
+        upgrade = upgrades.sort((A,B) => (A.value - B.value)).pop()
+        break;
+      case "roi":
+      default:
+        // This finds the item with the best ROI..This typically results 
+        //  in a bunch of smaller upgrades
+        upgrade = upgrades.sort(((a, b) => (a.ratio - b.ratio))).pop()
+    }
+
+
+
+
     if (upgrade) {
       if (upgrade.type == "NODE") {
         ns.print("Purchasing a new node")
-        ns.hacknet.purchaseNode()
+        if (sim == 0)
+           ns.hacknet.purchaseNode()
+        else
+          cash -= upgrade.price
       } else if (upgrade.type == "CORE") {
         ns.printf("Upgrading CORES : Node %i Cores +%i (+$%.2f)",
           upgrade.node, upgrade.q, upgrade.value)
-        var ret = ns.hacknet.upgradeCore(upgrade.node, upgrade.q)
-        if(!ret)
-          ns.printf(" -> Fail!")
+        if (sim == 0) {
+          var ret = ns.hacknet.upgradeCore(upgrade.node, upgrade.q)
+          if(!ret)
+            ns.printf(" -> Fail!")
+        } else {
+          cash -= upgrade.price
+        }
       } else if (upgrade.type == "LEVEL") {
         ns.printf("Upgrading LEVELS : Node %i Level +%i (+$%.2f)",
           upgrade.node, upgrade.q, upgrade.value)
-        var ret= ns.hacknet.upgradeLevel(upgrade.node, upgrade.q)
-        if(!ret)
-          ns.printf(" -> Fail!")
+        if (sim == 0) {
+          var ret= ns.hacknet.upgradeLevel(upgrade.node, upgrade.q)
+          if(!ret)
+            ns.printf(" -> Fail!")
+        } else {
+          cash -= upgrade.price
+        }
       } else if (upgrade.type == "RAM") {
         ns.printf("Upgrading RAM : Node %i RAM +%i (+$%.2f)",
           upgrade.node, upgrade.q, upgrade.value)
-        var ret = ns.hacknet.upgradeRam(upgrade.node, upgrade.q)
-        if(!ret)
-          ns.printf(" -> Fail!")
+        if (sim ==0) {
+          var ret = ns.hacknet.upgradeRam(upgrade.node, upgrade.q)
+          if(!ret)
+            ns.printf(" -> Fail!")
+        } else {
+          cash -= upgrade.price
+        }
       }
       await ns.sleep(20)
     // Now upgrade the cheapest
@@ -140,6 +175,8 @@ export async function main(ns) {
         ns.formatNumber(totalProduction, 2), ns.formatNumber(totalProduction - revenue, 2))
       ns.toast(msg, "info")
       revenue = totalProduction
+      if (sim) 
+        return
       await ns.sleep(5 * 60 * 1000);
     }
   }
