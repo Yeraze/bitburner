@@ -23,6 +23,9 @@ export async function main(ns) {
             await doCommand(ns, `ns.sleeve.setToIdle(${sleeveNum})`)
         }
     }
+    
+    var univCourse = ns.getServerMoneyAvailable("home") > 1000000 ? "Algorithms" : "Computer Science"
+
     for(var sleeveNum =0; sleeveNum < sleeveCount; sleeveNum++) {
         var sleeve = ns.sleeve.getSleeve(sleeveNum)
         var sleeveRecord = { id: sleeveNum,
@@ -98,14 +101,14 @@ export async function main(ns) {
                 } else { 
                     // As a last resort, study
                     await doCommand(ns, 
-                        `ns.sleeve.setToUniversityCourse(${sleeveNum}, "Rothman University", "Algorithms")`)
+                        `ns.sleeve.setToUniversityCourse(${sleeveNum}, "Rothman University", "${univCourse}")`)
                 }
             }
         }
         var job = ns.sleeve.getTask(sleeveNum)
         if(job == null) {
             await doCommand(ns, 
-                `ns.sleeve.setToUniversityCourse(${sleeveNum}, "Rothman University", "Algorithms")`)
+                `ns.sleeve.setToUniversityCourse(${sleeveNum}, "Rothman University", "${univCourse}")`)
         }
 
         job = ns.sleeve.getTask(sleeveNum)

@@ -116,7 +116,7 @@ export async function main(ns) {
       continue; // we already have it
     for(var _fac of augsFromFaction) {
       fac = _fac.faction
-      //var fData = factionData.find((A) => (A.name == fac))
+      //var fData jkubnh= factionData.find((A) => (A.name == fac))
       if(_fac.augments.includes(aug)) {
         ns.printf("Found priority aug %s at %s", aug, fac)
         ns.spawn("singularity-augpurchase.js", {spawnDelay: 0}, fac, aug)

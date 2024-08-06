@@ -32,7 +32,7 @@ export async function main(ns) {
         ns.grafting.getAugmentationGraftPrice(A) < cash
     ))
     const interestedAugs = []
-    for(var aug of augList) {
+    for(var aug of affordableAugs) {
         var stats = ns.singularity.getAugmentationStats(aug)
         // See if this augment hits our BN qualifications as useful
         //   And the violet entropy virus aug is always interesting

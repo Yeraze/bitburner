@@ -78,12 +78,16 @@ export async function main(ns) {
   }
   if(ns.getResetInfo().currentNode == 13) {
     db.dbLog(ns,"start",  "Initializing Stanek's gift")
-    execContinue(ns, "singularity-stanek.js", "home", {temporary: true, threads:4})
+    var threads = 4
+    threads = Math.floor((ns.getServerMaxRam("home") / ns.getScriptRam("singularity-stanek.js")) / 2)
+    if (threads < 1) 
+      threads = 1
+    execContinue(ns, "singularity-stanek.js", "home", {temporary: true, threads:threads}, "--cycles", 5)
   } else {
     db.dbLog(ns, "start", "Initializing IPvGO Game")
     execContinue(ns, "ipvgo.js", "home", {threads:1, temporary:true}, 1000)
   }
-  
+
   db.dbLog(ns, "start", "Beginning Singularity manager...")
   execContinue(ns, "singularity-start.js", "home", {threads:1, temporary:true})
 
@@ -183,6 +187,14 @@ async function hackUntilTarget(ns, target, stopAtTarget) {
       // But it's the fastest way..
       await execAndWait(ns, "global-cleanup.js", "home", {threads:1, temporary:true}, "--super")
       ns.exec("batcher/controller.js", "home", 1, target)
+      if(ns.getResetInfo().currentNode == 13) {
+        db.dbLog(ns,"start",  "Updating Stanek's gift")
+        var threads = 4
+        threads = Math.floor((ns.getServerMaxRam("home") / ns.getScriptRam("singularity-stanek.js")) / 2)
+        if (threads < 1) 
+          threads = 1
+        execContinue(ns, "singularity-stanek.js", "home", {temporary: true, threads:threads}, "--cycles", 5)
+      }
       totalRam = totalRamNow
     }
   }
