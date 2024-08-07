@@ -189,7 +189,9 @@ export async function main(ns) {
 
         if(augment) {
             var rateEntry = factionRates.find((A) => (A.name == augment.faction))
-            var eta = db.formatTime(ns, (augment.repRemaining / rateEntry.rate) * 1000)
+            var eta = "<??>"
+            if(rateEntry)
+                eta=db.formatTime(ns, (augment.repRemaining / (rateEntry.rate) * 1000))
 
             ns.printf("Augment: %s [%s] (%s) %s", 
                 augment.augment, augment.faction, augment.progress, eta

@@ -11,7 +11,7 @@ export function dbRead(ns, table) {
         try {
             return JSON.parse(ns.read(filename))            
         } catch (error) {
-            ns.printf(`ERROR: ${table} corrupted`)
+            // ns.printf(`ERROR: ${table} corrupted`)
             return null
         }
     else    
