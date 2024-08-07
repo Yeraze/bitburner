@@ -10,6 +10,15 @@ export async function main(ns) {
         rehprintf(ns, "Purchased %s from %s", aug, faction)
         db.dbLogf(ns, "Purchased %s from %s", aug, faction)
         ns.toast(ns.sprintf("Purchased %s", aug), "success", null)
+        if(aug == "NeuroFlux Governor") {
+            var record = db.dbRead(ns, "nfg")
+            var count = 0
+            if(record)
+                count = record.count
+            count++
+            var nr = {count:count, last: Date.now()}
+            db.dbWrite(ns, "nfg", nr)
+        }
         if(aug == "The Red Pill") {
             ns.toast("Restarting to ENDGAME!", "info", null)
             ns.spawn("reset.js")

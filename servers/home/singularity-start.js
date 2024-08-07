@@ -44,28 +44,37 @@ export async function main(ns) {
     if (counter % 300 == 0) {
       // If the average Hacking Levels per Second drops under 2
       //  Since this happens every 5 minutes, check for 10 levels
-      if(ns.getHackingLevel() - playerLevel < 10) {
-        var augMeta = db.dbRead(ns, "augment-meta")
-        var augsPurchased = 0
-        if (augMeta) 
-          augsPurchased = augMeta.augmentsPurchased
+      var augMeta = db.dbRead(ns, "augment-meta")
+      var augsPurchased = 0
+      if (augMeta) 
+        augsPurchased = augMeta.augmentsPurchased
 
-        if (augsPurchased == 0) {
-          db.dbLogf(ns, "WARN: Run extend: no augmentation purchase")
-        } else if (ns.singularity.getCurrentWork()?.type == "GRAFTING") {
-          db.dbLogf(ns, "WARN: Run extend: Waiting on graft..")
-        } else {
-          resetCount++
-          ns.toast(ns.sprintf("CONSIDERING RESET: %i of 3", resetCount), "warning", 60000)
-          if(resetCount >= 3) {
-            if(ns.fileExists("extend.txt", "home")) {
-              db.dbLogf(ns, "WARN: Run extended: extend.txt flag found")    
-            } else {
-              ns.toast("RESETTING!!!", "warning", null)
-              ns.spawn("reset.js", 1)
-            }
-          }  
+      var trigger = false
+      var nfg = db.dbRead(ns, "nfg")
+      if(nfg) {
+        if ((nfg.count > 5) && (Date.now() - nfg.last > (5 * 60 * 1000))) {
+          trigger = true
+          augsPurchased += nfg.count
         }
+      }
+      if(ns.getHackingLevel() - playerLevel < 10) 
+        trigger = true
+      if (ns.singularity.getCurrentWork()?.type == "GRAFTING") 
+        trigger = false
+      if (augsPurchased == 0) 
+        trigger = false
+
+      if(trigger) {
+        resetCount++
+        ns.toast(ns.sprintf("CONSIDERING RESET: %i of 3", resetCount), "warning", 60000)
+        if(resetCount >= 3) {
+          if(ns.fileExists("extend.txt", "home")) {
+            db.dbLogf(ns, "WARN: Run extended: extend.txt flag found")    
+          } else {
+            ns.toast("RESETTING!!!", "warning", null)
+            ns.spawn("reset.js", 1)
+          }
+        }  
       } else {
         resetCount = 0
       }

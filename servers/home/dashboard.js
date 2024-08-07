@@ -199,12 +199,15 @@ export async function main(ns) {
         }
 
         if(augMeta) {
-            ns.printf("-> %s%i Augments Installed%s, %s%i pending",
+            var nfg = db.dbRead(ns, "nfg")
+            ns.printf("-> %s%i Augments Installed%s, %s%i pending %s",
                 augMeta.augmentsInstalled >= 30 ? color.fgGreen : color.reset,
                 augMeta.augmentsInstalled, 
                 color.reset,
                 augMeta.augmentsPurchased > 0 ? color.fgCyan : color.reset,
-                augMeta.augmentsPurchased)
+                augMeta.augmentsPurchased,
+                nfg?.count > 0 ? `(${nfg.count} NFG)` : ""
+            )
         } else {
             ns.printf("-> Augments status <pending>")
         }
