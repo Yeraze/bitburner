@@ -102,9 +102,12 @@ export async function main(ns) {
         if (home) {
             ns.printf(" * CPU Cores: %i  \t\t($%s to upgrade)", home.cores,
                 ns.formatNumber(home.coreUpgrade))
-            ns.printf(" * RAM: %s (%s free)\t($%s to upgrade)", 
+            var percFree = (home.ram - home.ramUsed) / home.ram
+            ns.printf(" * RAM: %s %s(%s free)%s\t($%s to upgrade)", 
                 ns.formatRam(home.ram),
-                ns.formatPercent((home.ram - home.ramUsed) / home.ram, 0),
+                (percFree < .1) ? color.fgRed : "",
+                ns.formatPercent(percFree, 0),
+                color.reset,
                 ns.formatNumber(home.ramUpgrade))
             
         } else {
@@ -185,17 +188,10 @@ export async function main(ns) {
 
 
         if(augment) {
-            var eta = ""
-            if(augProgress = "") 
-                augProgress = [augment.augment, augment.progress, Date.now()]           
-            if(augment.augment != augProgress[0]) 
-                augProgress = [augment.augment, augment.progress, Date.now()]
-            if(augment.progress != augProgress[1]) {
+            var rateEntry = factionRates.find((A) => (A.name == augment.faction))
+            var eta = db.formatTime(ns, (augment.repRemaining / rateEntry.rate) * 1000)
 
-            }
-
-
-            ns.printf("Augment: Saving for %s [%s] (%s) %s", 
+            ns.printf("Augment: %s [%s] (%s) %s", 
                 augment.augment, augment.faction, augment.progress, eta
             )
         } else {

@@ -65,6 +65,7 @@ export async function main(ns) {
         }
         var record = {augment: aug,
                       faction: faction,
+                      repRemaining: ns.singularity.getAugmentationRepReq(aug) - ns.singularity.getFactionRep(faction),
                       progress: ns.formatPercent( ns.singularity.getFactionRep(faction) / ns.singularity.getAugmentationRepReq(aug))
         }
         db.dbWrite(ns, "augment", record)
