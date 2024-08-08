@@ -171,6 +171,9 @@ export async function main(ns) {
                 case "SUPPORT":
                     sleeveRecord.job = "Support"
                     break;
+                case "COMPANY":
+                    sleeveRecord.job = ns.sprintf("W: %s", job.companyName)
+                    break;
                 default:
                     sleeveRecord.job = job.type
             } 

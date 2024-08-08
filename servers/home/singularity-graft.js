@@ -66,6 +66,11 @@ export async function main(ns) {
 
     interestedAugs.sort((A,B) => (A.cost - B.cost)).reverse()
 
+    if(ns.getPlayer().entropy >=5) {
+        // We need to get rid of this entropy before we go any further
+        interestedAugs.unshift( { aug: "violet Congruity Implant"})
+    }
+
     try { 
         if(ns.grafting.graftAugmentation(interestedAugs[0].aug)) {
             db.dbLogf(ns, "GRAFT: Starting graft for %s",interestedAugs[0].aug)

@@ -16,4 +16,6 @@ export async function main(ns) {
     ns.printf("-> [%i] %s", fragment.id, frag.effect)
   }
 
+  ns.printf("-> Entropy: %s", ns.getPlayer().entropy)
+
 }
