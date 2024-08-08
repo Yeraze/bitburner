@@ -12,9 +12,18 @@ export async function main(ns) {
 
   db.dbLog(ns, "start", "Initial setup...")
   await doCommand(ns, `ns.singularity.commitCrime("Homicide")`)
+  execContinue(ns, "dashboard.js", "home", {temporary: true, threads:1})
+
+  if(ns.getResetInfo().currentNode == 13) {
+    if(!await doCommand(ns, "ns.stanek.acceptGift()")) {
+      db.dbLogf(ns, "ERROR: Unable to accept Stanek's gift")
+      ns.toast("Unable to accept Stanek's gift", "error")
+    }
+    db.dbLogf(ns, "Initializing Stanek's gift")
+    await execAndWait(ns, "singularity-stanek.js", "home", {temporary: true, threads:1}, "--cycles", 50)
+  }
 
   execContinue(ns, "pservs.js", "home", {threads:1, temporary:true})
-  ns.exec("dashboard.js", "home", {temporary: true, threads:1})
   // These scripts area bit "fat",so make sure we have ram
   if (ns.getServerMaxRam("home") < 128) {
     db.dbLog(ns, "start", "Looks like we're still earlygame, starting n00dle blast")
@@ -75,17 +84,10 @@ export async function main(ns) {
     ns.scriptKill("loop_weaken.js", "home")
     await execAndWait(ns, "global-cleanup.js", "home", {temporary:true}, "--loop")
   }
-  if(ns.getResetInfo().currentNode == 13) {
-    db.dbLog(ns,"start",  "Initializing Stanek's gift")
-    var threads = 4
-    threads = Math.floor((ns.getServerMaxRam("home") / ns.getScriptRam("singularity-stanek.js")) / 2)
-    if (threads < 1) 
-      threads = 1
-    execContinue(ns, "singularity-stanek.js", "home", {temporary: true, threads:threads}, "--cycles", 5)
-  } else {
-    db.dbLog(ns, "start", "Initializing IPvGO Game")
-    execContinue(ns, "ipvgo.js", "home", {threads:1, temporary:true}, 1000)
-  }
+
+  db.dbLog(ns, "start", "Initializing IPvGO Game")
+  execContinue(ns, "ipvgo2.js", "home", {threads:1, temporary:true}, 1000)
+  
 
   db.dbLog(ns, "start", "Beginning Singularity manager...")
   execContinue(ns, "singularity-start.js", "home", {threads:1, temporary:true})

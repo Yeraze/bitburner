@@ -37,6 +37,48 @@ export async function doCommand(ns, command) {
 } 
 
 /** @param {NS} ns */
+export async function doMaxCommand(ns, command) {
+  var random = Math.floor(Math.random() * 100000000)
+  var filename = `/tmp/${random}.js`
+  var resultFile = `/tmp/${random}.txt`
+
+  if (ns.fileExists(filename))
+    ns.clear(filename)
+  ns.printf("Executing '%s'", command)
+  ns.write(filename, "export async function main(ns) {\n", "a")
+  ns.write(filename, `  var result = ${command};\n`, "a")
+  ns.write(filename, `  ns.write("${resultFile}", JSON.stringify(result), "w");\n`)
+  ns.write(filename, "}", "a")
+
+  // Calculate ram
+  var availRam = ns.getServerMaxRam("home") - ns.getServerUsedRam("home")
+  var threads = Math.floor( availRam / ns.getScriptRam(filename) )
+  if (threads < 1)
+    threads = 1
+
+  await execAndWait(ns, filename, "home", {temporary: true, threads: threads})
+  if(!ns.rm(filename)) {
+    dbLogf(ns, "ERROR: Unable to rm %s", filename)
+  }
+
+  if (ns.fileExists(resultFile)) {
+    var data = ns.read(resultFile)
+    if(!ns.rm(resultFile)) {
+      dbLogf(ns, "ERROR: Unable to rm %s", resultFile)
+    }
+
+    try {
+      ns.printf("-> Returning %s", data)
+      return JSON.parse(data)
+    } catch {
+      return null
+    }
+  } else {
+    return null
+  }
+} 
+
+/** @param {NS} ns */
 export function execContinue(ns, script, host, ...cmdArgs) {
   if (ns.scriptRunning(script, host) == false) {
     ns.tprintf("Launching [%s]:%s...", host, script)
