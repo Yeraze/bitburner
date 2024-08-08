@@ -7,7 +7,7 @@
  * - Stoneware
  * - gmcew
  */
-
+import * as db from 'database.js'
 const CHEATS = false
 const LOGTIME = false
 let STYLE = 0
@@ -23,6 +23,8 @@ let validMove;
 let validLibMoves;
 let chains;
 let testBoard = []
+let _gameStart = Date.now()
+let _gameIterations = 0
 /** @param {NS} ns */
 export async function main(ns) {
   ns.tail()
@@ -237,9 +239,26 @@ function getStyle(ns) {
       STYLE = 6
   }
 }
+
+/** @param {NS} ns */
 function checkNewGame(ns, gameInfo) {
   if (gameInfo?.type === "gameOver") {
     if (!REPEAT) return
+
+    var gameStats = ns.go.analysis.getStats()
+    _gameIterations ++
+    var record = {
+      avgTime: (Date.now() - _gameStart) / _gameIterations,
+      iterations: _gameIterations,
+      results: []
+    }
+    for(var opp of opponent2) {
+      if(gameStats[opp]) 
+        record.results.push( {opponent: opp,
+                              percent: gameStats[opp].bonusPercent / 100.0, 
+                              description: gameStats[opp].bonusDescription})
+    }
+    db.dbWrite(ns, "ipvgo2", record)
     try { ns.go.resetBoardState(opponent2[Math.floor(Math.random() * opponent2.length)], 13) }
     catch { ns.go.resetBoardState(opponent[Math.floor(Math.random() * opponent.length)], 13) }
     turn = 0

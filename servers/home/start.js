@@ -44,6 +44,7 @@ export async function main(ns) {
         .reduce((a, S) => (a + ns.getServerMaxRam(S)), 0)
       if (totalRamNow > totalRam) {
         db.dbLog(ns, "start", "-> Extending n00dle blast")
+        await execAndWait(ns, "singularity-stanek.js", "home", {temporary: true, threads:1}, "--cycles", 10)
         await execAndWait(ns, "blast.js", "home", {threads:1, temporary:true}, "n00dles", "EXTEND", 4 );
         totalRam = totalRamNow
       }
@@ -75,6 +76,7 @@ export async function main(ns) {
         .reduce((a, S) => (a + ns.getServerMaxRam(S)), 0)
       if (totalRamNow > totalRam) {
         db.dbLog(ns, "start", "-> Extending joesguns blast")
+        await execAndWait(ns, "singularity-stanek.js", "home", {temporary: true, threads:1}, "--cycles", 10)
         await execAndWait(ns, "blast.js", "home", {threads:1, temporary:true}, "joesguns", "EXTEND", 4 );
         totalRam = totalRamNow
       }
@@ -186,16 +188,11 @@ async function hackUntilTarget(ns, target, stopAtTarget) {
         target, ns.formatRam(totalRamNow))
       // This isa bit messy, yes.. And can leave the target in an unprepped state
       // But it's the fastest way..
+      await execAndWait(ns, "singularity-stanek.js", "home", {temporary: true, threads:1}, "--cycles", 10)
+
       await execAndWait(ns, "global-cleanup.js", "home", {threads:1, temporary:true}, "--super")
       ns.exec("batcher/controller.js", "home", 1, target)
-      if(ns.getResetInfo().currentNode == 13) {
-        db.dbLog(ns,"start",  "Updating Stanek's gift")
-        var threads = 4
-        threads = Math.floor((ns.getServerMaxRam("home") / ns.getScriptRam("singularity-stanek.js")) / 2)
-        if (threads < 1) 
-          threads = 1
-        execContinue(ns, "singularity-stanek.js", "home", {temporary: true, threads:threads}, "--cycles", 5)
-      }
+
       totalRam = totalRamNow
     }
   }

@@ -25,7 +25,6 @@ export async function main(ns) {
         var global = db.dbRead(ns, "global")
         var home = db.dbRead(ns, "home")
         var augMeta = db.dbRead(ns, "augment-meta")
-        var ipvgo = db.dbRead(ns, "ipvgo")
         ns.clearLog()
         // Header line first, cash flow data
         var newCash = ns.getServerMoneyAvailable("home")
@@ -89,6 +88,7 @@ export async function main(ns) {
         }
 
         if(ns.scriptRunning("ipvgo.js", "home")) {
+            var ipvgo = db.dbRead(ns, "ipvgo")
             ns.printf("=== IPvGO ============================================")
             if(ipvgo) {
                 ns.printf("Iterations: %i (%s s per iteration)", 
@@ -98,6 +98,22 @@ export async function main(ns) {
                 ns.printf(" <pending>")
             }
         }
+        if(ns.scriptRunning('ipvgo2.js', 'home')) {
+            var ipvgo = db.dbRead(ns, "ipvgo2")
+            ns.printf("=== IPvGO(v2) ============================================")
+            if (ipvgo) {
+                ns.printf("Iterations: %i (%s s per iteration)", 
+                    ipvgo.iterations, ns.formatNumber( ipvgo.avgTime / 1000 ))
+                for(var impact of ipvgo.results) {
+                    ns.printf(" => [%s]: %s %s",
+                        impact.opponent,
+                        ns.formatPercent(impact.percent, 2),
+                        impact.description)
+                }
+            }
+        }
+
+
         ns.printf("=== Home computer ============================================")
         if (home) {
             ns.printf(" * CPU Cores: %i  \t\t($%s to upgrade)", home.cores,
