@@ -3,7 +3,11 @@ import * as CONST from 'reh-constants.js'
 import * as db from 'database.js'
 /** @param {NS} ns */
 export async function main(ns) {
-    ns.tail()
+    //ns.tail()
+    if(ns.getResetInfo().ownedAugs.includes("Stanek's Gift - Genesis") == false) {
+        db.dbLogf(ns, "STANEK: Gift not found, exiting")
+        return
+    }
     var cycles = 100
     cycles = parsearg(ns, "--cycles", 25)
     db.dbLogf(ns, "STANEK: Charging %i cycles", cycles)

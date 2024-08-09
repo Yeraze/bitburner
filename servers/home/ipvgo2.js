@@ -27,11 +27,13 @@ let _gameStart = Date.now()
 let _gameIterations = 0
 /** @param {NS} ns */
 export async function main(ns) {
-  ns.tail()
+  //ns.tail()
   ns.disableLog("go.makeMove")
   const startBoard = ns.go.getBoardState()
   let inProgress = false
   turn = 0
+  _gameStart = Date.now()
+  _gameIterations = 0
   START = performance.now()
   //If we have already moved, jump the turn to 3 to get out of Opening Moves
   for (let x = 0; x < startBoard[0].length; x++) {
