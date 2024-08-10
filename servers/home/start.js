@@ -13,14 +13,21 @@ export async function main(ns) {
   db.dbLog(ns, "start", "Initial setup...")
   await doCommand(ns, `ns.singularity.commitCrime("Homicide")`)
   execContinue(ns, "dashboard.js", "home", {temporary: true, threads:1})
+  execContinue(ns, "dashboard-2.js", "home", {temporary: true, threads:1})
+
 
   if(ns.getResetInfo().currentNode == 13) {
-    if(!await doCommand(ns, "ns.stanek.acceptGift()")) {
-      db.dbLogf(ns, "ERROR: Unable to accept Stanek's gift")
-      ns.toast("Unable to accept Stanek's gift", "error")
+    if((Date.now() - ns.getResetInfo().lastAugReset) > 60*1000) {
+      db.dbLogf(ns, "Bypassing Stanek bootstrap")
+    } else {
+      if(!await doCommand(ns, "ns.stanek.acceptGift()")) {
+        db.dbLogf(ns, "ERROR: Unable to accept Stanek's gift")
+        ns.toast("Unable to accept Stanek's gift", "error")
+      }
+      db.dbLogf(ns, "Initializing Stanek's gift")
+      await execAndWait(ns, "singularity-stanek.js", "home", {temporary: true, threads:1}, "--cycles", 50)
+      ns.exec("singularity-stanek.js", "home", {temporary:true}, "--cycles", "5000", "--trickle")
     }
-    db.dbLogf(ns, "Initializing Stanek's gift")
-    await execAndWait(ns, "singularity-stanek.js", "home", {temporary: true, threads:1}, "--cycles", 50)
   }
 
   execContinue(ns, "pservs.js", "home", {threads:1, temporary:true})

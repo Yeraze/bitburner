@@ -61,7 +61,7 @@ export async function main(ns) {
             ns.formatNumber(ns.getPlayer().karma))
         var workString = "<pending>"
         if(faction) {
-            ns.sprintf("%s for %s", faction.work, faction.faction)
+            workString = ns.sprintf("%s for %s", faction.work, faction.faction)
         }
         ns.printf("Work: %s\t%s", workString,
             (ns.singularity.exportGameBonus() ? color.fgCyan +"[BONUS]" : "")
@@ -87,31 +87,6 @@ export async function main(ns) {
             ns.printf("Target: <unknown>")
         }
 
-        if(ns.scriptRunning("ipvgo.js", "home")) {
-            var ipvgo = db.dbRead(ns, "ipvgo")
-            ns.printf("=== IPvGO ============================================")
-            if(ipvgo) {
-                ns.printf("Iterations: %i (%s s per iteration)", 
-                    ipvgo.iteration, ns.formatNumber( ipvgo.avgTime / 1000 ))
-                ns.printf("Result: %s %s", ns.formatPercent(ipvgo.percent / 100), ipvgo.description)
-            } else {
-                ns.printf(" <pending>")
-            }
-        }
-        if(ns.scriptRunning('ipvgo2.js', 'home')) {
-            var ipvgo = db.dbRead(ns, "ipvgo2")
-            ns.printf("=== IPvGO(v2) ============================================")
-            if (ipvgo) {
-                ns.printf("Iterations: %i (%s s per iteration)", 
-                    ipvgo.iterations, ns.formatNumber( ipvgo.avgTime / 1000 ))
-                for(var impact of ipvgo.results) {
-                    ns.printf(" => [%s]: %s %s",
-                        impact.opponent,
-                        ns.formatPercent(impact.percent, 2),
-                        impact.description)
-                }
-            }
-        }
 
 
         ns.printf("=== Home computer ============================================")
@@ -235,22 +210,6 @@ export async function main(ns) {
         for (var fac of factionList.filter((A) => (!A.status)) )
             invites.push(fac.name)
         ns.printf("Invitations: %s", invites.join(', '))
-
-        var lineCount = 5
-        if(ns.scriptRunning("pservs.js", "home")) {
-            ns.printf("=== Purchased Server Log: [running] ============================")
-            var lines = db.dbLogFetch(ns, "pserv", 3)
-            for(var l of lines)
-                ns.print(l)
-        } else {
-            lineCount = 10
-        }
-
-
-        lines = db.dbLogFetch(ns, "start", lineCount)
-        ns.printf("=== Startup Log: ============================================")
-        for(var l of lines)
-            ns.print(l)
 
     }
 

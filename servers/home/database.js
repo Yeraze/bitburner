@@ -42,8 +42,8 @@ export function dbLog(ns, table, line) {
     if (lines == null)
         lines = []
     lines.unshift(logline)
-    if (lines.length > 10) 
-        lines = lines.slice(0, 10)
+    if (lines.length > 100) 
+        lines = lines.slice(0, 100)
 
     ns.write(filename, JSON.stringify(lines), "w")
 }
