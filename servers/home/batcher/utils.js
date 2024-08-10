@@ -400,7 +400,7 @@ export async function prep(ns, values, ramNet) {
 			ns.print(`~${batchCount} ${(batchCount === 1) ? "batch" : "batches"}.`);
 			var record = {target : values.target,
 				greed: "??",
-				status: ns.sprintf("%s .. %s", msg, ns.tFormat(time))
+				status: ns.sprintf("%s .. %s", msg, db.formatTime(ns, time))
   			}
   			db.dbWrite(ns, "batcher", record)
 		}, 200);
