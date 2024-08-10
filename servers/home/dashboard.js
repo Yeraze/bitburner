@@ -208,7 +208,8 @@ export async function main(ns) {
             var eta = "<??>"
             if(rateEntry)
                 eta=db.formatTime(ns, (augment.repRemaining / (rateEntry.rate) * 1000))
-
+            if (augment.repRemaining < 0)
+                eta = "Done!"
             ns.printf("Augment: %s [%s] (%s) %s", 
                 augment.augment, augment.faction, augment.progress, eta
             )
