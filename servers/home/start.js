@@ -11,12 +11,13 @@ export async function main(ns) {
 
 
   db.dbLog(ns, "start", "Initial setup...")
-  await doCommand(ns, `ns.singularity.commitCrime("Homicide")`)
+  if(ns.getResetInfo().ownedSF.has(4))
+    await doCommand(ns, `ns.singularity.commitCrime("Homicide")`)
   execContinue(ns, "dashboard.js", "home", {temporary: true, threads:1})
   execContinue(ns, "dashboard-2.js", "home", {temporary: true, threads:1})
 
 
-  if(ns.getResetInfo().currentNode == 13) {
+  if((ns.getResetInfo().currentNode == 13) || ns.getResetInfo().ownedSF.has(13)) {
     if((Date.now() - ns.getResetInfo().lastAugReset) > 60*1000) {
       db.dbLogf(ns, "Bypassing Stanek bootstrap")
     } else {
@@ -26,8 +27,8 @@ export async function main(ns) {
       }
       db.dbLogf(ns, "Initializing Stanek's gift")
       await execAndWait(ns, "singularity-stanek.js", "home", {temporary: true, threads:1}, "--cycles", 50)
-      ns.exec("singularity-stanek.js", "home", {temporary:true}, "--cycles", "5000", "--trickle")
     }
+    ns.exec("singularity-stanek.js", "home", {temporary:true}, "--cycles", "5000", "--trickle")
   }
 
   execContinue(ns, "pservs.js", "home", {threads:1, temporary:true})
@@ -97,10 +98,10 @@ export async function main(ns) {
   db.dbLog(ns, "start", "Initializing IPvGO Game")
   execContinue(ns, "ipvgo2.js", "home", {threads:1, temporary:true}, 1000)
   
-
-  db.dbLog(ns, "start", "Beginning Singularity manager...")
-  execContinue(ns, "singularity-start.js", "home", {threads:1, temporary:true})
-
+  if(ns.getResetInfo().ownedSF.has(4)) {
+    db.dbLog(ns, "start", "Beginning Singularity manager...")
+    execContinue(ns, "singularity-start.js", "home", {threads:1, temporary:true})
+  }
   // Now we can switch to joesguns
   // We'll be here a while, so there's more logic going on
   // Monitor for new servers added to the list,

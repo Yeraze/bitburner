@@ -23,5 +23,6 @@ export async function main(ns) {
     ns.printf("No stanek")
 
   }
-
+  for(var sf of ns.getResetInfo().ownedSF)
+    ns.printf("%s", sf)
 }

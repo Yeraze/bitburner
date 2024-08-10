@@ -92,6 +92,8 @@ export async function main(ns) {
 }
 /** @param {NS} ns */
 async function manageGraft(ns) {
+  if((!ns.getResetInfo().ownedSF.has(10)) && (!ns.getResetInfo().currentNode != 10))
+    return // hasn't unlocked Grafting
   const cash = ns.getServerMoneyAvailable("home")
 
   if(cash < 1000000000) {
@@ -108,6 +110,8 @@ async function manageGraft(ns) {
 }
 
 async function manageSleeves(ns) {
+  if((!ns.getResetInfo().ownedSF.has(10)) && (!ns.getResetInfo().currentNode != 10))
+    return // hasn't unlocked Grafting
   await execAndWait(ns, "singularity-sleeve.js", "home", {temporary:true})
 }
 /** @param {NS} ns */
