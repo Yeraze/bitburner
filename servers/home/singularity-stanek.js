@@ -4,7 +4,7 @@ import * as db from 'database.js'
 /** @param {NS} ns */
 export async function main(ns) {
     //ns.tail()
-    if(ns.getResetInfo().ownedAugs.includes("Stanek's Gift - Genesis") == false) {
+    if(ns.getResetInfo().ownedAugs.has("Stanek's Gift - Genesis") == false) {
         db.dbLogf(ns, "STANEK: Gift not found, exiting")
         return
     }

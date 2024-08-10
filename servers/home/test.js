@@ -17,5 +17,11 @@ export async function main(ns) {
   }
 
   ns.printf("-> Entropy: %s", ns.getPlayer().entropy)
+  if(ns.getResetInfo().ownedAugs.has("Stanek's Gift - Genesis")) {
+    ns.printf("Found stanek's gift!")
+  } else {
+    ns.printf("No stanek")
+
+  }
 
 }

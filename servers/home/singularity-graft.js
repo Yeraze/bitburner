@@ -66,7 +66,7 @@ export async function main(ns) {
 
     interestedAugs.sort((A,B) => (A.cost - B.cost)).reverse()
 
-    if(ns.getPlayer().entropy >=5) {
+    if(ns.getPlayer().entropy >= 10) {
         // We need to get rid of this entropy before we go any further
         interestedAugs.unshift( { aug: "violet Congruity Implant"})
     }
