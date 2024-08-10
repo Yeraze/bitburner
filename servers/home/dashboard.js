@@ -7,7 +7,7 @@ export async function main(ns) {
     ns.disableLog('ALL')
     ns.tail()
     ns.moveTail(800,0)
-    ns.resizeTail(650, 900)
+    ns.resizeTail(650, 800)
     let avgMoneyIncrease = [ns.getServerMoneyAvailable("home")]
     var cash = 0
  
@@ -185,16 +185,16 @@ export async function main(ns) {
                 eta=db.formatTime(ns, (augment.repRemaining / (rateEntry.rate) * 1000))
             if (augment.repRemaining < 0)
                 eta = "Done!"
-            ns.printf("Augment: %s [%s] (%s) %s", 
-                augment.augment, augment.faction, augment.progress, eta
-            )
+            ns.printf("Augment: %s [%s]",
+                augment.augment, augment.faction)
+            ns.printf(" => (%s) %s", augment.progress, eta)
         } else {
             ns.printf("Augment: <none>")
         }
 
         if(augMeta) {
             var nfg = db.dbRead(ns, "nfg")
-            ns.printf("-> %s%i Augments Installed%s, %s%i pending %s",
+            ns.printf(" => %s%i Augments Installed%s, %s%i pending %s",
                 augMeta.augmentsInstalled >= 30 ? color.fgGreen : color.reset,
                 augMeta.augmentsInstalled, 
                 color.reset,
