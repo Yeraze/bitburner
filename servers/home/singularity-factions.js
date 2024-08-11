@@ -31,7 +31,7 @@ export async function main(ns) {
             if (await doCommand(ns, `ns.singularity.travelToCity("${faction.location}")`))  {
               rehprintf(ns, "Traveling to %s, looking for %s", faction.location,
                 faction.faction)
-              db.dbLogf(ns, "Traveling to %s",faction.location)
+              //db.dbLogf(ns, "Traveling to %s",faction.location)
               return
             }
           } else if (!currentFactions.includes(faction.faction)) {

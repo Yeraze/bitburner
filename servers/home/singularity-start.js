@@ -8,7 +8,7 @@ export async function main(ns) {
 
   if (ns.getHackingLevel() < 10) {
     db.dbLog(ns, "start", "Starting CS to hit level 10...")
-    rehprintf(ns, "Starting CS to hit level 10...")
+    //rehprintf(ns, "Starting CS to hit level 10...")
     await doCommand(ns, 'ns.singularity.universityCourse("rothman university", "computer science", true)');
     while (ns.getHackTime() < 10) {
       await ns.sleep(1000);

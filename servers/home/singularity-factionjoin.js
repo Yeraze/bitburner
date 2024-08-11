@@ -6,9 +6,11 @@ export async function main(ns) {
     const faction = ns.args[0]
     //ns.tail()
     ns.printf("Considering %s", faction)
-    if(ns.singularity.joinFaction(faction))
-        ns.toast(ns.sprintf("Joined faction %s", faction), "success")
-    // If we have the NMI we can background the hacking
+    if(ns.singularity.joinFaction(faction)) {
+        let msg = ns.sprintf("Joined faction %s", faction)
+        ns.toast(msg, "success")
+        db.dbLogf(ns, msg)
+    }
 
     if (ns.singularity.getCurrentWork()?.type == "GRAFTING") {
         var record = { work: "GRAFTING", faction: ns.singularity.getCurrentWork().augmentation}

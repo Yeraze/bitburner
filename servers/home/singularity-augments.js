@@ -92,7 +92,7 @@ export async function main(ns) {
           continue // too expensive
         }
         // we can afford this, so buy it
-        rehprintf(ns, "Purchasing %s from %s", aug, fac)
+        //rehprintf(ns, "Purchasing %s from %s", aug, fac)
         db.dbLog(ns, "start", ns.sprintf("Purchasing %s from %s", aug, fac))
         ns.spawn("singularity-augpurchase.js", {spawnDelay: 0}, fac, aug)
       } else {

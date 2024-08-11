@@ -26,7 +26,7 @@ export async function main(ns) {
         ns.toast("Unable to accept Stanek's gift", "error")
       }
       db.dbLogf(ns, "Initializing Stanek's gift")
-      await execAndWait(ns, "singularity-stanek.js", "home", {temporary: true, threads:1}, "--cycles", 50)
+      await execAndWait(ns, "singularity-stanek.js", "home", {temporary: true, threads:1}, "--cycles", 20j)
     }
     ns.exec("singularity-stanek.js", "home", {temporary:true}, "--cycles", "5000", "--trickle")
   }

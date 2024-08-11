@@ -7,7 +7,7 @@ export async function main(ns) {
     // If we have the NMI we can background the hacking
 
     if (await doCommand(ns, `ns.singularity.purchaseAugmentation("${faction}", "${aug}")`)) {
-        rehprintf(ns, "Purchased %s from %s", aug, faction)
+        //rehprintf(ns, "Purchased %s from %s", aug, faction)
         db.dbLogf(ns, "Purchased %s from %s", aug, faction)
         ns.toast(ns.sprintf("Purchased %s", aug), "success", null)
         if(aug == "NeuroFlux Governor") {
