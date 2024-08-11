@@ -4,9 +4,9 @@ import * as db from 'database.js'
 /** @param {NS} ns */
 export async function main(ns) {
   ns.printf("Reading aug-all")
-  const augmentsIHave = db.dbRead(ns, "aug-all")
+  const augmentsIHave = db.dbRead(ns, "aug-all") ?? []
   ns.printf("Reading aug-installed")
-  const augmentsInstalled = db.dbRead(ns, "aug-installed")
+  const augmentsInstalled = db.dbRead(ns, "aug-installed") ?? []
 
   // We always want this one
   //  These augments don't have Stats in the traditional sense, so they
@@ -17,14 +17,14 @@ export async function main(ns) {
   var minRepValue = 10e9
   var favAugment = ""
   var savingUp = false
-  var augsPurchased = augmentsIHave.filter( (A) => (augmentsInstalled.indexOf(A) == -1))
+  var augsPurchased = augmentsIHave.filter( (A) => (augmentsInstalled.indexOf(A) == -1)) 
 
   var record = { augmentsInstalled: augmentsInstalled.length,
                  augmentsPurchased: augsPurchased.length}
   db.dbWrite(ns, "augment-meta", record)
 
   ns.printf("Loading factions")
-  var factionData = db.dbRead(ns, "factions")
+  var factionData = db.dbRead(ns, "factions") ?? []
   var factionList = []
   for(var fac of factionData)
     factionList.push(fac.name)
@@ -32,13 +32,13 @@ export async function main(ns) {
   ns.printf("%i factions known", factionList.length)
 
   ns.printf("Loading augs-from-faction")
-  var augsFromFaction = db.dbRead(ns, "augs-from-faction")
+  var augsFromFaction = db.dbRead(ns, "augs-from-faction") ?? []
   ns.printf("Loading aug-prereqs")
-  var augPrereqs = db.dbRead(ns, "aug-prereqs")
+  var augPrereqs = db.dbRead(ns, "aug-prereqs") ?? []
   ns.printf("Loading aug-cost")
-  var augCosts = db.dbRead(ns, "aug-cost")
+  var augCosts = db.dbRead(ns, "aug-cost") ?? []
   ns.printf("Loading aug-stats")
-  var augStats = db.dbRead(ns, "aug-stats")
+  var augStats = db.dbRead(ns, "aug-stats") ?? []
 
   // First build the list of Augments to Buy
 

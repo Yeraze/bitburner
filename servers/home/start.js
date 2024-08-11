@@ -12,7 +12,7 @@ export async function main(ns) {
 
   db.dbLog(ns, "start", "Initial setup...")
   if(ns.getResetInfo().ownedSF.has(4))
-    await doCommand(ns, `ns.singularity.commitCrime("Homicide")`)
+    await doCommand(ns, `ns.singularity.commitCrime("Rob Store")`)
   execContinue(ns, "dashboard.js", "home", {temporary: true, threads:1})
   execContinue(ns, "dashboard-2.js", "home", {temporary: true, threads:1})
 
@@ -26,7 +26,7 @@ export async function main(ns) {
         ns.toast("Unable to accept Stanek's gift", "error")
       }
       db.dbLogf(ns, "Initializing Stanek's gift")
-      await execAndWait(ns, "singularity-stanek.js", "home", {temporary: true, threads:1}, "--cycles", 20j)
+      await execAndWait(ns, "singularity-stanek.js", "home", {temporary: true, threads:1}, "--cycles", 20)
     }
     ns.exec("singularity-stanek.js", "home", {temporary:true}, "--cycles", "5000", "--trickle")
   }
