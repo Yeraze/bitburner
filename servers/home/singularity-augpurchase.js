@@ -37,7 +37,6 @@ export async function main(ns) {
             await doCommand(ns, `ns.singularity.joinFaction("${faction}")`)
             await doCommand(ns, `ns.singularity.donateToFaction("${faction}", ${donation})`)
 
-            rehprintf(ns, "Donated $%s to %s", ns.formatNumber(donation), faction)
             db.dbLogf(ns, "Donated $%s to %s", ns.formatNumber(donation), faction)
             if(ns.singularity.getAugmentationRepReq(aug) < ns.singularity.getFactionRep(faction)) {
                 boughtIt = true

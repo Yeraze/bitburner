@@ -1,5 +1,5 @@
 import * as CONST from "reh-constants.js"
-
+import * as db from 'database.js'
 /** @param {NS} ns */
 export async function doCommand(ns, command) {
   var random = Math.floor(Math.random() * 100000000)
@@ -87,11 +87,11 @@ export function execContinue(ns, script, host, ...cmdArgs) {
 }
 /** @param {NS} ns */
 export function rehprintf(ns, format, ...printvars) {
-  ns.tprintf(format, ...printvars)
+  //ns.tprintf(format, ...printvars)
   ns.printf(format, ...printvars)
-
+  db.dbLogf(ns, format, ...printvars)
   var msg = ns.sprintf(format, ...printvars)
-  ns.toast(msg, "info")
+  //ns.toast(msg, "info")
 }
 
 /** @param {NS} ns */
