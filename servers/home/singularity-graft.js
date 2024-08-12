@@ -29,7 +29,7 @@ export async function main(ns) {
     }
 
     const affordableAugs = augList.filter((A) => (
-        ns.grafting.getAugmentationGraftPrice(A) < cash
+        (ns.grafting.getAugmentationGraftPrice(A)*1.1) < cash
     ))
     const interestedAugs = []
     for(var aug of affordableAugs) {
@@ -72,6 +72,10 @@ export async function main(ns) {
     }
 
     try { 
+        if (ns.getPlayer().city != "New Tokyo") {
+            db.dbLogf(ns, "GRAFT: Traveling to New Tokyo for grafting..")
+            ns.singularity.travelToCity("New Tokyo")
+        }
         if(ns.grafting.graftAugmentation(interestedAugs[0].aug)) {
             db.dbLogf(ns, "GRAFT: Starting graft for %s",interestedAugs[0].aug)
             ns.write("/tmp/grafted.txt", interestedAugs[0].aug, "w")
