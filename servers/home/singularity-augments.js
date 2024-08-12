@@ -1,4 +1,4 @@
-import {rehprintf, qualifyAugment} from 'reh.js'
+import {rehprintf, qualifyAugment, doCommand} from 'reh.js'
 import * as CONST from 'reh-constants.js'
 import * as db from 'database.js'
 /** @param {NS} ns */
@@ -106,6 +106,16 @@ export async function main(ns) {
           favAugment = aug
           minRepValue = augCost.rep - fData.rep
         }
+        // If we got here then this is an "interesting" augment
+        // that we can't afford yet...
+        if(!ns.getPlayer().factions.includes(fac)) {
+          // We're not in the faction..
+          if((await doCommand(ns, `ns.singularity.getFactionEnemies("${fac}").length`)) == 0) {
+            // This faction has no enemies, so join up..Sleeve & BG grind
+            db.dbLogf(ns, "Joining %s for background grind", fac)
+            await doCommand(ns, `ns.singularity.joinFaction("${fac}")`)
+          }
+        }
       }
     }
   }
@@ -131,7 +141,7 @@ export async function main(ns) {
   // So check the NFG's
   const NFG = "NeuroFlux Governor"
   var nfgCost = augCosts.find((A) => (A.augment == NFG))
-  if(nfgCost.cost < ns.getServerMoneyAvailable("home")) {
+  if((nfgCost) && (nfgCost.cost < ns.getServerMoneyAvailable("home"))) {
     for(var _fac of augsFromFaction) {
       var fac = _fac.faction
       var fData = factionData.find((A) => (A.name == fac))

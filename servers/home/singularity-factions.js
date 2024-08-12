@@ -19,7 +19,6 @@ export async function main(ns) {
     // get the list of all factions we know of: Joined and Pending
     var currentFactions = ns.getPlayer().factions.concat(
         ns.singularity.checkFactionInvitations())
-    
     for(var faction of factionOrder) {
       // Search every faction in the list..
       //  If the faction has not already invited us,

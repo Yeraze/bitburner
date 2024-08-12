@@ -25,4 +25,6 @@ export async function main(ns) {
   }
   for(var sf of ns.getResetInfo().ownedSF)
     ns.printf("%s", sf)
+
+  ns.printf(Object.prototype.toString.call("Hello"));
 }
