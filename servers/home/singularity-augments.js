@@ -12,13 +12,13 @@ export async function main(ns) {
   //  These augments don't have Stats in the traditional sense, so they
   //  don't pass our auto-classifier.. So just hard-code them here.
   var augsToBuy = ["The Red Pill", "CashRoot Starter Kit", "Neuroreceptor Management Implant"] 
-  var priorityAugs = ["The Red Pill", "CashRoot Starter Kit", "Neuroreceptor Management Implant"]
+  var priorityAugs = []
   var minRepFaction = "NONE"
   var minRepValue = 10e9
   var favAugment = ""
   var savingUp = false
   var augsPurchased = augmentsIHave.filter( (A) => (augmentsInstalled.indexOf(A) == -1)) 
-
+ 
   var record = { augmentsInstalled: augmentsInstalled.length,
                  augmentsPurchased: augsPurchased.length}
   db.dbWrite(ns, "augment-meta", record)
@@ -74,7 +74,7 @@ export async function main(ns) {
     for(var aug of _fac.augments) { 
 
  
-      if(augmentsIHave.includes(aug) && (aug != "NeuroFlux Governor")) 
+      if(augmentsIHave.includes(aug)) 
         continue; // We already have this
       if(augsToBuy.indexOf(aug) == -1)
         continue; // We don't want this augment
@@ -122,6 +122,23 @@ export async function main(ns) {
       if(_fac.augments.includes(aug)) {
         ns.printf("Found priority aug %s at %s", aug, fac)
         ns.spawn("singularity-augpurchase.js", {spawnDelay: 0}, fac, aug)
+      }
+    }
+  }
+
+  // Alright, nothing left to do but grind..
+  // So check the NFG's
+  const NFG = "NeuroFlux Governor"
+  var nfgCost = augCosts.find((A) => (A.augment == aug))
+  if(nfgCost.cost < ns.getServerMoneyAvailable("home")) {
+    for(var _fac of augsFromFaction) {
+      var fac = _fac.faction
+      var fData = factionData.find((A) => (A.name == fac))
+
+      if(_fac.augments.includes(NFG)) {
+        if (fData.rep < nfgCost.rep) {
+          ns.spawn("singularity-augpurchase.js", {spawnDelay: 0}, fac, NFG)
+        }
       }
     }
   }

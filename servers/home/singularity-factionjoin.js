@@ -34,10 +34,7 @@ export async function main(ns) {
     } else {
         ns.singularity.workForFaction(faction, work, focus)
     }
-    if(ns.scriptRunning("ipvgo2.js", "home") == false) {
-        db.dbLogf(ns, "Launching ipvgo")
-        ns.exec("ipvgo2.js", "home", {temporary: true, threads: 1}, "1000")
-    }
+
     var record = { faction: faction, work: work}
     db.dbWrite(ns, "faction", record)
 }
