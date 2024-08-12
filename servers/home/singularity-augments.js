@@ -55,7 +55,8 @@ export async function main(ns) {
       }
       if(!meetsPrereqs)
         continue
-      
+      if(aug == "NeuroFlux Governor")
+        continue
       // Attempt to "categorize" the aug
       var stats = augStats.find((A) => (A.augment == aug)).stats
       if(qualifyAugment(ns, stats)) {
@@ -84,7 +85,7 @@ export async function main(ns) {
       if(augCost.rep < fData.rep) {
         if(augCost.cost > ns.getServerMoneyAvailable("home")) {
           // We have the Rep for this augment, but not the cash
-          ns.printf("%s-> Qualify for %s, but too expensive (%s)",
+          db.dbLogf(ns, "%s-> Qualify for %s, but too expensive (%s)",
               CONST.fgYellow, aug, 
               ns.formatPercent(ns.getServerMoneyAvailable("home")/ augCost.cost)
           )
@@ -129,14 +130,16 @@ export async function main(ns) {
   // Alright, nothing left to do but grind..
   // So check the NFG's
   const NFG = "NeuroFlux Governor"
-  var nfgCost = augCosts.find((A) => (A.augment == aug))
+  var nfgCost = augCosts.find((A) => (A.augment == NFG))
   if(nfgCost.cost < ns.getServerMoneyAvailable("home")) {
     for(var _fac of augsFromFaction) {
       var fac = _fac.faction
       var fData = factionData.find((A) => (A.name == fac))
 
       if(_fac.augments.includes(NFG)) {
-        if (fData.rep < nfgCost.rep) {
+        if (fData.rep > nfgCost.rep) {
+          db.dbLogf(ns, "Buying NFG from %s (%i rep, $%s)", fac, 
+            nfgCost.rep, ns.formatNumber(nfgCost.cost))
           ns.spawn("singularity-augpurchase.js", {spawnDelay: 0}, fac, NFG)
         }
       }

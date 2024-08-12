@@ -66,9 +66,7 @@ export async function main(ns) {
 
       if(trigger) {
         resetCount++
-        let msg = ns.sprintf("CONSIDERING RESET: %i of 3", resetCount)
-        ns.toast(msg, "warning", 60000)
-        db.dbLogf(ns, msg)
+        ns.toast(ns.sprintf("CONSIDERING RESET: %i of 3", resetCount), "warning", 60000)
         if(resetCount >= 3) {
           if(ns.fileExists("extend.txt", "home")) {
             db.dbLogf(ns, "WARN: Run extended: extend.txt flag found")    
