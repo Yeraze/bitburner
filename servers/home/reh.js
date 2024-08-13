@@ -25,7 +25,10 @@ export async function doCommand(ns, command) {
   writeCmdFile(ns, filename, command)
 
   var pid = ns.exec(filename, "home", {temporary: true, threads: 1})
-
+  if(pid == 0) {
+    ns.printf("Failed to launch %s", filename)
+    return null
+  }
   let port = ns.getPortHandle(pid)
   await port.nextWrite()
 

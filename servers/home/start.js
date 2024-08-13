@@ -31,7 +31,10 @@ export async function main(ns) {
     ns.exec("singularity-stanek.js", "home", {temporary:true}, "--cycles", "5000", "--trickle")
   }
 
-  execContinue(ns, "pservs.js", "home", {threads:1, temporary:true})
+  if(ns.getResetInfo().currentNode == 9)
+    execContinue(ns, "hacknet.js", "home", {threads:1, temporary:true})
+  else
+    execContinue(ns, "pservs.js", "home", {threads:1, temporary:true})
   // These scripts area bit "fat",so make sure we have ram
   if (ns.getServerMaxRam("home") < 128) {
     db.dbLog(ns, "start", "Looks like we're still earlygame, starting n00dle blast")
