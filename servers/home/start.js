@@ -98,9 +98,10 @@ export async function main(ns) {
     await execAndWait(ns, "global-cleanup.js", "home", {temporary:true}, "--loop")
   }
 
-  db.dbLog(ns, "start", "Initializing IPvGO Game")
-  execContinue(ns, "ipvgo2.js", "home", {threads:1, temporary:true}, 1000)
-  
+  if(ns.getServerMaxRam("home") > 256) {
+    db.dbLog(ns, "start", "Initializing IPvGO Game")
+    execContinue(ns, "ipvgo2.js", "home", {threads:1, temporary:true}, 1000)
+  }
   if(ns.getResetInfo().ownedSF.has(4)) {
     db.dbLog(ns, "start", "Beginning Singularity manager...")
     execContinue(ns, "singularity-start.js", "home", {threads:1, temporary:true})
