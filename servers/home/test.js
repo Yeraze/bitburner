@@ -27,4 +27,6 @@ export async function main(ns) {
     ns.printf("%s", sf)
 
   ns.printf(Object.prototype.toString.call("Hello"));
+
+  ns.printf( await doCommand(ns,`ns.getResetInfo().currentNode`))
 }

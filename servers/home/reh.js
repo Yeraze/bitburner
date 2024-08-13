@@ -10,28 +10,27 @@ export async function doCommand(ns, command) {
     ns.clear(filename)
   ns.printf("Executing '%s'", command)
   ns.write(filename, "export async function main(ns) {\n", "a")
-  ns.write(filename, `  var result = ${command};\n`, "a")
-  ns.write(filename, `  ns.write("${resultFile}", JSON.stringify(result), "w");\n`)
+  ns.write(filename, `  const port = ns.getPortHandle(ns.pid)\n`, "a")
+  ns.write(filename, `  var result = ""\n`, "a")
+  ns.write(filename, `  ns.atExit(() => { port.write(result) })\n`, "a")
+  ns.write(filename, `  try {\n`, "a")
+  ns.write(filename, `    result = ${command};\n`, "a")
+  ns.write(filename, "  } catch (error) {\n", "a")
+  ns.write(filename, "    result = []\n", "a")
+  ns.write(filename, "  }\n", "a")
   ns.write(filename, "}", "a")
 
-  await execAndWait(ns, filename, "home", {temporary: true, threads: 1})
-  if(!ns.rm(filename)) {
-    dbLogf(ns, "ERROR: Unable to rm %s", filename)
-  }
+  var pid = ns.exec(filename, "home", {temporary: true, threads: 1})
 
-  if (ns.fileExists(resultFile)) {
-    var data = ns.read(resultFile)
-    if(!ns.rm(resultFile)) {
-      dbLogf(ns, "ERROR: Unable to rm %s", resultFile)
-    }
+  let port = ns.getPortHandle(pid)
+  await port.nextWrite()
 
-    try {
-      ns.printf("-> Returning %s", data)
-      return JSON.parse(data)
-    } catch {
-      return null
-    }
-  } else {
+  let data = port.read()
+  //await execAndWait(ns, filename, "home", {temporary: true, threads: 1})
+  try {
+    ns.printf("-> Returning %s", data)
+    return JSON.parse(data)
+  } catch {
     return null
   }
 } 
@@ -46,8 +45,14 @@ export async function doMaxCommand(ns, command) {
     ns.clear(filename)
   ns.printf("Executing '%s'", command)
   ns.write(filename, "export async function main(ns) {\n", "a")
-  ns.write(filename, `  var result = ${command};\n`, "a")
-  ns.write(filename, `  ns.write("${resultFile}", JSON.stringify(result), "w");\n`)
+  ns.write(filename, `  const port = ns.getPortHandle(ns.pid)\n`, "a")
+  ns.write(filename, `  var result = ""\n`, "a")
+  ns.write(filename, `  ns.atExit(() => { port.write(result) })\n`, "a")
+  ns.write(filename, `  try {\n`, "a")
+  ns.write(filename, `    result = ${command};\n`, "a")
+  ns.write(filename, "  } catch (error) {\n", "a")
+  ns.write(filename, "    result = []\n", "a")
+  ns.write(filename, "  }\n", "a")
   ns.write(filename, "}", "a")
 
   // Calculate ram
@@ -56,24 +61,21 @@ export async function doMaxCommand(ns, command) {
   if (threads < 1)
     threads = 1
 
-  await execAndWait(ns, filename, "home", {temporary: true, threads: threads})
-  if(!ns.rm(filename)) {
-    dbLogf(ns, "ERROR: Unable to rm %s", filename)
+  ns.printf("Launching %s on %i threads", filename, threads)
+  var pid = ns.exec(filename, "home", {temporary: true, threads: threads})
+  if(pid == 0) {
+    ns.printf("Failed to launch %s", filename)
+    return null
   }
+  let port = ns.getPortHandle(pid)
+  await port.nextWrite()
 
-  if (ns.fileExists(resultFile)) {
-    var data = ns.read(resultFile)
-    if(!ns.rm(resultFile)) {
-      dbLogf(ns, "ERROR: Unable to rm %s", resultFile)
-    }
-
-    try {
-      ns.printf("-> Returning %s", data)
-      return JSON.parse(data)
-    } catch {
-      return null
-    }
-  } else {
+  let data = port.read()
+  //await execAndWait(ns, filename, "home", {temporary: true, threads: 1})
+  try {
+    ns.printf("-> Returning %s", data)
+    return JSON.parse(data)
+  } catch {
     return null
   }
 } 
