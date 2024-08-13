@@ -1,4 +1,6 @@
 import {parsearg} from "reh.js"
+import * as db from "./database";
+
 /** @param {NS} ns */
 export async function main(ns) {
   ns.disableLog('ALL')
@@ -22,11 +24,20 @@ export async function main(ns) {
       continue;
     }
 
+    let hashCount = 0
+    while(ns.hacknet.numHashes() > 10) {
+      ns.hacknet.spendHashes("Sell for Money")
+      hashCount++
+      await ns.sleep(10)
+    }
+    if(hashCount > 0)
+      db.dbLogf(ns, "Sold %i hashes for Money", hashCount)
+
     // Now find out the cheapest option to try
     var nodeCost = ns.hacknet.getPurchaseNodeCost()
 
     var upgrades = []
-    if(ns.hacknet.numNodes() < 20) {
+    if(ns.hacknet.numNodes() < 8) {
       if(nodeCost < cash) {
         var newRate = ns.formulas.hacknetNodes.moneyGainRate(1,1,1)
         upgrades.push( {node: -1,

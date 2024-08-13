@@ -29,4 +29,7 @@ export async function main(ns) {
   ns.printf(Object.prototype.toString.call("Hello"));
 
   ns.printf( await doCommand(ns,`ns.getResetInfo().currentNode`))
+
+  ns.printf("Hashes = %i", ns.hacknet.numHashes())
+
 }
