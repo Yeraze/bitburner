@@ -191,6 +191,7 @@ export async function main(ns) {
 
       var counter = 0;
       while(counter < 5 * 60) {
+        counter++
         var record = { numNodes: ns.hacknet.numNodes(),
                        numHashes: ns.hacknet.numHashes(),
                        maxHashes: ns.hacknet.hashCapacity() }

@@ -87,6 +87,17 @@ export async function main(ns) {
             ns.printf("Target: <unknown>")
         }
 
+        if(ns.scriptRunning("hacknet.js", "home")) {
+            ns.printf("=== Hacknet ============================================")
+            let hacknet = db.dbRead(ns, "hacknet")
+            if (hacknet) {
+                ns.printf("Number of Nodes: %i\tHashes: %s/%s",
+                    hacknet.numNodes,
+                    ns.formatNumber(hacknet.numHashes), 
+                    ns.formatNumber(hacknet.maxHashes)
+                )
+            }
+        }
 
 
         ns.printf("=== Home computer ============================================")
