@@ -12,8 +12,7 @@ export async function main(ns) {
 
   db.dbLog(ns, "start", "Initial setup...")
   if(ns.getResetInfo().ownedSF.has(4))
-    await doCommand(ns, `ns.singularity.commitCrime("Rob Store")`)
-  execContinue(ns, "dashboard.js", "home", {temporary: true, threads:1})
+    await doCommand(ns, `ns.singularity.universityCourse("rothman university", "computer science")`)
   execContinue(ns, "dashboard-2.js", "home", {temporary: true, threads:1})
 
 
@@ -36,6 +35,7 @@ export async function main(ns) {
   else
     execContinue(ns, "pservs.js", "home", {threads:1, temporary:true})
   // These scripts area bit "fat",so make sure we have ram
+
   if (ns.getServerMaxRam("home") < 128) {
     db.dbLog(ns, "start", "Looks like we're still earlygame, starting n00dle blast")
 
@@ -106,6 +106,8 @@ export async function main(ns) {
     db.dbLog(ns, "start", "Beginning Singularity manager...")
     execContinue(ns, "singularity-start.js", "home", {threads:1, temporary:true})
   }
+  execContinue(ns, "dashboard.js", "home", {temporary: true, threads:1})
+
   // Now we can switch to joesguns
   // We'll be here a while, so there's more logic going on
   // Monitor for new servers added to the list,
