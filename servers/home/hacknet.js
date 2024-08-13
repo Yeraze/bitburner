@@ -29,12 +29,20 @@ export async function main(ns) {
     while(ns.hacknet.numHashes() > 10) {
       ns.hacknet.spendHashes("Sell for Money")
       hashCount++
-      maxNodes = 4
       await ns.sleep(10)
     }
-    if(hashCount > 0)
+    if(hashCount > 0) {
+      if(ns.getPlayer().skills.hacking < 50) {
+        maxNodes = 4
+      } else if (ns.getPlayer().skills.hacking < 200) {
+        maxNodes = 8
+      } else if (ns.getPlayer().skills.hacking < 1000) {
+        maxNodes = 16
+      } else {
+        maxNodes = 24
+      }
       db.dbLogf(ns, "Sold %i hashes for Money", hashCount)
-
+    }  
     // Now find out the cheapest option to try
     var nodeCost = ns.hacknet.getPurchaseNodeCost()
 

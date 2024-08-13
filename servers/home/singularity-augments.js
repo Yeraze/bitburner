@@ -19,6 +19,9 @@ export async function main(ns) {
   var savingUp = false
   var augsPurchased = augmentsIHave.filter( (A) => (augmentsInstalled.indexOf(A) == -1)) 
  
+  if(ns.getResetInfo().currentNode == 9) {
+    priorityAugs.push()
+  }
   var record = { augmentsInstalled: augmentsInstalled.length,
                  augmentsPurchased: augsPurchased.length}
   db.dbWrite(ns, "augment-meta", record)

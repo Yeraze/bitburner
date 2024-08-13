@@ -5,7 +5,7 @@ import * as db from 'database.js'
 export async function main(ns) {
     ns.disableLog('ALL')
 
-    var factionData = db.dbRead(ns, "factions")
+    var factionData = db.dbRead(ns, "factions") ?? []
     var factionList = []
     for(var fac of factionData)
       factionList.push(fac.name)
