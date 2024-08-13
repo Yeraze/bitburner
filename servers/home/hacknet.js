@@ -23,11 +23,13 @@ export async function main(ns) {
       ns.hacknet.purchaseNode()
       continue;
     }
+    var maxNodes = 20
 
     let hashCount = 0
     while(ns.hacknet.numHashes() > 10) {
       ns.hacknet.spendHashes("Sell for Money")
       hashCount++
+      maxNodes = 4
       await ns.sleep(10)
     }
     if(hashCount > 0)
@@ -37,7 +39,7 @@ export async function main(ns) {
     var nodeCost = ns.hacknet.getPurchaseNodeCost()
 
     var upgrades = []
-    if(ns.hacknet.numNodes() < 8) {
+    if(ns.hacknet.numNodes() < maxNodes) {
       if(nodeCost < cash) {
         var newRate = ns.formulas.hacknetNodes.moneyGainRate(1,1,1)
         upgrades.push( {node: -1,
@@ -134,7 +136,7 @@ export async function main(ns) {
     }
 
 
-    if (upgrade) {
+    if (upgrade && (ns.hacknet.numNodes() < maxNodes)) {
       if (upgrade.type == "NODE") {
         ns.print("Purchasing a new node")
         if (sim == 0)
@@ -186,7 +188,15 @@ export async function main(ns) {
       revenue = totalProduction
       if (sim) 
         return
-      await ns.sleep(5 * 60 * 1000);
+
+      var counter = 0;
+      while(counter < 5 * 60) {
+        var record = { numNodes: ns.hacknet.numNodes(),
+                       numHashes: ns.hacknet.numHashes(),
+                       maxHashes: ns.hacknet.hashCapacity() }
+        db.dbWrite(ns, "hacknet", record)
+        await ns.sleep(1000)
+      }
     }
   }
 }
