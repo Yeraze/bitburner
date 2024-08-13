@@ -1,11 +1,7 @@
 import * as CONST from "reh-constants.js"
 import * as db from 'database.js'
 /** @param {NS} ns */
-export async function doCommand(ns, command) {
-  var random = Math.floor(Math.random() * 100000000)
-  var filename = `/tmp/${random}.js`
-  var resultFile = `/tmp/${random}.txt`
-
+function writeCmdFile(ns, filename, command) {
   if (ns.fileExists(filename))
     ns.clear(filename)
   ns.printf("Executing '%s'", command)
@@ -19,6 +15,14 @@ export async function doCommand(ns, command) {
   ns.write(filename, "    result = []\n", "a")
   ns.write(filename, "  }\n", "a")
   ns.write(filename, "}", "a")
+}
+
+/** @param {NS} ns */
+export async function doCommand(ns, command) {
+  var random = Math.floor(Math.random() * 100000000)
+  var filename = `/tmp/${random}.js`
+
+  writeCmdFile(ns, filename, command)
 
   var pid = ns.exec(filename, "home", {temporary: true, threads: 1})
 
@@ -39,21 +43,8 @@ export async function doCommand(ns, command) {
 export async function doMaxCommand(ns, command) {
   var random = Math.floor(Math.random() * 100000000)
   var filename = `/tmp/${random}.js`
-  var resultFile = `/tmp/${random}.txt`
 
-  if (ns.fileExists(filename))
-    ns.clear(filename)
-  ns.printf("Executing '%s'", command)
-  ns.write(filename, "export async function main(ns) {\n", "a")
-  ns.write(filename, `  const port = ns.getPortHandle(ns.pid)\n`, "a")
-  ns.write(filename, `  var result = ""\n`, "a")
-  ns.write(filename, `  ns.atExit(() => { port.write(result) })\n`, "a")
-  ns.write(filename, `  try {\n`, "a")
-  ns.write(filename, `    result = ${command};\n`, "a")
-  ns.write(filename, "  } catch (error) {\n", "a")
-  ns.write(filename, "    result = []\n", "a")
-  ns.write(filename, "  }\n", "a")
-  ns.write(filename, "}", "a")
+  writeCmdFile(ns, filename, command)
 
   // Calculate ram
   var availRam = ns.getServerMaxRam("home") - ns.getServerUsedRam("home")
