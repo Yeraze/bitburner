@@ -12,7 +12,7 @@ export async function main(ns) {
 
   db.dbLog(ns, "start", "Initial setup...")
   if(ns.getResetInfo().ownedSF.has(4))
-    await doCommand(ns, `ns.singularity.universityCourse("rothman university", "computer science")`)
+    await doCommand(ns, `ns.singularity.commitCrime('Mug')`)
   execContinue(ns, "dashboard-2.js", "home", {temporary: true, threads:1})
 
 
@@ -38,6 +38,7 @@ export async function main(ns) {
 
   if (ns.getServerMaxRam("home") < 128) {
     db.dbLog(ns, "start", "Looks like we're still earlygame, starting n00dle blast")
+    await doCommand(ns, `ns.singularity.universityCourse("rothman university", "computer science")`)
 
     // Use the blast.js script to hack n00dles
     // until our Hacking level is 30 (3x Joesguns)
@@ -98,7 +99,7 @@ export async function main(ns) {
     await execAndWait(ns, "global-cleanup.js", "home", {temporary:true}, "--loop")
   }
 
-  if(ns.getServerMaxRam("home") > 256) {
+  if(ns.getServerMaxRam("home") >= 256) {
     db.dbLog(ns, "start", "Initializing IPvGO Game")
     execContinue(ns, "ipvgo2.js", "home", {threads:1, temporary:true}, 1000)
   }

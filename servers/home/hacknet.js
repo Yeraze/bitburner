@@ -201,7 +201,10 @@ export async function main(ns) {
         return
 
       var counter = 0;
-      while(counter < 5 * 60) {
+      var timeToWait = 60 * 5 // 5 minutes
+      if(ns.getResetInfo().currentNode == 9) 
+        timeToWait = 30
+      while(counter < timeToWait) {
         counter++
         var record = { numNodes: ns.hacknet.numNodes(),
                        numHashes: ns.hacknet.numHashes(),
