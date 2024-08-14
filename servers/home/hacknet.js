@@ -20,8 +20,11 @@ export async function main(ns) {
     }
     if(ns.hacknet.numNodes() == 0) {
       // There are no nodes.. So buy the first one
-      ns.hacknet.purchaseNode()
-      continue;
+      if (ns.hacknet.purchaseNode() == -1) {
+        // For some reason, we couldn't buy it.
+        await ns.sleep(5000); 
+        continue
+      }
     }
     var maxNodes = 20
 

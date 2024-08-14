@@ -115,6 +115,9 @@ export async function main(ns) {
   //.   For Purchased servers, monitor total RAM available
   //        to account for Upgrades
   // When those come online, add them to the queue
+  if(ns.getResetInfo().currentNode == 9)
+    return //In BN9, there's not much point in hacking for cash....
+
   await hackUntilTarget(ns, "joesguns", "phantasy")
   await hackUntilTarget(ns, "phantasy", "rho-construction")
   await hackUntilTarget(ns, "rho-construction", "global-pharm")
