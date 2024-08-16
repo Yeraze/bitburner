@@ -246,6 +246,8 @@ export async function main(ns) {
 		const servers = getServers(ns, (server) => {
 			if (!ns.args[0]) target = checkTarget(ns, server, target, ns.fileExists("Formulas.exe", "home"));
 			copyScripts(ns, server, WORKERS, true);
+      if(server.startsWith("hacknet-server"))
+        return false
 			return ns.hasRootAccess(server);
 		});
 		const ramNet = new RamNet(ns, servers);

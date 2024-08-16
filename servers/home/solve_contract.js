@@ -63,7 +63,7 @@ export async function main(ns) {
         await ns.sleep(10)
     }
     // Keep tabs of failed contracts
-    if (notified.length > 0)
+    //if (notified.length > 0)
         //await ns.write(fUnsolvedContracts, JSON.stringify(notified), "w");
     // Let the user know when we're done solving a large number of contracts.
     if (quietSolve) {

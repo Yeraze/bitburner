@@ -31,7 +31,7 @@ export async function main(ns) {
   }
 
   if(ns.getResetInfo().currentNode == 9)
-    execContinue(ns, "hacknet.js", "home", {threads:1, temporary:true})
+    execContinue(ns, "hacknet-servers.js", "home", {threads:1, temporary:true})
   else
     execContinue(ns, "pservs.js", "home", {threads:1, temporary:true})
   // These scripts area bit "fat",so make sure we have ram

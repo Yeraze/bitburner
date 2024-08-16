@@ -26,14 +26,43 @@ export async function main(ns) {
         continue
       }
     }
+    var maxNodes = 20
 
+    let hashCount = 0
+    while(ns.hacknet.numHashes() > 10) {
+      ns.hacknet.spendHashes("Sell for Money")
+      hashCount++
+      await ns.sleep(10)
+    }
+    if(hashCount > 0) {
+      if(ns.getPlayer().skills.hacking < 50) {
+        maxNodes = 4
+      } else if (ns.getPlayer().skills.hacking < 200) {
+        maxNodes = 8
+      } else if (ns.getPlayer().skills.hacking < 1000) {
+        maxNodes = 16
+      } else {
+        maxNodes = 24
+      }
+      ns.printf("Sold %i hashes for $%s", hashCount*4, ns.formatNumber(hashCount*1000000,0))
+      db.dbLogf(ns, "Sold %i hashes for Money", hashCount*4)
+    }  
+
+    var totalHProduction = 0
+    for(var index=0; index < ns.hacknet.numNodes(); index++) {
+      totalHProduction += ns.hacknet.getNodeStats(index).hashCapacity
+    }
+    if ((hashCount*4) > (totalHProduction*0.8)) {
+        // We just sold over 80% of our total Hash Storage Capacity
+        // time to buy more
+    }
     // Now find out the cheapest option to try
     var nodeCost = ns.hacknet.getPurchaseNodeCost()
 
     var upgrades = []
     if(ns.hacknet.numNodes() < maxNodes) {
       if(nodeCost < cash) {
-        var newRate = ns.formulas.hacknetNodes.moneyGainRate(1,1,1)
+        var newRate = ns.formulas.hacknetServers.hashGainRate(1, 0, 1, 1)
         upgrades.push( {node: -1,
                 price: nodeCost,
                 value: (16 - ns.hacknet.numNodes()) ,
@@ -48,7 +77,32 @@ export async function main(ns) {
       var nLevel = ns.hacknet.getNodeStats(index).level
       var nCores = ns.hacknet.getNodeStats(index).cores
       var nRam = ns.hacknet.getNodeStats(index).ram
-      var moneyRate = ns.formulas.hacknetNodes.moneyGainRate(nLevel, nRam, nCores)
+      var moneyRate = ns.formulas.hacknetServers.hashGainRate(nLevel, 0, nRam, nCores)
+      if ((hashCount*4) > (totalHProduction*0.8)) {
+        // We just sold over 80% of our total Hash Storage Capacity
+        // time to buy more
+        if (ns.hacknet.getCacheUpgradeCost(index) < cash) {
+            var HowMany = 0
+            var keepGoing = true
+            while(keepGoing) {
+              HowMany++
+              var cost= ns.hacknet.getCacheUpgradeCost(index, HowMany)
+              if (cost > cash) {
+                keepGoing = false
+              } else if (cost == -1) {
+                keepGoing = false
+              } else { 
+//                ns.formulas.hacknetServers.hashGainRate(nLevel, 0, nRam, nCores + HowMany)
+                upgrades.push( {node: index, 
+                        price: cost,
+                        value: HowMany,
+                        q: HowMany,
+                        ratio: 1,
+                        type: "CACHE"} )
+              }
+            }
+          }        
+      }
       if (ns.hacknet.getCoreUpgradeCost(index) < cash) {
         var HowMany = 0
         var keepGoing = true
@@ -60,7 +114,7 @@ export async function main(ns) {
           } else if (cost == -1) {
             keepGoing = false
           } else { 
-            var newRate = ns.formulas.hacknetNodes.moneyGainRate(nLevel, nRam, nCores + HowMany)
+            var newRate = ns.formulas.hacknetServers.hashGainRate(nLevel, 0, nRam, nCores + HowMany)
             upgrades.push( {node: index, 
                     price: cost,
                     value: newRate - moneyRate,
@@ -81,7 +135,7 @@ export async function main(ns) {
           } else if (cost == -1) {
             keepGoing = false
           } else {
-            var newRate = ns.formulas.hacknetNodes.moneyGainRate(nLevel, nRam + HowMany, nCores)
+            var newRate = ns.formulas.hacknetServers.hashGainRate(nLevel, 0, nRam + HowMany, nCores)
             upgrades.push( {node: index, 
                     price: cost,
                     value: newRate - moneyRate,
@@ -102,7 +156,7 @@ export async function main(ns) {
           } else if (cost == -1) {
             keepGoing = false
           } else {
-            var newRate = ns.formulas.hacknetNodes.moneyGainRate(nLevel + HowMany, nRam, nCores)
+            var newRate = ns.formulas.hacknetServers.hashGainRate(nLevel + HowMany, 0, nRam, nCores)
             upgrades.push( {node: index,
                     price: cost,
                     value: newRate - moneyRate,
@@ -116,6 +170,9 @@ export async function main(ns) {
 
     var upgrade
     switch(parsearg(ns, "--model", "roi")) {
+      case "sellonly":
+        upgrade = null
+        break
       case "windfall":
         // This finds the single biggest cash-maker
         upgrade = upgrades.sort((A,B) => (A.value - B.value)).pop()
@@ -126,9 +183,7 @@ export async function main(ns) {
         //  in a bunch of smaller upgrades
         upgrade = upgrades.sort(((a, b) => (a.ratio - b.ratio))).pop()
     }
-    if(parsearg(ns, "--expand", 1) == "no") {
-      upgrade = null
-    }
+
 
     if (upgrade && (ns.hacknet.numNodes() < maxNodes)) {
       if (upgrade.type == "NODE") {
@@ -137,8 +192,18 @@ export async function main(ns) {
            ns.hacknet.purchaseNode()
         else
           cash -= upgrade.price
+      } else if (upgrade.type == "CACHE") {
+        ns.printf("Upgrading CACHE: Node %i Cache +%i",
+            upgrade.node, upgrade.q)
+        if (sim == 0) {
+            var ret = ns.hacknet.upgradeCache(upgrade.node, upgrade.q)
+            if(!ret)
+                ns.printf(" -> FAIL!") 
+        } else {
+            cache -= upgrade.price
+        }   
       } else if (upgrade.type == "CORE") {
-        ns.printf("Upgrading CORES : Node %i Cores +%i (+$%.2f)",
+        ns.printf("Upgrading CORES : Node %i Cores +%i (+%.4f)",
           upgrade.node, upgrade.q, upgrade.value)
         if (sim == 0) {
           var ret = ns.hacknet.upgradeCore(upgrade.node, upgrade.q)
@@ -148,7 +213,7 @@ export async function main(ns) {
           cash -= upgrade.price
         }
       } else if (upgrade.type == "LEVEL") {
-        ns.printf("Upgrading LEVELS : Node %i Level +%i (+$%.2f)",
+        ns.printf("Upgrading LEVELS : Node %i Level +%i (+%.4f)",
           upgrade.node, upgrade.q, upgrade.value)
         if (sim == 0) {
           var ret= ns.hacknet.upgradeLevel(upgrade.node, upgrade.q)
@@ -158,7 +223,7 @@ export async function main(ns) {
           cash -= upgrade.price
         }
       } else if (upgrade.type == "RAM") {
-        ns.printf("Upgrading RAM : Node %i RAM +%i (+$%.2f)",
+        ns.printf("Upgrading RAM : Node %i RAM +%i (+%.4f)",
           upgrade.node, upgrade.q, upgrade.value)
         if (sim ==0) {
           var ret = ns.hacknet.upgradeRam(upgrade.node, upgrade.q)
@@ -177,7 +242,7 @@ export async function main(ns) {
         totalProduction += ns.hacknet.getNodeStats(index).production
       }
       var msg =ns.sprintf("-> %i nodes producing $%s/s (+%s/s)", ns.hacknet.numNodes(),
-        ns.formatNumber(totalProduction, 2), ns.formatNumber(totalProduction - revenue, 2))
+        ns.formatNumber(totalProduction, 4), ns.formatNumber(totalProduction - revenue, 4))
       ns.toast(msg, "info")
       revenue = totalProduction
       if (sim) 
