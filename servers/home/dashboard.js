@@ -91,6 +91,17 @@ export async function main(ns) {
             ns.printf("=== Hacknet ============================================")
             let hacknet = db.dbRead(ns, "hacknet")
             if (hacknet) {
+                ns.printf("Number of Nodes: %i\tCash: %s/%s",
+                    hacknet.numNodes,
+                    ns.formatNumber(hacknet.numHashes), 
+                    ns.formatNumber(hacknet.maxHashes)
+                )
+            }
+        }
+        if(ns.scriptRunning("hacknet-servers.js", "home")) {
+            ns.printf("=== Hacknet ============================================")
+            let hacknet = db.dbRead(ns, "hacknet")
+            if (hacknet) {
                 ns.printf("Number of Nodes: %i\tHashes: %s/%s",
                     hacknet.numNodes,
                     ns.formatNumber(hacknet.numHashes), 
@@ -98,7 +109,6 @@ export async function main(ns) {
                 )
             }
         }
-
 
         ns.printf("=== Home computer ============================================")
         if (home) {

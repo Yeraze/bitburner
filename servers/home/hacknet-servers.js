@@ -241,7 +241,7 @@ export async function main(ns) {
       for(var index=0; index < ns.hacknet.numNodes(); index++) {
         totalProduction += ns.hacknet.getNodeStats(index).production
       }
-      var msg =ns.sprintf("-> %i nodes producing $%s/s (+%s/s)", ns.hacknet.numNodes(),
+      var msg =ns.sprintf("-> %i nodes producing %s h/s (+%s/s)", ns.hacknet.numNodes(),
         ns.formatNumber(totalProduction, 4), ns.formatNumber(totalProduction - revenue, 4))
       ns.toast(msg, "info")
       revenue = totalProduction
