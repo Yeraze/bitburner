@@ -18,13 +18,24 @@ function writeCmdFile(ns, filename, command) {
 }
 
 /** @param {NS} ns */
-export async function doCommand(ns, command) {
+export async function doCommand(ns, command, reqthreads = 1) {
   var random = Math.floor(Math.random() * 100000000)
   var filename = `/tmp/${random}.js`
 
   writeCmdFile(ns, filename, command)
 
-  var pid = ns.exec(filename, "home", {temporary: true, threads: 1})
+  var threads = 1
+  if (reqthreads > 1)
+    threads = reqthreads
+  if (reqthreads < 1) {
+      // Calculate ram
+    var availRam = ns.getServerMaxRam("home") - ns.getServerUsedRam("home")
+    threads = Math.floor( (availRam / ns.getScriptRam(filename) ) * reqthreads )
+    if (threads < 1)
+      threads = 1
+  }
+
+  var pid = ns.exec(filename, "home", {temporary: true, threads: threads})
   if(pid == 0) {
     ns.printf("Failed to launch %s", filename)
     return null
@@ -44,34 +55,7 @@ export async function doCommand(ns, command) {
 
 /** @param {NS} ns */
 export async function doMaxCommand(ns, command) {
-  var random = Math.floor(Math.random() * 100000000)
-  var filename = `/tmp/${random}.js`
-
-  writeCmdFile(ns, filename, command)
-
-  // Calculate ram
-  var availRam = ns.getServerMaxRam("home") - ns.getServerUsedRam("home")
-  var threads = Math.floor( availRam / ns.getScriptRam(filename) )
-  if (threads < 1)
-    threads = 1
-
-  ns.printf("Launching %s on %i threads", filename, threads)
-  var pid = ns.exec(filename, "home", {temporary: true, threads: threads})
-  if(pid == 0) {
-    ns.printf("Failed to launch %s", filename)
-    return null
-  }
-  let port = ns.getPortHandle(pid)
-  await port.nextWrite()
-
-  let data = port.read()
-  //await execAndWait(ns, filename, "home", {temporary: true, threads: 1})
-  try {
-    ns.printf("-> Returning %s", data)
-    return JSON.parse(data)
-  } catch {
-    return null
-  }
+  doCommand(ns, command, 0.975)
 } 
 
 /** @param {NS} ns */
