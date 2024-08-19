@@ -37,7 +37,7 @@ export async function doCommand(ns, command, reqthreads = 1) {
 
   var pid = ns.exec(filename, "home", {temporary: true, threads: threads})
   if(pid == 0) {
-    ns.printf("Failed to launch %s", filename)
+    ns.printf("Failed to launch %s over %i threads", filename, threads)
     return null
   }
   let port = ns.getPortHandle(pid)
@@ -55,7 +55,7 @@ export async function doCommand(ns, command, reqthreads = 1) {
 
 /** @param {NS} ns */
 export async function doMaxCommand(ns, command) {
-  doCommand(ns, command, 0.975)
+  await doCommand(ns, command, 0.975)
 } 
 
 /** @param {NS} ns */

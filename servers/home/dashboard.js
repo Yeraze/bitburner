@@ -31,7 +31,7 @@ export async function main(ns) {
         if ((cash > 0) && ((newCash-cash) >= 0)) 
             avgMoneyIncrease.push(newCash-cash)
         cash = newCash
-        while (avgMoneyIncrease.length > 10)
+        while (avgMoneyIncrease.length > 60)
             avgMoneyIncrease.shift()
         
         var cashRate = avgMoneyIncrease.reduce(

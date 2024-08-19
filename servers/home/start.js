@@ -117,7 +117,7 @@ export async function main(ns) {
   //        to account for Upgrades
   // When those come online, add them to the queue
   if(ns.getResetInfo().currentNode == 9) {
-    while(true) {
+    while(ns.getServerMaxRam("home") < 512) {
       await ns.sleep(5000);
       await checkForBreaches(ns)
       await checkContracts(ns)
