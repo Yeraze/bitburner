@@ -32,4 +32,7 @@ export async function main(ns) {
 
   ns.printf("Hashes = %i", ns.hacknet.numHashes())
 
+  var lvlStudying = ns.hacknet.getHashUpgradeLevel("Improve Studying")
+  var upgCost = ns.formulas.hacknetServers.hashUpgradeCost("Improve Studying", lvlStudying)
+  ns.printf("Improve studying => level %i cost %i", lvlStudying, upgCost)
 }

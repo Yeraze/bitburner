@@ -139,6 +139,7 @@ class ContinuousBatcher {
 		if (this.#empties) ns.print(`Empty Dataports: ${this.#empties}`)
 		var record = {target : metrics.target,
 			greed: `${Math.floor(metrics.greed * 1000) / 10}%`,
+			rate: ns.formatNumber(metrics.maxMoney * metrics.greed * metrics.chance / (4 * metrics.spacer) * 1000),
 			status: `Active jobs: ${this.#running.size}/${metrics.depth * 4}`
 		}
 		db.dbWrite(ns, "batcher", record)			

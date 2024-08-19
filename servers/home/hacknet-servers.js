@@ -12,6 +12,8 @@ export async function main(ns) {
   var revenue = 0
   var sim = parsearg(ns, "--dryrun", 0)
   var cash = ns.getServerMoneyAvailable("home")
+
+
   while(!stop) {
     if (sim) {
       ns.printf("New cash value: $%s", ns.formatNumber(cash))
@@ -29,11 +31,51 @@ export async function main(ns) {
     var maxNodes = 20
 
     let hashCount = 0
+
+    // See if we can upgrade our studying a bit
+    var lvlStudying = ns.hacknet.getHashUpgradeLevel("Improve Studying")
+    var upgCost = ns.formulas.hacknetServers.hashUpgradeCost("Improve Studying", lvlStudying)
+    if (ns.hacknet.numHashes() > upgCost) {
+      if(ns.hacknet.spendHashes("Improve Studying"))
+        db.dbLogf(ns, "Upgrading studying to level %i", lvlStudying+1)
+    }
+
+    // See if we can boost the situation around our Hacking Target
+    var batcher = db.dbRead(ns, "batcher")
+    if (batcher) {
+      var target = batcher.target
+      var lvlMinSec = ns.hacknet.getHashUpgradeLevel("Reduce Minimum Security")
+      var upgCost = ns.formulas.hacknetServers.hashUpgradeCost("Reduce Minimum Security", lvlMinSec)
+      if (ns.hacknet.numHashes() > upgCost) {
+        if (ns.hacknet.spendHashes("Reduce Minimum Security", target))
+          db.dbLogf(ns, "Lowering Security of %s %i: %s", target, lvlMinSec+1, 
+              ns.formatNumber(ns.getServerMinSecurityLevel(target)))
+      }         
+      
+      var lvlMaxMoney = ns.hacknet.getHashUpgradeLevel("Increase Maximum Money")
+      var upgCost = ns.formulas.hacknetServers.hashUpgradeCost("Increase Maximum Money", lvlMaxMoney)
+      if (ns.hacknet.numHashes() > upgCost) {
+        if (ns.hacknet.spendHashes("Increase Maximum Money", target))
+          db.dbLogf(ns, "Increasing Maximum Money of %s %i: $%s", target, lvlMaxMoney+1,
+              ns.formatNumber(ns.getServerMaxMoney(target)))
+      }  
+    }
+
     while(ns.hacknet.numHashes() > 10) {
       ns.hacknet.spendHashes("Sell for Money")
       hashCount++
-      await ns.sleep(10)
+      //await ns.sleep(10)
     }
+
+    if (revenue > 8) {
+      // We've got a decent bit of revenue coming in..
+      // 8hash/sec => $2mil/sec
+      // So reserve $100Mil
+      cash -= (100 * 1000000)
+      if (cash < 0)
+        cash = 0
+    }
+
     if(hashCount > 0) {
       if(ns.getPlayer().skills.hacking < 50) {
         maxNodes = 4
@@ -248,10 +290,12 @@ export async function main(ns) {
       if (sim) 
         return
 
+
+
       var counter = 0;
       var timeToWait = 60 * 5 // 5 minutes
       if(ns.getResetInfo().currentNode == 9) 
-        timeToWait = 30
+        timeToWait = 60
       while(counter < timeToWait) {
         counter++
         var record = { numNodes: ns.hacknet.numNodes(),
