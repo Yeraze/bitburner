@@ -33,6 +33,8 @@ export async function main(ns) {
         //  or can just buy the augment we're looking at
         //  each donation is 100e9 = $100B
         const donation = 100e9
+        if (faction == "Church of the Machine God")
+          return // We can't donate to this faction
         while((ns.getServerMoneyAvailable("home") > donation) && !boughtIt) {
             await doCommand(ns, `ns.singularity.joinFaction("${faction}")`)
             await doCommand(ns, `ns.singularity.donateToFaction("${faction}", ${donation})`)

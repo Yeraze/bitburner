@@ -19,9 +19,9 @@ export async function main(ns) {
   var savingUp = false
   var augsPurchased = augmentsIHave.filter( (A) => (augmentsInstalled.indexOf(A) == -1)) 
  
-  if(ns.getResetInfo().currentNode == 9) {
-    priorityAugs.push()
-  }
+  //if(ns.getResetInfo().currentNode == 9) {
+  //  priorityAugs.push()
+  //}
   var record = { augmentsInstalled: augmentsInstalled.length,
                  augmentsPurchased: augsPurchased.length}
   db.dbWrite(ns, "augment-meta", record)
@@ -44,9 +44,14 @@ export async function main(ns) {
   var augStats = db.dbRead(ns, "aug-stats") ?? []
 
   // First build the list of Augments to Buy
-
+  var augIndex = 0
   for(var _fac of augsFromFaction) {
     var fac = _fac.faction
+    augIndex++
+    ns.printf("Evaluating Faction %s (%i/%i)", fac,
+      augIndex, augsFromFaction.length)
+    if(ns.args.includes("--slow"))
+      await ns.sleep(1000)
     for(var aug of _fac.augments) {  
       // See if we meet the prereq's
       var meetsPrereqs = true
@@ -72,11 +77,15 @@ export async function main(ns) {
   ns.printf("%i eligible augments", augsToBuy.length)
 
   // First search the list to see what the "lowest rep" aug is
+  augIndex = 0
   for(var _fac of augsFromFaction) {
     fac = _fac.faction
     var fData = factionData.find((A) => (A.name == fac))
+    await ns.sleep(100)
+    augIndex++
+    ns.printf("Finding best Aug from Faction %s (%i/%i)", fac,
+      augIndex, augsFromFaction.length)
     for(var aug of _fac.augments) { 
-
  
       if(augmentsIHave.includes(aug)) 
         continue; // We already have this
@@ -84,20 +93,27 @@ export async function main(ns) {
         continue; // We don't want this augment
 
       ns.printf("[%s] %s (%i)", fac, aug, augsToBuy.indexOf(aug))
+      if(ns.args.includes("--slow"))
+        await ns.sleep(1000)
       var augCost = augCosts.find((A) => (A.augment == aug))
       if(augCost.rep < fData.rep) {
         if(augCost.cost > ns.getServerMoneyAvailable("home")) {
           // We have the Rep for this augment, but not the cash
-          db.dbLogf(ns, "%s-> Qualify for %s, but too expensive (%s)",
+          var line = ns.sprintf("%s-> Qualify for %s, but too expensive (%s)",
               CONST.fgYellow, aug, 
-              ns.formatPercent(ns.getServerMoneyAvailable("home")/ augCost.cost)
-          )
+              ns.formatPercent(ns.getServerMoneyAvailable("home")/ augCost.cost)          )
+          db.dbLogf(ns, line)
+          ns.print(line)
           savingUp = true
           continue // too expensive
         }
         // we can afford this, so buy it
         //rehprintf(ns, "Purchasing %s from %s", aug, fac)
-        db.dbLog(ns, "start", ns.sprintf("Purchasing %s from %s", aug, fac))
+        var line= ns.sprintf("Purchasing %s from %s", aug, fac)
+        db.dbLogf(ns, line)
+        ns.print(line)
+        if(ns.args.includes("--slow"))
+          await ns.sleep(1000)
         ns.spawn("singularity-augpurchase.js", {spawnDelay: 0}, fac, aug)
       } else {
         // We got here by not having enough faction rep to buy it
@@ -116,6 +132,9 @@ export async function main(ns) {
           if((await doCommand(ns, `ns.singularity.getFactionEnemies("${fac}").length`)) == 0) {
             // This faction has no enemies, so join up..Sleeve & BG grind
             db.dbLogf(ns, "Joining %s for background grind", fac)
+            ns.printf("Joining %s for background grind", fac)
+            if(ns.args.includes("--slow"))
+              await ns.sleep(1000)
             await doCommand(ns, `ns.singularity.joinFaction("${fac}")`)
           }
         }
@@ -127,6 +146,9 @@ export async function main(ns) {
   // So we're going to just start a Grind for something later.
   // In that case, let's check the Priority Augment list and see
   // if we can get that going.
+  ns.printf("Evaluating priority augments: %i", priorityAugs.length)
+  if(ns.args.includes("--slow"))
+    await ns.sleep(1000)
   for(var aug of priorityAugs) {
     if(augmentsIHave.includes(aug))
       continue; // we already have it
@@ -135,6 +157,8 @@ export async function main(ns) {
       //var fData jkubnh= factionData.find((A) => (A.name == fac))
       if(_fac.augments.includes(aug)) {
         ns.printf("Found priority aug %s at %s", aug, fac)
+        if(ns.args.includes("--slow"))
+          await ns.sleep(1000)
         ns.spawn("singularity-augpurchase.js", {spawnDelay: 0}, fac, aug)
       }
     }
@@ -142,6 +166,9 @@ export async function main(ns) {
 
   // Alright, nothing left to do but grind..
   // So check the NFG's
+  ns.printf("Evaluating NFG's")
+  if(ns.args.includes("--slow"))
+    await ns.sleep(1000)
   const NFG = "NeuroFlux Governor"
   var nfgCost = augCosts.find((A) => (A.augment == NFG))
   if((nfgCost) && (nfgCost.cost < ns.getServerMoneyAvailable("home"))) {
@@ -151,18 +178,27 @@ export async function main(ns) {
 
       if(_fac.augments.includes(NFG)) {
         if (fData.rep > nfgCost.rep) {
-          db.dbLogf(ns, "Buying NFG from %s (%i rep, $%s)", fac, 
+          var line = ns.sprintf( "Buying NFG from %s (%i rep, $%s)", fac, 
             nfgCost.rep, ns.formatNumber(nfgCost.cost))
+          db.dbLogf(ns, line)
+          ns.print(line)
+          if(ns.args.includes("--slow"))
+            await ns.sleep(1000)
           ns.spawn("singularity-augpurchase.js", {spawnDelay: 0}, fac, NFG)
         }
       }
     }
   }
   ns.printf("End of main loop")
+  if(ns.args.includes("--slow"))
+    await ns.sleep(1000)
   if (minRepFaction != "NONE") {
     // So there is an augment available to buy.
     // But we don't have sufficient Faction Rep.. so start grinding!
     ns.printf("Attempting to purchase %s from %s", favAugment, minRepFaction)
+    if(ns.args.includes("--slow"))
+      await ns.sleep(1000)
+
     ns.spawn("singularity-augpurchase.js", {spawnDelay: 0}, minRepFaction, favAugment)
   }
 
