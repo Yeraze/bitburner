@@ -95,8 +95,19 @@ export async function main(ns) {
       totalHProduction += ns.hacknet.getNodeStats(index).hashCapacity
     }
     if ((hashCount*4) > (totalHProduction*0.8)) {
-        // We just sold over 80% of our total Hash Storage Capacity
-        // time to buy more
+      // We just sold over 80% of our total Hash Storage Capacity
+      // time to buy more
+      var minCost = 1e99
+      var minCostIndex = -1
+      for(var index=0; index < ns.hacknet.numNodes(); index++) {
+        if (ns.hacknet.getCacheUpgradeCost(index) < minCost) {
+          minCost = ns.hacknet.getCacheUpgradeCost(index)
+          minCostIndex = index
+        }
+      }
+      if(ns.hacknet.upgradeCache(minCostIndex)) {
+        db.dbLogf(ns, "Upgrading Hacknet Server Cache")
+      }
     }
     // Now find out the cheapest option to try
     var nodeCost = ns.hacknet.getPurchaseNodeCost()
@@ -120,31 +131,7 @@ export async function main(ns) {
       var nCores = ns.hacknet.getNodeStats(index).cores
       var nRam = ns.hacknet.getNodeStats(index).ram
       var moneyRate = ns.formulas.hacknetServers.hashGainRate(nLevel, 0, nRam, nCores)
-      if ((hashCount*4) > (totalHProduction*0.8)) {
-        // We just sold over 80% of our total Hash Storage Capacity
-        // time to buy more
-        if (ns.hacknet.getCacheUpgradeCost(index) < cash) {
-            var HowMany = 0
-            var keepGoing = true
-            while(keepGoing) {
-              HowMany++
-              var cost= ns.hacknet.getCacheUpgradeCost(index, HowMany)
-              if (cost > cash) {
-                keepGoing = false
-              } else if (cost == -1) {
-                keepGoing = false
-              } else { 
-//                ns.formulas.hacknetServers.hashGainRate(nLevel, 0, nRam, nCores + HowMany)
-                upgrades.push( {node: index, 
-                        price: cost,
-                        value: HowMany,
-                        q: HowMany,
-                        ratio: 1,
-                        type: "CACHE"} )
-              }
-            }
-          }        
-      }
+      
       if (ns.hacknet.getCoreUpgradeCost(index) < cash) {
         var HowMany = 0
         var keepGoing = true
@@ -289,8 +276,6 @@ export async function main(ns) {
       revenue = totalProduction
       if (sim) 
         return
-
-
 
       var counter = 0;
       var timeToWait = 60 * 5 // 5 minutes

@@ -42,7 +42,7 @@ export async function doCommand(ns, command, reqthreads = 1) {
   }
   let port = ns.getPortHandle(pid)
   await port.nextWrite()
-
+  ns.rm(filename)
   let data = port.read()
   //await execAndWait(ns, filename, "home", {temporary: true, threads: 1})
   try {
