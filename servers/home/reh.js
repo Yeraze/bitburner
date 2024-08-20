@@ -38,6 +38,7 @@ export async function doCommand(ns, command, reqthreads = 1) {
   var pid = ns.exec(filename, "home", {temporary: true, threads: threads})
   if(pid == 0) {
     ns.printf("Failed to launch %s over %i threads", filename, threads)
+    ns.rm(filename)
     return null
   }
   let port = ns.getPortHandle(pid)

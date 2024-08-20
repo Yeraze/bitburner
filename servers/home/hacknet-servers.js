@@ -13,6 +13,8 @@ export async function main(ns) {
   var sim = parsearg(ns, "--dryrun", 0)
   var cash = ns.getServerMoneyAvailable("home")
 
+  var kickBatcher = false
+  var kickBatcherTimeout = 0
 
   while(!stop) {
     if (sim) {
@@ -37,7 +39,8 @@ export async function main(ns) {
     var upgCost = ns.formulas.hacknetServers.hashUpgradeCost("Improve Studying", lvlStudying)
     if (ns.hacknet.numHashes() > upgCost) {
       if(ns.hacknet.spendHashes("Improve Studying"))
-        db.dbLogf(ns, "Upgrading studying to level %i", lvlStudying+1)
+        db.dbLogf(ns, "Upgrading studying to level %i (%s)", lvlStudying+1,
+          ns.formatPercent(ns.hacknet.getStudyMult()))
     }
 
     // See if we can boost the situation around our Hacking Target
@@ -47,18 +50,33 @@ export async function main(ns) {
       var lvlMinSec = ns.hacknet.getHashUpgradeLevel("Reduce Minimum Security")
       var upgCost = ns.formulas.hacknetServers.hashUpgradeCost("Reduce Minimum Security", lvlMinSec)
       if (ns.hacknet.numHashes() > upgCost) {
-        if (ns.hacknet.spendHashes("Reduce Minimum Security", target))
+        if (ns.hacknet.spendHashes("Reduce Minimum Security", target)) {
           db.dbLogf(ns, "Lowering Security of %s %i: %s", target, lvlMinSec+1, 
               ns.formatNumber(ns.getServerMinSecurityLevel(target)))
+          kickBatcher = true
+          kickBatcherTimeout = 3
+        }
       }         
       
       var lvlMaxMoney = ns.hacknet.getHashUpgradeLevel("Increase Maximum Money")
       var upgCost = ns.formulas.hacknetServers.hashUpgradeCost("Increase Maximum Money", lvlMaxMoney)
       if (ns.hacknet.numHashes() > upgCost) {
-        if (ns.hacknet.spendHashes("Increase Maximum Money", target))
+        if (ns.hacknet.spendHashes("Increase Maximum Money", target)) {
           db.dbLogf(ns, "Increasing Maximum Money of %s %i: $%s", target, lvlMaxMoney+1,
-              ns.formatNumber(ns.getServerMaxMoney(target)))
+              ns.formatNumber(ns.getServerMaxMoney(target))) 
+          kickBatcher = true
+          kickBatcherTimeout = 5
+        }
       }  
+    }
+
+    if(kickBatcher) {
+      kickBatcherTimeout--
+      if(kickBatcherTimeout < 0) {
+        db.dbLogf(ns, "Killing batcher to adopt new stats")
+        ns.scriptKill("batcher/controller.js", "home")
+        kickBatcher = false
+      }
     }
 
     while(ns.hacknet.numHashes() > 10) {
@@ -86,8 +104,9 @@ export async function main(ns) {
       } else {
         maxNodes = 24
       }
-      ns.printf("Sold %i hashes for $%s", hashCount*4, ns.formatNumber(hashCount*1000000,0))
-      db.dbLogf(ns, "Sold %i hashes for Money", hashCount*4)
+      var line = ns.sprintf("Sold %i hashes for $%s", hashCount*4, ns.formatNumber(hashCount*1000000,0))
+      ns.print(line)
+      db.dbLogf(ns, line)
     }  
 
     var totalHProduction = 0

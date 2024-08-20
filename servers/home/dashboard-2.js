@@ -58,7 +58,7 @@ export async function main(ns) {
             (ns.singularity.exportGameBonus() ? color.fgCyan +"[BONUS]" : "")
         )
         ns.printf("%s[START-]%s\t%s[SINGUL]%s\t%s[STANEK]%s\t%s[BATCH]",
-            ns.scriptRunning("start.js", "home")? color.fgGreen : color.fgRed,
+            ns.scriptRunning("basicstart.js", "home")? color.fgGreen : color.fgRed,
             color.reset,
             ns.scriptRunning("singularity-start.js", "home")? color.fgGreen : color.fgRed,
             color.reset,
