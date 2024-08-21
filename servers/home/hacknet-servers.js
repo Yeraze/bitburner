@@ -16,6 +16,7 @@ export async function main(ns) {
   var kickBatcher = false
   var kickBatcherTimeout = 0
 
+  var opModel = parsearg(ns, "--model", "roi")
   while(!stop) {
     if (sim) {
       ns.printf("New cash value: $%s", ns.formatNumber(cash))
@@ -83,9 +84,11 @@ export async function main(ns) {
       }
     }
 */
+    var hashesSold = 0
     while(ns.hacknet.numHashes() > 10) {
       ns.hacknet.spendHashes("Sell for Money")
       hashCount+=4
+      hashesSold++
       //await ns.sleep(10)
     }
 
@@ -108,7 +111,7 @@ export async function main(ns) {
       } else {
         maxNodes = 24
       }
-      var line = ns.sprintf("Sold %i hashes for $%s", hashCount, ns.formatNumber((hashCount/4)*1000000,0))
+      var line = ns.sprintf("Sold %i hashes for $%s", hashCount, ns.formatNumber(hashesSold*1000000,0))
       ns.print(line)
       db.dbLogf(ns, line)
     }  
@@ -220,8 +223,16 @@ export async function main(ns) {
       }
     }
 
+    // Look for a changed opmodel
+    var dbModel = db.dbRead(ns, "opmodel")
+    if (dbModel) {
+      if (opModel != dbModel.opModel) {
+        db.dbLogf(ns, "HNSERV: Changed opmodel to %s", dbModel.opModel)
+        opModel = dbModel.opModel
+      }
+    }
     var upgrade
-    switch(parsearg(ns, "--model", "roi")) {
+    switch(opModel) {
       case "sellonly":
         upgrade = null
         break
@@ -236,8 +247,7 @@ export async function main(ns) {
         upgrade = upgrades.sort(((a, b) => (a.ratio - b.ratio))).pop()
     }
 
-
-    if (upgrade && (ns.hacknet.numNodes() < maxNodes)) {
+    if (upgrade) {
       if (upgrade.type == "NODE") {
         ns.print("Purchasing a new node")
         if (sim == 0)

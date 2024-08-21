@@ -190,7 +190,7 @@ export async function main(ns) {
             continue
         // Purchase any augments
         for(var aug of ns.sleeve.getSleevePurchasableAugs(sleeveNum)) {
-            if(aug.cost < ns.getServerMoneyAvailable("home")) {
+            if((aug.cost < ns.getServerMoneyAvailable("home")) && (aug.name != "Z.O.Ë.")) {
                 if(await doCommand(ns, `ns.sleeve.purchaseSleeveAug(${sleeveNum}, "${aug.name}")`)) {
                     ns.toast(ns.sprintf("[SLEEVE:%i] Buying augment %s", sleeveNum, aug.name), "info")
                     db.dbLogf(ns, "[SLEEVE:%i] Buying augment %s", sleeveNum, aug.name)

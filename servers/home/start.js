@@ -12,7 +12,7 @@ export async function main(ns) {
 
   db.dbLog(ns, "start", "Initial setup...")
   if(ns.getResetInfo().ownedSF.has(4))
-    await doCommand(ns, `ns.singularity.commitCrime('Mug')`)
+    await doCommand(ns, `ns.singularity.commitCrime('Rob Store')`)
   execContinue(ns, "dashboard-2.js", "home", {temporary: true, threads:1})
 
 
