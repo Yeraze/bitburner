@@ -99,10 +99,10 @@ export async function main(ns) {
       if(augCost.rep < fData.rep) {
         if(augCost.cost > ns.getServerMoneyAvailable("home")) {
           // We have the Rep for this augment, but not the cash
-          var line = ns.sprintf("%s-> Qualify for %s, but too expensive (%s)",
-              CONST.fgYellow, aug, 
-              ns.formatPercent(ns.getServerMoneyAvailable("home")/ augCost.cost)          )
-          db.dbLogf(ns, line)
+          var perc = ns.formatPercent(ns.getServerMoneyAvailable("home")/ augCost.cost)
+          var line = ns.sprintf("%s -> Qualify for %s , but too expensive ( %s )",
+              CONST.fgYellow, aug, perc)
+          db.dbLog(ns, "start", line)
           ns.print(line)
           savingUp = true
           continue // too expensive
@@ -111,7 +111,7 @@ export async function main(ns) {
         //rehprintf(ns, "Purchasing %s from %s", aug, fac)
         var line= ns.sprintf("Purchasing %s from %s", aug, fac)
         db.dbLogf(ns, line)
-        ns.print(line)
+        ns.printf(line)
         if(ns.args.includes("--slow"))
           await ns.sleep(1000)
         ns.spawn("singularity-augpurchase.js", {spawnDelay: 0}, fac, aug)
@@ -178,8 +178,8 @@ export async function main(ns) {
 
       if(_fac.augments.includes(NFG)) {
         if (fData.rep > nfgCost.rep) {
-          var line = ns.sprintf( "Buying NFG from %s (%i rep, $%s)", fac, 
-            nfgCost.rep, ns.formatNumber(nfgCost.cost))
+          var line = ns.sprintf("Buying NFG from %s (%s rep, $%s)", fac, 
+            ns.formatNumber(nfgCost.rep), ns.formatNumber(nfgCost.cost))
           db.dbLogf(ns, line)
           ns.print(line)
           if(ns.args.includes("--slow"))

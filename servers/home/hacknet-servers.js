@@ -38,9 +38,11 @@ export async function main(ns) {
     var lvlStudying = ns.hacknet.getHashUpgradeLevel("Improve Studying")
     var upgCost = ns.formulas.hacknetServers.hashUpgradeCost("Improve Studying", lvlStudying)
     if (ns.hacknet.numHashes() > upgCost) {
-      if(ns.hacknet.spendHashes("Improve Studying"))
+      if(ns.hacknet.spendHashes("Improve Studying")) {
+        hashCount += upgCost
         db.dbLogf(ns, "Upgrading studying to level %i (%s)", lvlStudying+1,
           ns.formatPercent(ns.hacknet.getStudyMult()))
+      }
     }
 
     // See if we can boost the situation around our Hacking Target
@@ -51,10 +53,11 @@ export async function main(ns) {
       var upgCost = ns.formulas.hacknetServers.hashUpgradeCost("Reduce Minimum Security", lvlMinSec)
       if (ns.hacknet.numHashes() > upgCost) {
         if (ns.hacknet.spendHashes("Reduce Minimum Security", target)) {
+          hashCount += upgCost
           db.dbLogf(ns, "Lowering Security of %s %i: %s", target, lvlMinSec+1, 
               ns.formatNumber(ns.getServerMinSecurityLevel(target)))
           kickBatcher = true
-          kickBatcherTimeout = 3
+          kickBatcherTimeout = 5
         }
       }         
       
@@ -62,6 +65,7 @@ export async function main(ns) {
       var upgCost = ns.formulas.hacknetServers.hashUpgradeCost("Increase Maximum Money", lvlMaxMoney)
       if (ns.hacknet.numHashes() > upgCost) {
         if (ns.hacknet.spendHashes("Increase Maximum Money", target)) {
+          hashCount += upgCost
           db.dbLogf(ns, "Increasing Maximum Money of %s %i: $%s", target, lvlMaxMoney+1,
               ns.formatNumber(ns.getServerMaxMoney(target))) 
           kickBatcher = true
@@ -69,7 +73,7 @@ export async function main(ns) {
         }
       }  
     }
-
+/*
     if(kickBatcher) {
       kickBatcherTimeout--
       if(kickBatcherTimeout < 0) {
@@ -78,10 +82,10 @@ export async function main(ns) {
         kickBatcher = false
       }
     }
-
+*/
     while(ns.hacknet.numHashes() > 10) {
       ns.hacknet.spendHashes("Sell for Money")
-      hashCount++
+      hashCount+=4
       //await ns.sleep(10)
     }
 
@@ -104,7 +108,7 @@ export async function main(ns) {
       } else {
         maxNodes = 24
       }
-      var line = ns.sprintf("Sold %i hashes for $%s", hashCount*4, ns.formatNumber(hashCount*1000000,0))
+      var line = ns.sprintf("Sold %i hashes for $%s", hashCount, ns.formatNumber((hashCount/4)*1000000,0))
       ns.print(line)
       db.dbLogf(ns, line)
     }  
@@ -113,7 +117,7 @@ export async function main(ns) {
     for(var index=0; index < ns.hacknet.numNodes(); index++) {
       totalHProduction += ns.hacknet.getNodeStats(index).hashCapacity
     }
-    if ((hashCount*4) > (totalHProduction*0.8)) {
+    if ((hashCount) > (totalHProduction*0.8)) {
       // We just sold over 80% of our total Hash Storage Capacity
       // time to buy more
       var minCost = 1e99

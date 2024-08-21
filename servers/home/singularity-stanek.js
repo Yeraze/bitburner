@@ -4,6 +4,7 @@ import * as db from 'database.js'
 /** @param {NS} ns */
 export async function main(ns) {
     //ns.tail()
+    ns.disableLog('ALL')
     if(ns.getResetInfo().ownedAugs.has("Stanek's Gift - Genesis") == false) {
         db.dbLogf(ns, "STANEK: Gift not found, exiting")
         return
@@ -23,8 +24,10 @@ export async function main(ns) {
     }
 
     for(var counter = 0; counter < cycles; counter++) {
-        await ns.sleep(10)
+        ns.clearLog()
         ns.printf("Charge cycle: %i of %i", counter, cycles)
+
+        await ns.sleep(10)
         for(var fragment of fragments) {
             ns.printf("-> [%i] %i,%i - %i", fragment.id, fragment.x, fragment.y, fragment.highestCharge)
             var cmd = `await ns.stanek.chargeFragment(${fragment.x}, ${fragment.y})`

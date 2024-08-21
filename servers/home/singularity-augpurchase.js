@@ -68,7 +68,7 @@ export async function main(ns) {
                 if(await doCommand(ns, `ns.singularity.getCurrentWork().type`) == "GRAFTING") {
                     db.dbLogf(ns, "WARN: Donations could be enabled for %s, but awaiting Graft", faction)
                 } else {
-                    ns.toast(ns.sprintf("Restarting to enable DONATIONS for %s", faction), "info", null)
+                    ns.toast(ns.sprintf("Restarting to enable DONATIONS for %s", faction), "info")
                     ns.spawn("reset.js")
                 }
             }
