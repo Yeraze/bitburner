@@ -103,10 +103,11 @@ export async function main(ns) {
             ns.printf("=== Hacknet ============================================")
             let hacknet = db.dbRead(ns, "hacknet")
             if (hacknet) {
-                ns.printf("Number of Nodes: %i\tHashes: %s/%s",
+                ns.printf("Number of Nodes: %i\tHashes: %s/%s (+%s h/s)",
                     hacknet.numNodes,
                     ns.formatNumber(hacknet.numHashes), 
-                    ns.formatNumber(hacknet.maxHashes)
+                    ns.formatNumber(hacknet.maxHashes),
+                    ns.formatNumber(hacknet.rate)
                 )
             }
         }

@@ -74,7 +74,7 @@ export async function main(ns) {
         }
       }  
     }
-/*
+
     if(kickBatcher) {
       kickBatcherTimeout--
       if(kickBatcherTimeout < 0) {
@@ -83,7 +83,7 @@ export async function main(ns) {
         kickBatcher = false
       }
     }
-*/
+
     var hashesSold = 0
     while(ns.hacknet.numHashes() > 10) {
       ns.hacknet.spendHashes("Sell for Money")
@@ -318,6 +318,7 @@ export async function main(ns) {
         counter++
         var record = { numNodes: ns.hacknet.numNodes(),
                        numHashes: ns.hacknet.numHashes(),
+                       rate: totalProduction,
                        maxHashes: ns.hacknet.hashCapacity() }
         db.dbWrite(ns, "hacknet", record)
         await ns.sleep(1000)
