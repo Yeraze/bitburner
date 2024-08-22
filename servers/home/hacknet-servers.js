@@ -35,10 +35,24 @@ export async function main(ns) {
 
     let hashCount = 0
 
+    // We only really want to do this if we would get some benefit from it..
+    // Which means either the Player is studying, or a Sleeve
+    var someoneIsStudying = false
+
+    if(ns.singularity.getCurrentWork()?.type == "CLASS")
+      someoneIsStudying = true
+
+    var sleeves = db.dbRead(ns, "sleeves")
+    if (sleeves) {
+      for(var sleeve of sleeves) {
+        if(sleeve.job.startsWith("U:"))
+          someoneIsStudying = true
+      }
+    }
     // See if we can upgrade our studying a bit
     var lvlStudying = ns.hacknet.getHashUpgradeLevel("Improve Studying")
     var upgCost = ns.formulas.hacknetServers.hashUpgradeCost("Improve Studying", lvlStudying)
-    if (ns.hacknet.numHashes() > upgCost) {
+    if (someoneIsStudying && (ns.hacknet.numHashes() > upgCost)) {
       if(ns.hacknet.spendHashes("Improve Studying")) {
         hashCount += upgCost
         db.dbLogf(ns, "Upgrading studying to level %i (%s)", lvlStudying+1,
