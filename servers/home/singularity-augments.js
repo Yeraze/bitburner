@@ -78,6 +78,8 @@ export async function main(ns) {
 
   // First search the list to see what the "lowest rep" aug is
   augIndex = 0
+  var unaffordable = 0
+  var unaff_cost = 1e99
   for(var _fac of augsFromFaction) {
     fac = _fac.faction
     var fData = factionData.find((A) => (A.name == fac))
@@ -99,10 +101,13 @@ export async function main(ns) {
       if(augCost.rep < fData.rep) {
         if(augCost.cost > ns.getServerMoneyAvailable("home")) {
           // We have the Rep for this augment, but not the cash
+          unaffordable++
+          if (augCost.cost < unaff_cost) {
+            unaff_cost = augCost.cost
+          }
           var perc = ns.formatPercent(ns.getServerMoneyAvailable("home")/ augCost.cost)
           var line = ns.sprintf("%s -> Qualify for %s , but too expensive ( %s )",
               CONST.fgYellow, aug, perc)
-          db.dbLog(ns, "start", line)
           ns.print(line)
           savingUp = true
           continue // too expensive
@@ -140,6 +145,11 @@ export async function main(ns) {
         }
       }
     }
+  }
+
+  if (unaffordable > 0) {
+    db.dbLogf(ns, "%i augments we can't afford, cheapest is $%s",
+      unaffordable, ns.formatNumber(unaff_cost))
   }
 
   // If we got here, there was nothing we could buy right now
