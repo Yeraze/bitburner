@@ -31,7 +31,7 @@ export async function main(ns) {
         continue
       }
     }
-    var maxNodes = 20
+    var maxNodes = 60
 
     let hashCount = 0
 
@@ -126,15 +126,6 @@ export async function main(ns) {
     }
 
     if(hashCount > 0) {
-      if(ns.getPlayer().skills.hacking < 50) {
-        maxNodes = 4
-      } else if (ns.getPlayer().skills.hacking < 200) {
-        maxNodes = 8
-      } else if (ns.getPlayer().skills.hacking < 1000) {
-        maxNodes = 16
-      } else {
-        maxNodes = 24
-      }
       var line = ns.sprintf("Sold %i hashes for $%s", hashCount, ns.formatNumber(hashesSold*1000000,0))
       ns.print(line)
       db.dbLogf(ns, line)
