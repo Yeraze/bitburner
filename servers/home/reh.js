@@ -18,6 +18,16 @@ function writeCmdFile(ns, filename, command) {
 }
 
 /** @param {NS} ns */
+export function setConfig(ns, prop, value) {
+  var record = db.dbRead(ns, "config")
+  if (record === null) {
+    record = {}
+  }
+  record[prop] = value
+  db.dbWrite(ns, "config", record)
+}
+
+/** @param {NS} ns */
 export function getConfig(ns, prop, defaultValue) {
   var record = db.dbRead(ns, "config")
   if(record != null) {

@@ -177,7 +177,7 @@ export async function main(ns) {
   // Alright, nothing left to do but grind..
   // So check the NFG's
 
-  if(getConfig(ns, "buynfg", 1) == 1) {
+  if(getConfig(ns, "buynfg", 0) == 1) {
     ns.printf("Evaluating NFG's")
     if(ns.args.includes("--slow"))
       await ns.sleep(1000)
