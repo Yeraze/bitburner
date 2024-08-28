@@ -184,7 +184,9 @@ async function hackUntilTarget(ns, target, stopAtTarget) {
       // This isa bit messy, yes.. And can leave the target in an unprepped state
       // But it's the fastest way..
       await execAndWait(ns, "global-cleanup.js", "home", {threads:1, temporary:true}, "--super")
-      await execAndWait(ns, "singularity-stanek.js", "home", {temporary: true, threads:1}, "--cycles", 10)
+      if(ns.getResetInfo().ownedAugs.has("Stanek's Gift - Serenity") == false)
+        await execAndWait(ns, "singularity-stanek.js", "home", 
+              {temporary: true, threads:1}, "--cycles", 10)
       ns.exec("batcher/controller.js", "home", 1, target)
 
       totalRam = totalRamNow
