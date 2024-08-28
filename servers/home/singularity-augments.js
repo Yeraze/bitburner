@@ -1,4 +1,4 @@
-import {rehprintf, qualifyAugment, doCommand} from 'reh.js'
+import {getConfig, rehprintf, qualifyAugment, doCommand} from 'reh.js'
 import * as CONST from 'reh-constants.js'
 import * as db from 'database.js'
 /** @param {NS} ns */
@@ -176,25 +176,28 @@ export async function main(ns) {
 
   // Alright, nothing left to do but grind..
   // So check the NFG's
-  ns.printf("Evaluating NFG's")
-  if(ns.args.includes("--slow"))
-    await ns.sleep(1000)
-  const NFG = "NeuroFlux Governor"
-  var nfgCost = augCosts.find((A) => (A.augment == NFG))
-  if((nfgCost) && (nfgCost.cost < ns.getServerMoneyAvailable("home"))) {
-    for(var _fac of augsFromFaction) {
-      var fac = _fac.faction
-      var fData = factionData.find((A) => (A.name == fac))
 
-      if(_fac.augments.includes(NFG)) {
-        if (fData.rep > nfgCost.rep) {
-          var line = ns.sprintf("Buying NFG from %s (%s rep, $%s)", fac, 
-            ns.formatNumber(nfgCost.rep), ns.formatNumber(nfgCost.cost))
-          db.dbLogf(ns, line)
-          ns.print(line)
-          if(ns.args.includes("--slow"))
-            await ns.sleep(1000)
-          ns.spawn("singularity-augpurchase.js", {spawnDelay: 0}, fac, NFG)
+  if(getConfig(ns, "buynfg", 1) == 1) {
+    ns.printf("Evaluating NFG's")
+    if(ns.args.includes("--slow"))
+      await ns.sleep(1000)
+    const NFG = "NeuroFlux Governor"
+    var nfgCost = augCosts.find((A) => (A.augment == NFG))
+    if((nfgCost) && (nfgCost.cost < ns.getServerMoneyAvailable("home"))) {
+      for(var _fac of augsFromFaction) {
+        var fac = _fac.faction
+        var fData = factionData.find((A) => (A.name == fac))
+
+        if(_fac.augments.includes(NFG)) {
+          if (fData.rep > nfgCost.rep) {
+            var line = ns.sprintf("Buying NFG from %s (%s rep, $%s)", fac, 
+              ns.formatNumber(nfgCost.rep), ns.formatNumber(nfgCost.cost))
+            db.dbLogf(ns, line)
+            ns.print(line)
+            if(ns.args.includes("--slow"))
+              await ns.sleep(1000)
+            ns.spawn("singularity-augpurchase.js", {spawnDelay: 0}, fac, NFG)
+          }
         }
       }
     }

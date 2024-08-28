@@ -18,6 +18,17 @@ function writeCmdFile(ns, filename, command) {
 }
 
 /** @param {NS} ns */
+export function getConfig(ns, prop, defaultValue) {
+  var record = db.dbRead(ns, "config")
+  if(record != null) {
+    if (record.hasOwnProperty(prop)) {
+      return record[prop]
+    }
+  }
+  return defaultValue
+}
+
+/** @param {NS} ns */
 export async function doCommand(ns, command, reqthreads = 1) {
   var random = Math.floor(Math.random() * 100000000)
   var filename = `/tmp/${random}.js`
