@@ -232,7 +232,8 @@ export async function main(ns) {
         var invites = []
         for (var fac of factionList.filter((A) => (!A.status)) )
             invites.push(fac.name)
-        ns.printf("Invitations: %s", invites.join(', '))
+        if(invites.length > 0)
+          ns.printf("Invitations: %s", invites.join(', '))
 
     }
 
