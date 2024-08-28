@@ -19,8 +19,6 @@ export async function main(ns) {
     while(true) {
         cycle++
         await ns.sleep(1000)
-        var batcher = db.dbRead(ns, "batcher")
-        var sleeves = db.dbRead(ns, "sleeves") ?? []
         var faction = db.dbRead(ns, "faction") 
         var factionList = db.dbRead(ns, "factions") ?? []
         var augment = db.dbRead(ns, "augment")
@@ -77,8 +75,9 @@ export async function main(ns) {
             color.reset,
             ns.scriptRunning("batcher/controller.js", "home")? color.fgGreen : color.fgRed
         )
-        ns.printf("=== Batcher ============================================")
+        var batcher = db.dbRead(ns, "batcher")
         if(batcher) {
+            ns.printf("=== Batcher ============================================")
             ns.printf("Target: %s (%s%s)", batcher.target,
                     (batcher.greed == "95%") ? color.fgCyan : "",
                     (batcher.status.includes("Active") ? 
@@ -133,25 +132,28 @@ export async function main(ns) {
         var colors = [color.fgWhite, color.fgWhite, color.fgWhite, color.fgWhite]
         dtable.push(row)
         ctable.push(colors)
-        for(var sleeve of sleeves) {
-            row = [ ns.sprintf("%s", sleeve.id+1), 
-                    ns.sprintf("%3s", sleeve.int),
-                    ns.sprintf("%7s", ns.formatNumber(sleeve.shock, 2)),
-                    ns.sprintf("%6s", ns.formatNumber(sleeve.sync, 2)),
-                    ns.sprintf("%s", sleeve.job)
-            ]
-            colors = ["", "",
-                sleeve.shock > 0 ? color.fgRed : color.fgGreen,
-                sleeve.sync < 99 ? color.fgRed : color.fgGreen,
-                ""
-            ]
-            dtable.push(row)
-            ctable.push(colors)
+        var sleeves = db.dbRead(ns, "sleeves") ?? []
+        if(sleeves.length > 0) {
+          ns.printf("=== Sleeves ============================================")
+          for(var sleeve of sleeves) {
+              row = [ ns.sprintf("%s", sleeve.id+1), 
+                      ns.sprintf("%3s", sleeve.int),
+                      ns.sprintf("%7s", ns.formatNumber(sleeve.shock, 2)),
+                      ns.sprintf("%6s", ns.formatNumber(sleeve.sync, 2)),
+                      ns.sprintf("%s", sleeve.job)
+              ]
+              colors = ["", "",
+                  sleeve.shock > 0 ? color.fgRed : color.fgGreen,
+                  sleeve.sync < 99 ? color.fgRed : color.fgGreen,
+                  ""
+              ]
+              dtable.push(row)
+              ctable.push(colors)
+          }
+          if(sleeves.length > 0)
+              ns.printf("Stats: %s", sleeves[0].stats?.join(' / ') )
+          table(ns, dtable, ctable)
         }
-        ns.printf("=== Sleeves ============================================")
-        if(sleeves.length > 0)
-            ns.printf("Stats: %s", sleeves[0].stats?.join(' / ') )
-        table(ns, dtable, ctable)
 
 
         ns.printf("=== Factions ============================================")
