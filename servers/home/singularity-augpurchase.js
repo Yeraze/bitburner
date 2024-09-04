@@ -29,7 +29,7 @@ export async function main(ns) {
     // We couldn't buy it.. see if we can donate up to it..
     var boughtIt = false
 
-    if( ns.singularity.getFactionFavor(faction) >= 150) {
+    if( ns.singularity.getFactionFavor(faction) >= ns.getFavorToDonate()) {
         // See how many donations we can make before we run out of cash
         //  or can just buy the augment we're looking at
         //  each donation is 100e9 = $100B
@@ -61,12 +61,12 @@ export async function main(ns) {
     // Triggering "factionjoin" will also starting hacking for it
     if(!boughtIt) {
         var favor = ns.singularity.getFactionFavor(faction)
-        if (favor < 150) {
+        if (favor < ns.getFavorToDonate()) {
             // See if a reset to convert Rep->Favor would be enough to
             // enable donations on the next run.
             var convFavor = ns.singularity.getFactionFavorGain(faction)
 
-            if(favor + convFavor > 150) {
+            if(favor + convFavor > ns.getFavorToDonate()) {
                 if(await doCommand(ns, `ns.singularity.getCurrentWork().type`) == "GRAFTING") {
                     db.dbLogf(ns, "WARN: Donations could be enabled for %s, but awaiting Graft", faction)
                 } else {

@@ -195,8 +195,8 @@ export async function main(ns) {
             colors = [fac.status ? color.fgGreen : "",
                 "",
                 "",
-                fac.favor > 150 ? color.fgGreen : 
-                    (fac.favor + fac.favorGain > 150) ? color.fgCyan : ""
+                fac.favor > ns.getFavorToDonate() ? color.fgGreen : 
+                    (fac.favor + fac.favorGain > ns.getFavorToDonate()) ? color.fgCyan : ""
             ]
             dtable.push(row)
             ctable.push(colors)
