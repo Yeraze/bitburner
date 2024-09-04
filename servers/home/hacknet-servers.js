@@ -57,9 +57,10 @@ export async function main(ns) {
       var levels = 1
       var hashes = ns.hacknet.numHashes()
       while(ns.formulas.hacknetServers.hashUpgradeCost("Improve Studying", lvlStudying+levels) < hashes) {
-        levels++
         hashes -= ns.formulas.hacknetServers.hashUpgradeCost("Improve Studying", lvlStudying+levels)
+        levels++
       }
+      
       hashUpgrades.push({name: "STUDY", amount: levels -1})
     }
 
@@ -71,8 +72,8 @@ export async function main(ns) {
       var levels = 1
       var hashes = ns.hacknet.numHashes()
       while(ns.formulas.hacknetServers.hashUpgradeCost("Reduce Minimum Security", lvlMinSec+levels) < hashes) {
-        levels++
         hashes -= ns.formulas.hacknetServers.hashUpgradeCost("Reduce Minimum Security", lvlStudying+levels)
+        levels++
       }
       if(levels > 1)
         hashUpgrades.push({name: "SECURITY", amount:  levels -1})
@@ -82,8 +83,8 @@ export async function main(ns) {
       var levels = 1
       var hashes = ns.hacknet.numHashes()
       while(ns.formulas.hacknetServers.hashUpgradeCost("Increase Maximum Money", lvlMaxMoney+levels) < hashes) {
-        levels++
         hashes -= ns.formulas.hacknetServers.hashUpgradeCost("Increase Maximum Money", lvlStudying+levels)
+        levels++
       }
       if(levels > 1)
         hashUpgrades.push({name: "MONEY", amount: levels -1 })
