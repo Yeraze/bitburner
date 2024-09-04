@@ -112,14 +112,19 @@ async function hackUntilTarget(ns, target, stopAtTarget) {
 
   // First wait until we have root & proper hacking level
   db.dbLogf(ns, "Waiting for root access on %s", target)
+  var counter = 0
   while (ns.hasRootAccess(target) == false) {
+    counter++
     await ns.sleep(1000);
     await checkForBreaches(ns)
+    ns.printf("Waiting for root on %s: %i", target, counter)
   }
   db.dbLogf(ns, "Waiting for Hack level on %s", target)
   while (ns.getHackingLevel() < ns.getServerRequiredHackingLevel(target)) {
     await checkForBreaches(ns)
     await ns.sleep(1000)
+    counter++
+    ns.printf("Waiting for hack level %s: %i", target, counter)
   }
 
   // Calculate the initial amount of RAM available
@@ -147,6 +152,8 @@ async function hackUntilTarget(ns, target, stopAtTarget) {
       }
 
     await ns.sleep(5000);
+    counter++
+    ns.printf("Monitoring hack on %s: %i", target, counter)
     await checkForBreaches(ns)
     await checkContracts(ns)
     var rekick = false
