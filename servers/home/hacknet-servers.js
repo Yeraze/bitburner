@@ -5,7 +5,7 @@ import * as db from "./database";
 export async function main(ns) {
   ns.disableLog('ALL')
   var stop =false;
-  //ns.tail()
+  ns.tail()
   ns.moveTail(400,0)
   ns.resizeTail(420, 110)
 
