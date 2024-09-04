@@ -134,6 +134,10 @@ async function hackUntilTarget(ns, target, stopAtTarget) {
   db.dbLogf(ns, "HWGW Attack on %s (%s available ram)", target, 
       ns.formatRam(totalRam))
 
+  // Cleanup any existing run
+  await execAndWait(ns, "global-cleanup.js", "home", {temporary: true}, "--super")
+  ns.scriptKill("batcher/controller.js", "home")
+
   // and START
   ns.exec("batcher/controller.js", "home", {threads:1, temporary:true}, target)
   var spokenRam = totalRam
@@ -200,8 +204,6 @@ async function hackUntilTarget(ns, target, stopAtTarget) {
     }
   }
   db.dbLogf(ns, "Ending attack on %s", target)
-  await execAndWait(ns, "global-cleanup.js", "home", {temporary: true}, "--super")
-  ns.scriptKill("batcher/controller.js", "home")
 }
 
 async function checkContracts(ns) {
