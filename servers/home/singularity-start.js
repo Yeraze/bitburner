@@ -164,8 +164,8 @@ async function manageFactions(ns) {
 
 /** @param {NS} ns */
 async function installBackdoors(ns) {
-//  const backdoorServers = ["CSEC", "avmnite-02h", "I.I.I.I", "run4theh111z", "w0r1d_d43m0n"]
-  const backdoorServers = ["CSEC", "avmnite-02h", "I.I.I.I", "run4theh111z"]
+  const backdoorServers = ["CSEC", "avmnite-02h", "I.I.I.I", "run4theh111z", "w0r1d_d43m0n"]
+  //const backdoorServers = ["CSEC", "avmnite-02h", "I.I.I.I", "run4theh111z"]
   for(var S of backdoorServers) {
     // if we are of sufficient level to hack
     //    and have root access
