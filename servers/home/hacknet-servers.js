@@ -98,15 +98,15 @@ export async function main(ns) {
       case "STUDY":
         if(ns.hacknet.spendHashes("Improve Studying", "", chosenUpgrade.amount)) {
           hashCount += upgCost
-          db.dbLogf(ns, "Upgrading studying to %s",
-            ns.formatPercent(ns.hacknet.getStudyMult()))
+          db.dbLogf(ns, "Upgrading studying to %s (%i levels)",
+            ns.formatPercent(ns.hacknet.getStudyMult()), chosenUpgrade.amount)
         }
         break;
       case  "SECURITY":
         if (ns.hacknet.spendHashes("Reduce Minimum Security", target, chosenUpgrade.amount)) {
           hashCount += upgCost
-          db.dbLogf(ns, "Lowering Security of %s  %s", target,
-              ns.formatNumber(ns.getServerMinSecurityLevel(target)))
+          db.dbLogf(ns, "Lowering Security of %s %s (%i levels)", target,
+              ns.formatNumber(ns.getServerMinSecurityLevel(target)), chosenUpgrade.amount)
           kickBatcher = true
           kickBatcherTimeout = 5
         }
@@ -114,8 +114,8 @@ export async function main(ns) {
       case "MONEY":
         if (ns.hacknet.spendHashes("Increase Maximum Money", target, chosenUpgrade.amount)) {
           hashCount += upgCost
-          db.dbLogf(ns, "Increasing Maximum Money of %s $%s", target,
-              ns.formatNumber(ns.getServerMaxMoney(target))) 
+          db.dbLogf(ns, "Increasing Maximum Money of %s $%s (%i levels)", target,
+              ns.formatNumber(ns.getServerMaxMoney(target)), chosenUpgrade.amount) 
           kickBatcher = true
           kickBatcherTimeout = 5
         }
