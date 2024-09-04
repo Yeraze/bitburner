@@ -141,14 +141,17 @@ export async function main(ns) {
       //await ns.sleep(10)
     }
 
-    if (revenue > 8) {
-      // We've got a decent bit of revenue coming in..
-      // 8hash/sec => $2mil/sec
-      // So reserve $100Mil
-      cash -= (100 * 1000000)
-      if (cash < 0)
-        cash = 0
+    // We've got a decent bit of revenue coming in..
+    // 8hash/sec => $2mil/sec
+    // So reserve $100Mil
+    //
+    if (revenue > 4) {
+      var rate = Math.floor(revenue / 4)
+      var reserved = Math.pow(10, rate) * 1000000
+      ns.printf("Reserving $%s", ns.formatNumber(reserved))
+      cash -= reserved
     }
+    if (cash<0) cash = 0
 
     if(hashCount > 0) {
       var line = ns.sprintf("Sold %i hashes for $%s", hashCount, ns.formatNumber(hashesSold*1000000,0))

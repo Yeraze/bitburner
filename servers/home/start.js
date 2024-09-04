@@ -15,6 +15,9 @@ export async function main(ns) {
     await doCommand(ns, `ns.singularity.commitCrime('Rob Store')`)
   execContinue(ns, "dashboard-2.js", "home", {temporary: true, threads:1})
 
+  if(ns.getResetInfo().ownedSF.has(9))
+    ns.exec("hacknet-servers.js", "home", {temporary:true, threads:1})
+
 
   if((ns.getResetInfo().currentNode == 13) || ns.getResetInfo().ownedSF.has(13)) {
     if((Date.now() - ns.getResetInfo().lastAugReset) > 60*1000) {
