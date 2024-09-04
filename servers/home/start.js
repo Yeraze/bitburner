@@ -19,14 +19,15 @@ export async function main(ns) {
     ns.exec("hacknet-servers.js", "home", {temporary:true, threads:1})
 
 
-  if((ns.getResetInfo().currentNode == 13) || ns.getResetInfo().ownedSF.has(13)) {
+  if(ns.getResetInfo().ownedSF.has(13)) {
     if((Date.now() - ns.getResetInfo().lastAugReset) > 60*1000) {
       db.dbLogf(ns, "Bypassing Stanek bootstrap")
     } else {
-      if(!await doCommand(ns, "ns.stanek.acceptGift()")) {
-        db.dbLogf(ns, "ERROR: Unable to accept Stanek's gift")
-        ns.toast("Unable to accept Stanek's gift", "error")
-      }
+      // Configure Stanek's gift
+        // Reload the Fragment DB
+      ns.write("db/stanek-fragments.txt", ns.read("stanek-fragments.txt"), "w")
+      await execAndWait(ns, "stanek-bootstrap.js", "home", {temporary: true, threads:1}, "--load)")
+
       db.dbLogf(ns, "Initializing Stanek's gift")
       await execAndWait(ns, "singularity-stanek.js", "home", {temporary: true, threads:1}, "--cycles", 20)
     }
