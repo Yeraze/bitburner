@@ -160,6 +160,7 @@ export async function main(ns) {
     }
   
     var hashesSold = 0
+    hashCount = 0
     while(ns.hacknet.numHashes() > 10) {
       ns.hacknet.spendHashes("Sell for Money")
       hashCount+=4
