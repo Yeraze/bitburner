@@ -72,7 +72,7 @@ export async function main(ns) {
       var levels = 1
       var hashes = ns.hacknet.numHashes()
       while(ns.formulas.hacknetServers.hashUpgradeCost("Reduce Minimum Security", lvlMinSec+levels) < hashes) {
-        hashes -= ns.formulas.hacknetServers.hashUpgradeCost("Reduce Minimum Security", lvlStudying+levels)
+        hashes -= ns.formulas.hacknetServers.hashUpgradeCost("Reduce Minimum Security", lvlMinSec+levels)
         levels++
       }
       if(levels > 1)
@@ -83,7 +83,7 @@ export async function main(ns) {
       var levels = 1
       var hashes = ns.hacknet.numHashes()
       while(ns.formulas.hacknetServers.hashUpgradeCost("Increase Maximum Money", lvlMaxMoney+levels) < hashes) {
-        hashes -= ns.formulas.hacknetServers.hashUpgradeCost("Increase Maximum Money", lvlStudying+levels)
+        hashes -= ns.formulas.hacknetServers.hashUpgradeCost("Increase Maximum Money", lvlMaxMoney+levels)
         levels++
       }
       if(levels > 1)
@@ -96,28 +96,35 @@ export async function main(ns) {
       ns.printf(" Chosen upgrade: %s +%i", chosenUpgrade.name, chosenUpgrade.amount)
       switch (chosenUpgrade.name) {
       case "STUDY":
-        if(ns.hacknet.spendHashes("Improve Studying", "", chosenUpgrade.amount)) {
-          hashCount += upgCost
-          db.dbLogf(ns, "Upgrading studying to %s (%i levels)",
+        if(ns.hacknet.spendHashes("Improve Studying", "", chosenUpgrade.count)) {
+          db.dbLogf(ns, "Upgrading studying to %s (%i level)",
+            ns.formatPercent(ns.hacknet.getStudyMult()), chosenUpgrade.amount)
+        } else {
+          db.dbLogf(es, "FAILED Upgrading studying to %s (%i level)",
             ns.formatPercent(ns.hacknet.getStudyMult()), chosenUpgrade.amount)
         }
         break;
       case  "SECURITY":
         if (ns.hacknet.spendHashes("Reduce Minimum Security", target, chosenUpgrade.amount)) {
-          hashCount += upgCost
           db.dbLogf(ns, "Lowering Security of %s %s (%i levels)", target,
               ns.formatNumber(ns.getServerMinSecurityLevel(target)), chosenUpgrade.amount)
           kickBatcher = true
           kickBatcherTimeout = 5
+        } else {
+          db.dbLogf(ns, "FAILED Lowering Security of %s %s (%i levels)", target,
+              ns.formatNumber(ns.getServerMinSecurityLevel(target)), chosenUpgrade.amount)
+
         }
         break;
       case "MONEY":
-        if (ns.hacknet.spendHashes("Increase Maximum Money", target, chosenUpgrade.amount)) {
-          hashCount += upgCost
+        if (ns.hacknet.spendHashes("Increase Maximum Money", target)) {
           db.dbLogf(ns, "Increasing Maximum Money of %s $%s (%i levels)", target,
               ns.formatNumber(ns.getServerMaxMoney(target)), chosenUpgrade.amount) 
           kickBatcher = true
           kickBatcherTimeout = 5
+        } else {
+          db.dbLogf(ns, "FAILED Increasing Maximum Money of %s $%s (%i levels)", target,
+              ns.formatNumber(ns.getServerMaxMoney(target)), chosenUpgrade.amount) 
         }
         break;
       }
