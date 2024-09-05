@@ -74,12 +74,14 @@ export async function main(ns) {
          }
 
         // If this sleeve has Shock, drive it to 0
+    /* Removing this, since it doesn't really impact much other than Augs
         if(sleeve.shock > 0) {
             await doCommand(ns, `ns.sleeve.setToShockRecovery(${sleeveNum})`)
             sleeveRecord.job = "Shock Recovery"
             records.push(sleeveRecord)
             continue
         }
+    */
 
         // If this sleeve is not synchronized, then synchronize it
         if(sleeve.sync < 100) {
