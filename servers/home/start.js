@@ -26,7 +26,7 @@ export async function main(ns) {
       // Configure Stanek's gift
         // Reload the Fragment DB
       ns.write("db/stanek-fragments.txt", ns.read("stanek-fragments.txt"), "w")
-      await execAndWait(ns, "stanek-bootstrap.js", "home", {temporary: true, threads:1}, "--load)")
+      await execAndWait(ns, "stanek-bootstrap.js", "home", {temporary: true, threads:1}, "--load")
 
       db.dbLogf(ns, "Initializing Stanek's gift")
       await execAndWait(ns, "singularity-stanek.js", "home", {temporary: true, threads:1}, "--cycles", 20)
