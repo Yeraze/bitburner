@@ -396,6 +396,10 @@ export async function prep(ns, values, ramNet) {
 			ns.print(`Security: +${ns.formatNumber(sec - minSec, 3)}`);
 			ns.print(`Money: \$${ns.formatNumber(money, 2)}/${ns.formatNumber(maxMoney, 2)}`);
 			const time = tEnd - Date.now();
+      if (time < -1) {
+        // Negative time, something is wrong
+        return false
+      }
 			ns.print(`Estimated time remaining: ${ns.tFormat(time)}`);
 			ns.print(`~${batchCount} ${(batchCount === 1) ? "batch" : "batches"}.`);
 			var record = {target : values.target,
