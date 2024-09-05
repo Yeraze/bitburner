@@ -33,8 +33,27 @@ export async function main(ns) {
     }
     var maxNodes = 60
 
-    let hashCount = 0
+    let hashCount = ns.hacknet.numHashes()
 
+    var totalHProduction = 0
+    for(var index=0; index < ns.hacknet.numNodes(); index++) {
+      totalHProduction += ns.hacknet.getNodeStats(index).hashCapacity
+    }
+    if ((hashCount) > (totalHProduction*0.8)) {
+      // We just sold over 80% of our total Hash Storage Capacity
+      // time to buy more
+      var minCost = 1e99
+      var minCostIndex = -1
+      for(var index=0; index < ns.hacknet.numNodes(); index++) {
+        if (ns.hacknet.getCacheUpgradeCost(index) < minCost) {
+          minCost = ns.hacknet.getCacheUpgradeCost(index)
+          minCostIndex = index
+        }
+      }
+      if(ns.hacknet.upgradeCache(minCostIndex)) {
+        db.dbLogf(ns, "Upgrading Hacknet Server Cache")
+      }
+    }
     // We only really want to do this if we would get some benefit from it..
     // Which means either the Player is studying, or a Sleeve
     var someoneIsStudying = false
@@ -166,25 +185,6 @@ export async function main(ns) {
       db.dbLogf(ns, line)
     }  
 
-    var totalHProduction = 0
-    for(var index=0; index < ns.hacknet.numNodes(); index++) {
-      totalHProduction += ns.hacknet.getNodeStats(index).hashCapacity
-    }
-    if ((hashCount) > (totalHProduction*0.8)) {
-      // We just sold over 80% of our total Hash Storage Capacity
-      // time to buy more
-      var minCost = 1e99
-      var minCostIndex = -1
-      for(var index=0; index < ns.hacknet.numNodes(); index++) {
-        if (ns.hacknet.getCacheUpgradeCost(index) < minCost) {
-          minCost = ns.hacknet.getCacheUpgradeCost(index)
-          minCostIndex = index
-        }
-      }
-      if(ns.hacknet.upgradeCache(minCostIndex)) {
-        db.dbLogf(ns, "Upgrading Hacknet Server Cache")
-      }
-    }
     // Now find out the cheapest option to try
     var nodeCost = ns.hacknet.getPurchaseNodeCost()
 
@@ -281,96 +281,92 @@ export async function main(ns) {
         opModel = dbModel.opModel
       }
     }
-    var upgrade
-    switch(opModel) {
-      case "sellonly":
-        upgrade = null
-        break
-      case "windfall":
-        // This finds the single biggest cash-maker
-        upgrade = upgrades.sort((A,B) => (A.value - B.value)).pop()
-        break;
-      case "roi":
-      default:
-        // This finds the item with the best ROI..This typically results 
-        //  in a bunch of smaller upgrades
-        upgrade = upgrades.sort(((a, b) => (a.ratio - b.ratio))).pop()
+    var success = true
+    while(success) {
+      var upgrade
+      switch(opModel) {
+        case "sellonly":
+          upgrade = null
+          break
+        case "windfall":
+          // This finds the single biggest cash-maker
+          upgrade = upgrades.sort((A,B) => (A.value - B.value)).pop()
+          break;
+        case "roi":
+        default:
+          // This finds the item with the best ROI..This typically results 
+          //  in a bunch of smaller upgrades
+          upgrade = upgrades.sort(((a, b) => (a.ratio - b.ratio))).pop()
+      }
+  
+      if (upgrade) {
+        if (upgrade.type == "NODE") {
+          ns.print("Purchasing a new node")
+          if (sim == 0)
+            ns.hacknet.purchaseNode()
+          else
+            cash -= upgrade.price
+        } else if (upgrade.type == "CACHE") {
+          ns.printf("Upgrading CACHE: Node %i Cache +%i",
+              upgrade.node, upgrade.q)
+          if (sim == 0) {
+              success = ns.hacknet.upgradeCache(upgrade.node, upgrade.q)
+          } else {
+              cache -= upgrade.price
+          }   
+        } else if (upgrade.type == "CORE") {
+          ns.printf("Upgrading CORES : Node %i Cores +%i (+%.4f)",
+            upgrade.node, upgrade.q, upgrade.value)
+          if (sim == 0) {
+            success = ns.hacknet.upgradeCore(upgrade.node, upgrade.q)
+          } else {
+            cash -= upgrade.price
+          }
+        } else if (upgrade.type == "LEVEL") {
+          ns.printf("Upgrading LEVELS : Node %i Level +%i (+%.4f)",
+            upgrade.node, upgrade.q, upgrade.value)
+          if (sim == 0) {
+            success = ns.hacknet.upgradeLevel(upgrade.node, upgrade.q)
+          } else {
+            cash -= upgrade.price
+          }
+        } else if (upgrade.type == "RAM") {
+          ns.printf("Upgrading RAM : Node %i RAM +%i (+%.4f)",
+            upgrade.node, upgrade.q, upgrade.value)
+          if (sim ==0) {
+            success = ns.hacknet.upgradeRam(upgrade.node, upgrade.q)
+          } else {
+            cash -= upgrade.price
+          }
+        }
+        //await ns.sleep(20)
+      // Now upgrade the cheapest
+      } else {
+        ns.print("Nothing to upgrade for now...")
+        success = false
+      }
     }
+    var totalProduction = 0
+    for(var index=0; index < ns.hacknet.numNodes(); index++) {
+      totalProduction += ns.hacknet.getNodeStats(index).production
+    }
+    var msg =ns.sprintf("-> %i nodes producing %s h/s (+%s/s)", ns.hacknet.numNodes(),
+      ns.formatNumber(totalProduction, 4), ns.formatNumber(totalProduction - revenue, 4))
+    ns.toast(msg, "info")
+    revenue = totalProduction
+    if (sim) 
+      return
 
-    if (upgrade) {
-      if (upgrade.type == "NODE") {
-        ns.print("Purchasing a new node")
-        if (sim == 0)
-           ns.hacknet.purchaseNode()
-        else
-          cash -= upgrade.price
-      } else if (upgrade.type == "CACHE") {
-        ns.printf("Upgrading CACHE: Node %i Cache +%i",
-            upgrade.node, upgrade.q)
-        if (sim == 0) {
-            var ret = ns.hacknet.upgradeCache(upgrade.node, upgrade.q)
-            if(!ret)
-                ns.printf(" -> FAIL!") 
-        } else {
-            cache -= upgrade.price
-        }   
-      } else if (upgrade.type == "CORE") {
-        ns.printf("Upgrading CORES : Node %i Cores +%i (+%.4f)",
-          upgrade.node, upgrade.q, upgrade.value)
-        if (sim == 0) {
-          var ret = ns.hacknet.upgradeCore(upgrade.node, upgrade.q)
-          if(!ret)
-            ns.printf(" -> Fail!")
-        } else {
-          cash -= upgrade.price
-        }
-      } else if (upgrade.type == "LEVEL") {
-        ns.printf("Upgrading LEVELS : Node %i Level +%i (+%.4f)",
-          upgrade.node, upgrade.q, upgrade.value)
-        if (sim == 0) {
-          var ret= ns.hacknet.upgradeLevel(upgrade.node, upgrade.q)
-          if(!ret)
-            ns.printf(" -> Fail!")
-        } else {
-          cash -= upgrade.price
-        }
-      } else if (upgrade.type == "RAM") {
-        ns.printf("Upgrading RAM : Node %i RAM +%i (+%.4f)",
-          upgrade.node, upgrade.q, upgrade.value)
-        if (sim ==0) {
-          var ret = ns.hacknet.upgradeRam(upgrade.node, upgrade.q)
-          if(!ret)
-            ns.printf(" -> Fail!")
-        } else {
-          cash -= upgrade.price
-        }
-      }
-      await ns.sleep(20)
-    // Now upgrade the cheapest
-    } else {
-      ns.print("Nothing to upgrade for now...")
-      var totalProduction = 0
-      for(var index=0; index < ns.hacknet.numNodes(); index++) {
-        totalProduction += ns.hacknet.getNodeStats(index).production
-      }
-      var msg =ns.sprintf("-> %i nodes producing %s h/s (+%s/s)", ns.hacknet.numNodes(),
-        ns.formatNumber(totalProduction, 4), ns.formatNumber(totalProduction - revenue, 4))
-      ns.toast(msg, "info")
-      revenue = totalProduction
-      if (sim) 
-        return
-
-      var counter = 0;
-      var timeToWait = 60 // 5 minutes
-      while(counter < timeToWait) {
-        counter++
-        var record = { numNodes: ns.hacknet.numNodes(),
-                       numHashes: ns.hacknet.numHashes(),
-                       rate: totalProduction,
-                       maxHashes: ns.hacknet.hashCapacity() }
-        db.dbWrite(ns, "hacknet", record)
-        await ns.sleep(1000)
-      }
+    var counter = 0;
+    var timeToWait = 60 // 1 minute
+    while(counter < timeToWait) {
+      counter++
+      var record = { numNodes: ns.hacknet.numNodes(),
+                      numHashes: ns.hacknet.numHashes(),
+                      rate: totalProduction,
+                      maxHashes: ns.hacknet.hashCapacity() }
+      db.dbWrite(ns, "hacknet", record)
+      await ns.sleep(1000)
     }
   }
 }
