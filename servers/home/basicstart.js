@@ -108,7 +108,8 @@ export async function main(ns) {
 async function hackUntilTarget(ns, target, stopAtTarget) {
   if (stopAtTarget != "FOREVER")
     if (ns.getHackingLevel() > ns.getServerRequiredHackingLevel(stopAtTarget)*3)
-      return
+      if(ns.hasRootAccess(stopAtTarget))
+        return
 
   // First wait until we have root & proper hacking level
   db.dbLogf(ns, "Waiting for root access on %s", target)
