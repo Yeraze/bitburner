@@ -5,7 +5,7 @@ import * as db from "./database";
 export async function main(ns) {
   ns.disableLog('ALL')
   var stop =false;
-  ns.tail()
+//  ns.tail()
   ns.moveTail(400,0)
   ns.resizeTail(420, 110)
 
@@ -125,24 +125,24 @@ export async function main(ns) {
         break;
       case  "SECURITY":
         if (ns.hacknet.spendHashes("Reduce Minimum Security", target, chosenUpgrade.amount)) {
-          db.dbLogf(ns, "Lowering Security of %s %s (%i levels)", target,
+          db.dbLogf(ns, "Lowering Security of %s %s (x%i)", target,
               ns.formatNumber(ns.getServerMinSecurityLevel(target)), chosenUpgrade.amount)
           kickBatcher = true
           kickBatcherTimeout = 5
         } else {
-          db.dbLogf(ns, "FAILED Lowering Security of %s %s (%i levels)", target,
+          db.dbLogf(ns, "FAILED Lowering Security of %s %s (x%i)", target,
               ns.formatNumber(ns.getServerMinSecurityLevel(target)), chosenUpgrade.amount)
 
         }
         break;
       case "MONEY":
         if (ns.hacknet.spendHashes("Increase Maximum Money", target)) {
-          db.dbLogf(ns, "Increasing Maximum Money of %s $%s (%i levels)", target,
+          db.dbLogf(ns, "Increasing Maximum Money of %s $%s (x%i)", target,
               ns.formatNumber(ns.getServerMaxMoney(target)), chosenUpgrade.amount) 
           kickBatcher = true
           kickBatcherTimeout = 5
         } else {
-          db.dbLogf(ns, "FAILED Increasing Maximum Money of %s $%s (%i levels)", target,
+          db.dbLogf(ns, "FAILED Increasing Maximum Money of %s $%s (x%i)", target,
               ns.formatNumber(ns.getServerMaxMoney(target)), chosenUpgrade.amount) 
         }
         break;
