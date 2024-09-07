@@ -5,11 +5,8 @@ import { qualifyAugment } from './reh'
 export async function main(ns) {
     // Only bother with grafting if we have cash
     const cash = ns.getServerMoneyAvailable("home")
-    if(cash < 1000000000) {
-        ns.printf("EXITING: Insufficient funds")
-        return
-    }
 
+    const priorityAugs = ['violet', 'QLink', 'CashRoot', 'Neuroreceptor']
     // If we're already grafting then don't bother
     if(ns.singularity.getCurrentWork().type == "GRAFTING") {
         ns.printf("EXITING: Already grafting")
@@ -28,6 +25,7 @@ export async function main(ns) {
         return
     }
 
+    // Trim to augs we can afford
     const affordableAugs = augList.filter((A) => (
         (ns.grafting.getAugmentationGraftPrice(A)*1.1) < cash
     ))
@@ -35,11 +33,20 @@ export async function main(ns) {
     for(var aug of affordableAugs) {
         var stats = ns.singularity.getAugmentationStats(aug)
         // See if this augment hits our BN qualifications as useful
-        //   And the violet entropy virus aug is always interesting
-        if((qualifyAugment(ns, stats)==false) && (aug.includes("violet") == false))
+        //   Priority augs are _always_ interesting
+        var qualified = qualifyAugment(ns, stats)
+        var priority = false
+        for(var a of priorityAugs) 
+          if(aug.includes(a)) {
+            qualified = true
+            priority = true
+          }
+        
+        if(qualified == false)
             continue
         // See if this is available for purchase directly
-        if(factionAugs.includes(aug))
+        // If it's a Priority aug, then we will graft it anyway
+        if(factionAugs.includes(aug) && !priority)
             continue
 
         // Check for pre-requisite augments
@@ -52,6 +59,7 @@ export async function main(ns) {
         }
         if (!meetsPreReq)
             continue
+
 
         ns.printf("Possible augment: %s", aug)
         interestedAugs.push( {aug: aug,
@@ -66,9 +74,21 @@ export async function main(ns) {
 
     interestedAugs.sort((A,B) => (A.cost - B.cost)).reverse()
 
+/*
     if(ns.getPlayer().entropy >= 10) {
         // We need to get rid of this entropy before we go any further
         interestedAugs.unshift( { aug: "violet Congruity Implant"})
+    }
+    */
+
+    var augToGraft = interestedAugs[0]
+    
+    // doubleCheck for priority augs in the list
+    for(var aug of interestedAugs){
+      for(var P of priorityAugs) {
+        if(aug.aug.includes(P))
+          augToGraft = aug
+      }
     }
 
     try { 
@@ -76,13 +96,13 @@ export async function main(ns) {
             db.dbLogf(ns, "GRAFT: Traveling to New Tokyo for grafting..")
             ns.singularity.travelToCity("New Tokyo")
         }
-        if(ns.grafting.graftAugmentation(interestedAugs[0].aug)) {
-            db.dbLogf(ns, "GRAFT: Starting graft for %s",interestedAugs[0].aug)
-            ns.write("/tmp/grafted.txt", interestedAugs[0].aug, "w")
+        if(ns.grafting.graftAugmentation(augToGraft.aug)) {
+            db.dbLogf(ns, "GRAFT: Starting graft for %s",augToGraft.aug)
+            ns.write("/tmp/grafted.txt", augToGraft.aug, "w")
         } else {
-            db.dbLogf(ns, "GRAFT: Failed to start graft of %s", interestedAugs[0].aug)
+            db.dbLogf(ns, "GRAFT: Failed to start graft of %s", augToGraft.aug)
         }
     } catch (error) {
-        db.dbLogf(ns, "ERROR: Failed to start graft of %s: %s", interestedAugs[0].aug, error)
+        db.dbLogf(ns, "ERROR: Failed to start graft of %s: %s", augToGraft.aug, error)
     }
 }

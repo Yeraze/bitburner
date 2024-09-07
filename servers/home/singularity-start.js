@@ -35,8 +35,8 @@ export async function main(ns) {
       await manageAugments(ns)
       await manageSleeves(ns)
     }
-    // every 20 minutes or so
-    if (counter % 1100 == 0) {
+    // every 2min or so
+    if (counter % 100 == 0) {
       await manageGraft(ns)
     }
 
