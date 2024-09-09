@@ -1,3 +1,4 @@
+import * as db from 'database.js'
 export function autocomplete(data, args) {
     return [...data.servers]; // This script autocompletes the list of servers.
 }
@@ -6,6 +7,16 @@ export function autocomplete(data, args) {
 export async function main(ns) {
   var target = ns.args[0]
   // first build the connection graph
+  if(target == "w0r1d_d43m0n") {
+    // ENDGAME!
+    let level = ns.getResetInfo().ownedSF.get(ns.getResetInfo().currentNode)
+    ns.printf("Currently in BN%i.%i", ns.getResetInfo().currentNode, level)
+    var line = ns.sprintf("BitNode %i.%i destroyed after %s\n",
+                ns.getResetInfo().currentNode, level,
+                db.formatTime(ns, Date.now() - ns.getResetInfo().lastNodeReset))
+    ns.write("runlog.txt", line, "a")
+    ns.singularity.destroyW0r1dD43m0n(12, "start.js")
+  }
   var path = []
   path.push(target)
   var parent = target;
