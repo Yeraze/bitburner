@@ -35,4 +35,14 @@ export async function main(ns) {
   var lvlStudying = ns.hacknet.getHashUpgradeLevel("Improve Studying")
   var upgCost = ns.formulas.hacknetServers.hashUpgradeCost("Improve Studying", lvlStudying)
   ns.printf("Improve studying => level %i cost %i", lvlStudying, upgCost)
+
+  for(var req of ns.singularity.getFactionInviteRequirements("Daedalus")) {
+    if (req["numAugmentations"])
+      ns.printf("Daedalus invite requires %i augs", req.numAugmentations)
+  }
+
+  var level = 1
+  level = ns.getResetInfo().ownedSF.get(ns.getResetInfo().currentNode)
+  ns.printf("Currently in BN%i.%i", ns.getResetInfo().currentNode, level)
+
 }
