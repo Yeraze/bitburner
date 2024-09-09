@@ -10,7 +10,16 @@ export async function main(ns) {
     // If we're already grafting then don't bother
     if(ns.singularity.getCurrentWork().type == "GRAFTING") {
         ns.printf("EXITING: Already grafting")
+        db.dbLogf(ns, "GRAFT: Already grafting")
         return
+    }
+    var faction = db.dbRead(ns, "faction") 
+    if(faction) {
+      if(faction.faction =="Daedalus") {
+        ns.printf("Aborting graft to grind Daedalus")
+        db.dbLogf(ns, "GRAFT: Grinding Daedalus")
+        return
+      }   
     }
 
     var factionAugs = []
@@ -22,6 +31,7 @@ export async function main(ns) {
     const augList = ns.grafting.getGraftableAugmentations()
     if(augList == null) {
         ns.printf("ERROR: No augments")
+        db.dbLogf(ns, "GRAFT: No graftable augments")
         return
     }
 
@@ -68,7 +78,7 @@ export async function main(ns) {
 
 
     if (interestedAugs.length == 0) {
-        db.dbLogf(ns, "GRAFT: No augments available...")
+        db.dbLogf(ns, "GRAFT: No interesting augments..")
         return
     }
 

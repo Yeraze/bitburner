@@ -57,6 +57,19 @@ export async function main(ns) {
           augsPurchased += nfg.count
         }
       }
+      // If we have less than 30 augs installed, but pending would put us over
+      // Then time to INSTALL
+      // Daedalus install requirement
+      var daedalusAugCount = 30
+      for(var req of ns.singularity.getFactionInviteRequirements("Daedalus")) {
+        if (req["numAugmentations"])
+          daedalusAugCount = req.numAugmentations
+      }
+      if(ns.getResetInfo().ownedAugs.length < daedalusAugCount) {
+        if (ns.getResetInfo().ownedAugs.length + augsPurchased >= daedalusAugCount) {
+          trigger = true
+        }
+      }
       if(ns.getHackingLevel() - playerLevel < 10) 
         trigger = true
       if (ns.singularity.getCurrentWork()?.type == "GRAFTING") 
@@ -96,14 +109,9 @@ async function manageGraft(ns) {
     return // hasn't unlocked Grafting
   const cash = ns.getServerMoneyAvailable("home")
 
-  if(cash < 1000000000) {
+  if(cash < 100000000) {
     return
   }
-
-  if(ns.fileExists("/tmp/grafted.txt", "home")) {
-    return
-  }
-
 
   ns.exec("singularity-graft.js", "home", {temporary: true, threads: 1})
 
