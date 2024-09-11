@@ -268,7 +268,7 @@ export function table(ns, data, colours) {
 }
 
 /** @param {NS} ns */
-export function qualifyAugment(ns, stats) {
+export function qualifyAugment(ns, stats, type = "BUY") {
   var maskHack = false
   var maskFaction = false
   var maskCompany = false
@@ -297,7 +297,10 @@ export function qualifyAugment(ns, stats) {
     case 12: // Recursion
       // We kinda want everything, to expedite getting to Daedalus
       // So enable hacknet and body for some cheap augs
-      maskHacknet = true; maskBody = true; maskFaction = true; maskHack = true; break;
+      if (type == "GRAFT") {
+        maskFaction = true; maskHack = true; break;
+      }
+      maskHacknet = true; maskBody = true; maskFaction = true; maskHack = true;
     case 11: // the big crash
     case 13: // Church of Staken
     case 8: // Wall Street

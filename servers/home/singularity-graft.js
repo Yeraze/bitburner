@@ -44,7 +44,7 @@ export async function main(ns) {
         var stats = ns.singularity.getAugmentationStats(aug)
         // See if this augment hits our BN qualifications as useful
         //   Priority augs are _always_ interesting
-        var qualified = qualifyAugment(ns, stats)
+        var qualified = qualifyAugment(ns, stats, "GRAFT")
         var priority = false
         for(var a of priorityAugs) 
           if(aug.includes(a)) {
