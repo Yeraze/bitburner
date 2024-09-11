@@ -295,6 +295,9 @@ export function qualifyAugment(ns, stats) {
     case 10: // Sleeves, need Body points to reach Covenant
       maskFaction = true; maskHack = true; maskBody = true; break;
     case 12: // Recursion
+      // We kinda want everything, to expedite getting to Daedalus
+      // So enable hacknet and body for some cheap augs
+      maskHacknet = true; maskBody = true; maskFaction = true; maskHack = true; break;
     case 11: // the big crash
     case 13: // Church of Staken
     case 8: // Wall Street
