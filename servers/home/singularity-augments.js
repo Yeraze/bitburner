@@ -22,8 +22,14 @@ export async function main(ns) {
   //if(ns.getResetInfo().currentNode == 9) {
   //  priorityAugs.push()
   //}
+  var daedalusAugCount = 30
+  for(var req of ns.singularity.getFactionInviteRequirements("Daedalus")) {
+    if (req["numAugmentations"])
+      daedalusAugCount = req.numAugmentations
+  }
   var record = { augmentsInstalled: augmentsInstalled.length,
-                 augmentsPurchased: augsPurchased.length}
+                 augmentsPurchased: augsPurchased.length,
+                 daedalusRequires: daedalusAugCount}
   db.dbWrite(ns, "augment-meta", record)
 
   ns.printf("Loading factions")

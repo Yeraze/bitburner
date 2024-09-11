@@ -35,10 +35,6 @@ export async function main(ns) {
       await manageAugments(ns)
       await manageSleeves(ns)
     }
-    // every 2min or so
-    if (counter % 100 == 0) {
-      await manageGraft(ns)
-    }
 
     // every 5 minutes or so (300 cycles)
     if (counter % 300 == 0) {
@@ -79,7 +75,7 @@ export async function main(ns) {
 
       if(trigger) {
         resetCount++
-        ns.toast(ns.sprintf("CONSIDERING RESET: %i of 3", resetCount), "warning", 60000)
+        ns.toast(ns.sprintf("CONSIDERING uESET: %i of 3", resetCount), "warning", 60000)
         if(resetCount >= 3) {
           if(ns.fileExists("extend.txt", "home")) {
             db.dbLogf(ns, "WARN: Run extended: extend.txt flag found")    
@@ -89,6 +85,7 @@ export async function main(ns) {
           }
         }  
       } else {
+        await manageGraft(ns)
         resetCount = 0
       }
       

@@ -7,7 +7,7 @@ export async function main(ns) {
     ns.disableLog('ALL')
     ns.tail()
     ns.moveTail(800,0)
-    ns.resizeTail(650, 800)
+    ns.resizeTail(650, 850)
     let avgMoneyIncrease = [ns.getServerMoneyAvailable("home")]
     var cash = 0
  
@@ -60,6 +60,11 @@ export async function main(ns) {
         ns.printf("Kills: %s\t\t\tKarma: %s",
             ns.formatNumber(ns.getPlayer().numPeopleKilled,0),
             ns.formatNumber(ns.getPlayer().karma))
+        ns.printf("Entropy: %s%i%s\t\t\tNFG: %i",
+            ns.getResetInfo().ownedAugs.has("violet Congruity Implant") ? color.fgGreen : color.fgRed,
+            ns.getPlayer().entropy, 
+            color.reset,
+            ns.getResetInfo().ownedAugs.get("NeuroFlux Governor") ?? 0)
         var workString = "<pending>"
         if(faction) {
             workString = ns.sprintf("%s for %s", faction.work, faction.faction)
@@ -159,15 +164,16 @@ export async function main(ns) {
               dtable.push(row)
               ctable.push(colors)
           }
-          if(sleeves.length > 0)
-              ns.printf("Stats: %s", sleeves[0].stats?.join(' / ') )
+          //if(sleeves.length > 0)
+          //  ns.printf("Stats: %s", sleeves[0].stats?.join(' / ') )
           table(ns, dtable, ctable)
         }
 
 
         ns.printf("=== Factions ============================================")
         dtable = []; ctable = []
-        row = ["Faction", "Rep", "Rate/s", "Favor"]
+        row = ["Faction", "Rep", "Rate/s"]
+        row.push(ns.sprintf("Favor [%i]", ns.getFavorToDonate()))
         var colors = [color.fgWhite, color.fgWhite, color.fgWhite]
         dtable.push(row)
         ctable.push(colors)   
@@ -228,9 +234,14 @@ export async function main(ns) {
 
         if(augMeta) {
             var nfg = db.dbRead(ns, "nfg")
-            ns.printf(" => %s%i Augments Installed%s, %s%i pending %s",
+            var dReq = ""
+            if(augMeta.augmentsInstalled < augMeta.daedalusRequires) {
+              dReq = ns.sprintf(" [%i]", augMeta.daedalusRequires)
+            }
+            ns.printf(" => %s%i Augments Installed%s%s, %s%i pending %s",
                 augMeta.augmentsInstalled >= 30 ? color.fgGreen : color.reset,
                 augMeta.augmentsInstalled, 
+                dReq,
                 color.reset,
                 augMeta.augmentsPurchased > 0 ? color.fgCyan : color.reset,
                 augMeta.augmentsPurchased,

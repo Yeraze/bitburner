@@ -7,7 +7,7 @@ export async function main(ns) {
     ns.disableLog('ALL')
     ns.tail()
     ns.moveTail(50,0)
-    ns.resizeTail(650, 900)
+    ns.resizeTail(650, 850)
     let avgMoneyIncrease = [ns.getServerMoneyAvailable("home")]
     var cash = 0
  
@@ -50,6 +50,11 @@ export async function main(ns) {
         ns.printf("Kills: %s\t\t\tKarma: %s",
             ns.formatNumber(ns.getPlayer().numPeopleKilled,0),
             ns.formatNumber(ns.getPlayer().karma))
+        ns.printf("Entropy: %s%i%s\t\t\tNFG: %i",
+            ns.getResetInfo().ownedAugs.has("violet Congruity Implant") ? color.fgGreen : color.fgRed,
+            ns.getPlayer().entropy, 
+            color.reset,
+            ns.getResetInfo().ownedAugs.get("NeuroFlux Governor") ?? 0)
         var workString = "<pending>"
         if(faction) {
             workString = ns.sprintf("%s for %s", faction.work, faction.faction)
