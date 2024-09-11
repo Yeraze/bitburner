@@ -73,7 +73,8 @@ export async function main(ns) {
 
         ns.printf("Possible augment: %s", aug)
         interestedAugs.push( {aug: aug,
-                              cost: ns.grafting.getAugmentationGraftPrice(aug) } )
+                              cost: ns.grafting.getAugmentationGraftPrice(aug),
+                              time: ns.grafting.getAugmentationGraftTime(aug) } )
     }
 
 
@@ -82,7 +83,11 @@ export async function main(ns) {
         return
     }
 
-    interestedAugs.sort((A,B) => (A.cost - B.cost)).reverse()
+    // Reverse sort on price, so [0] is most expensive
+    //interestedAugs.sort((A,B) => (A.cost - B.cost)).reverse()
+    // Sort on time, so [0] is fastest
+    interestedAugs.sort((A,B) => (A.time - B.time))
+
 
 /*
     if(ns.getPlayer().entropy >= 10) {
