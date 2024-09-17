@@ -297,6 +297,10 @@ export function qualifyAugment(ns, stats, type = "BUY") {
     case 12: // Recursion
       // We kinda want everything, to expedite getting to Daedalus
       // So enable hacknet and body for some cheap augs
+      var augMeta = db.dbRead(ns, "augment-meta")
+      if(augMeta.augmentsInstalled > augMeta.daedalusRequires) {
+        maskHack = true; break;
+      }
       if (type == "GRAFT") {
         maskFaction = true; maskHack = true; break;
       }
