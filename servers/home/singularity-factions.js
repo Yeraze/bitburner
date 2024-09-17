@@ -11,7 +11,7 @@ export async function main(ns) {
                         {faction: "Nitesec",  location: ""}, 
                         {faction: "The Black Hand", location: ""},
                         {faction: "Aevum", location: "Aevum"},
-                        {faction: "Tian Di Hui", location: "Chongqing"},
+                        //{faction: "Tian Di Hui", location: "Chongqing"},
                         {faction: "New Tokyo", location:"New Tokyo"},
                         {faction: "BitRunners", location: ""},
                         {faction: "Daedalus", location:""}
