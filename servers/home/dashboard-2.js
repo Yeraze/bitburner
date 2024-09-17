@@ -50,7 +50,7 @@ export async function main(ns) {
         ns.printf("Kills: %s\tKarma: %s\tHacking: %s",
             ns.formatNumber(ns.getPlayer().numPeopleKilled,0),
             ns.formatNumber(ns.getPlayer().karma),
-            ns.formatNumber(ns.getPlayer().skills.hacking, 0))
+            ns.formatNumber(ns.getPlayer().skills.hacking, 3))
         ns.printf("Entropy: %s%i%s\tNFG: %i\t\tWD: %s",
             ns.getResetInfo().ownedAugs.has("violet Congruity Implant") ? color.fgGreen : color.fgRed,
             ns.getPlayer().entropy, 

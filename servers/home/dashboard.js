@@ -57,6 +57,7 @@ export async function main(ns) {
         ns.printf("Money: $%s (+$%s/s)\t%s",
             ns.formatNumber(cash, 2), ns.formatNumber(cashRate, 2), vMsg)
 
+/*
         ns.printf("Kills: %s\tKarma: %s\tHacking: %s",
             ns.formatNumber(ns.getPlayer().numPeopleKilled,0),
             ns.formatNumber(ns.getPlayer().karma),
@@ -83,6 +84,7 @@ export async function main(ns) {
             color.reset,
             ns.scriptRunning("batcher/controller.js", "home")? color.fgGreen : color.fgRed
         )
+        */
         var batcher = db.dbRead(ns, "batcher")
         if(ns.scriptRunning("batcher/controller.js", "home") && batcher) {
             ns.printf("=== Batcher ============================================")
