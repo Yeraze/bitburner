@@ -61,8 +61,11 @@ export async function main(ns) {
         if (req["numAugmentations"])
           daedalusAugCount = req.numAugmentations
       }
-      if(ns.getResetInfo().ownedAugs.length < daedalusAugCount) {
-        if (ns.getResetInfo().ownedAugs.length + augsPurchased >= daedalusAugCount) {
+      if(ns.getResetInfo().ownedAugs.size < daedalusAugCount) {
+        if (ns.getResetInfo().ownedAugs.size + augsPurchased >= daedalusAugCount) {
+          // Force it now.
+          ns.toast("RESETTING to find Daedalus", "warning", null)
+          ns.spawn("reset.js", 1, "--force")
           trigger = true
         }
       }
@@ -75,7 +78,7 @@ export async function main(ns) {
 
       if(trigger) {
         resetCount++
-        ns.toast(ns.sprintf("CONSIDERING uESET: %i of 3", resetCount), "warning", 60000)
+        ns.toast(ns.sprintf("CONSIDERING RESET: %i of 3", resetCount), "warning", 60000)
         if(resetCount >= 3) {
           if(ns.fileExists("extend.txt", "home")) {
             db.dbLogf(ns, "WARN: Run extended: extend.txt flag found")    
