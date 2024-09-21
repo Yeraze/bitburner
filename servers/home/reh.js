@@ -304,7 +304,7 @@ export function qualifyAugment(ns, stats, type = "BUY") {
       if (type == "GRAFT") {
         maskFaction = true; maskHack = true; break;
       }
-      maskHacknet = true; maskBody = true; maskFaction = true; maskHack = true;
+      maskHacknet = true; maskFaction = true; maskHack = true;
     case 11: // the big crash
     case 13: // Church of Staken
     case 8: // Wall Street
