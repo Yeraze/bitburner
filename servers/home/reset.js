@@ -16,5 +16,5 @@ export async function main(ns) {
 
     db.dbWrite(ns, "resets", globalRecord, "global")
     
-    //ns.singularity.softReset("start.js")
+    ns.singularity.softReset("start.js")
 }
