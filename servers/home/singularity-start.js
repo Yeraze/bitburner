@@ -62,7 +62,7 @@ export async function main(ns) {
           daedalusAugCount = req.numAugmentations
       }
       if(ns.getResetInfo().ownedAugs.size < daedalusAugCount) {
-        if (ns.getResetInfo().ownedAugs.size + augsPurchased >= daedalusAugCount) {
+        if (ns.getResetInfo().ownedAugs.size + augMeta.augmentsPurchased >= daedalusAugCount) {
           // Force it now.
           ns.toast("RESETTING to find Daedalus", "warning", null)
           ns.spawn("reset.js", 1, "--force")
