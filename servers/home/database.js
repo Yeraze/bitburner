@@ -1,12 +1,12 @@
 /** @param {NS} ns */
-export function dbWrite(ns, table, object) {
-    var filename = `db/${table}.txt`
+export function dbWrite(ns, table, object, root = "db") {
+    var filename = `${root}/${table}.txt`
     ns.write(filename, JSON.stringify(object), "w")
 }
 
 /** @param {NS} ns */
-export function dbRead(ns, table) {
-    var filename = `db/${table}.txt`
+export function dbRead(ns, table, root = "db") {
+    var filename = `${root}/${table}.txt`
     if (ns.fileExists(filename, "home"))
         try {
             return JSON.parse(ns.read(filename))            
