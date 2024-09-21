@@ -29,8 +29,13 @@ export async function main(ns) {
             (partial, a) => (partial +a), 0 ) / avgMoneyIncrease.length
         
 
-        ns.printf("[RUN] %s\t\t[NODE] %s", 
+        let level = ns.getResetInfo().ownedSF.get(ns.getResetInfo().currentNode)
+        var nodeString = ns.sprintf("%i.%i",
+            ns.getResetInfo().currentNode, level)
+        var resetCount = db.dbRead(ns, "resets", "global").resets
+        ns.printf("[RUN:%i] %s\t\t[NODE:%s] %s", resetCount+1,
                 db.formatTime(ns, Date.now() - ns.getResetInfo().lastAugReset),
+                nodeString,
                 db.formatTime(ns, Date.now() - ns.getResetInfo().lastNodeReset))
         var vMsg = ""
         if(global) {

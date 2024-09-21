@@ -1,3 +1,4 @@
+import * as db from 'database.js'
 /** @param {NS} ns */
 export async function main(ns) {
     if(ns.fileExists("extend.txt","home")) {
@@ -8,5 +9,12 @@ export async function main(ns) {
         }
     }
     ns.rm("extend.txt", "home")
-    ns.singularity.softReset("start.js")
+
+    var globalRecord = db.dbRead(ns, "resets", "global") ?? {}
+
+    globalRecord.resets = globalRecord?.resets + 1
+
+    db.dbWrite(ns, "resets", globalRecord, "global")
+    
+    //ns.singularity.softReset("start.js")
 }

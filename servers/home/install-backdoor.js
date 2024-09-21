@@ -8,13 +8,18 @@ export async function main(ns) {
   var target = ns.args[0]
   // first build the connection graph
   if(target == "w0r1d_d43m0n") {
+
+    var resetCount = db.dbRead(ns, "resets", "global").resets
+    
     // ENDGAME!
     let level = ns.getResetInfo().ownedSF.get(ns.getResetInfo().currentNode)
     ns.printf("Currently in BN%i.%i", ns.getResetInfo().currentNode, level)
-    var line = ns.sprintf("BitNode %i.%i destroyed after %s\n",
+    var line = ns.sprintf("BitNode %i.%i destroyed after %s (%s resets)\n",
                 ns.getResetInfo().currentNode, level,
-                db.formatTime(ns, Date.now() - ns.getResetInfo().lastNodeReset))
+                db.formatTime(ns, Date.now() - ns.getResetInfo().lastNodeReset),
+                resetCount)
     ns.write("runlog.txt", line, "a")
+    db.dbWrite(ns, "resets", {resets: 0}, "global")
     ns.singularity.destroyW0r1dD43m0n(12, "start.js")
   }
   var path = []
