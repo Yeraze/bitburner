@@ -8,7 +8,7 @@ export async function main(ns) {
 
     const priorityAugs = ['violet', 'QLink', 'CashRoot', 'Neuroreceptor']
     // If we're already grafting then don't bother
-    if(ns.singularity.getCurrentWork().type == "GRAFTING") {
+    if(ns.singularity.getCurrentWork()?.type == "GRAFTING") {
         ns.printf("EXITING: Already grafting")
         db.dbLogf(ns, "GRAFT: Already grafting")
         return
