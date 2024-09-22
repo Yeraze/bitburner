@@ -16,7 +16,6 @@ export async function main(ns) {
     var factionListTimes = [Date.now(), Date.now()]
     var augProgress = []
     var cycle = 0
-    var lastBatcherStatus = ""
     while(true) {
         cycle++
         await ns.sleep(1000)
@@ -98,14 +97,6 @@ export async function main(ns) {
                     (batcher.status.includes("Active") ? 
                         ((cycle % 6 < 3) ? `$${batcher.rate}/s` : batcher.greed) :
                         batcher.status))
-            if(batcher.status == lastBatcherStatus) {
-              if(batcher.status.startsWith("Finalizing")) {
-                // Looks like the Batcher may have locked up..
-                db.dbLogf(ns, "Looks like batcher stalled, killing")
-                ns.scriptKill("batcher/controller.js", "home")
-              }
-            }
-            lastBatcherStatus = batcher.status
         } else {
             ns.printf("Target: <unknown>")
         }

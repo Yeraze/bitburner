@@ -376,8 +376,8 @@ export async function prep(ns, values, ramNet) {
 		}
 
 		// Fancy UI stuff to update you on progress.
-		const tEnd = ((mode === 0 ? wEnd1 : wEnd2) - Date.now()) * batchCount + Date.now();
 		const timer = setInterval(() => {
+      const tEnd = ((mode === 0 ? wEnd1 : wEnd2) - Date.now()) * batchCount + Date.now();
 			ns.clearLog();
 			var msg = ""
 			switch (mode) {
@@ -395,16 +395,18 @@ export async function prep(ns, values, ramNet) {
 			}
 			ns.print(`Security: +${ns.formatNumber(sec - minSec, 3)}`);
 			ns.print(`Money: \$${ns.formatNumber(money, 2)}/${ns.formatNumber(maxMoney, 2)}`);
-			const time = tEnd - Date.now();
-      if (time < -5) {
+			let time = tEnd - Date.now();
+      let timeString = `ETA: ${ns.tFormat(time)}`
+      if (time < 0) {
         // Negative time, something is wrong
-        throw "Negatime"
+        time = Date.now() - tEnd;
+        let timeString = `Overage: ${ns.tFormat(time)}`
       }
-			ns.print(`Estimated time remaining: ${ns.tFormat(time)}`);
+			ns.print(timeString);
 			ns.print(`~${batchCount} ${(batchCount === 1) ? "batch" : "batches"}.`);
 			var record = {target : values.target,
 				greed: "??",
-				status: ns.sprintf("%s .. %s", msg, db.formatTime(ns, time))
+				status: ns.sprintf("%s .. %s", msg, timeString)
   			}
   			db.dbWrite(ns, "batcher", record)
 		}, 200);
