@@ -271,7 +271,7 @@ export async function prep(ns, values, ramNet) {
 	let sec = values.sec;
 	while (!isPrepped(ns, values.target)) {
 		const wTime = ns.getWeakenTime(values.target);
-		const gTime = wTime * 0.8;
+		const gTime = ns.getGrowTime(values.target);
 		const dataPort = ns.getPortHandle(ns.pid);
 		dataPort.clear();
 
@@ -290,12 +290,15 @@ export async function prep(ns, values, ramNet) {
 		2: One shot
 		*/
 
+    let weakenImpact = ns.weakenAnalyze(1)
+    let invWeaken = Math.ceil(1.0 / weakenImpact)
+
 		if (money < maxMoney) {
 			gThreads = Math.ceil(ns.growthAnalyze(values.target, maxMoney / money));
-			wThreads2 = Math.ceil(ns.growthAnalyzeSecurity(gThreads) / 0.05);
+			wThreads2 = Math.ceil(ns.growthAnalyzeSecurity(gThreads) / weakenImpact);
 		}
 		if (sec > minSec) {
-			wThreads1 = Math.ceil((sec - minSec) * 20);
+			wThreads1 = Math.ceil((sec - minSec) * invWeaken)
 			if (!(wThreads1 + wThreads2 + gThreads <= totalThreads && gThreads <= maxThreads)) {
 				gThreads = 0;
 				wThreads2 = 0;
@@ -377,7 +380,8 @@ export async function prep(ns, values, ramNet) {
 
 		// Fancy UI stuff to update you on progress.
 		const timer = setInterval(() => {
-      const tEnd = ((mode === 0 ? wEnd1 : wEnd2) - Date.now()) * batchCount + Date.now();
+      //const tEnd = ((mode === 0 ? wEnd1 : wEnd2) - Date.now()) * batchCount + Date.now();
+      const tEnd = (mode === 0 ? wEnd1 : wEnd2)
 			ns.clearLog();
 			var msg = ""
 			switch (mode) {
