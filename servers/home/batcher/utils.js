@@ -397,7 +397,7 @@ export async function prep(ns, values, ramNet) {
 			ns.print(`Money: \$${ns.formatNumber(money, 2)}/${ns.formatNumber(maxMoney, 2)}`);
 			let time = tEnd - Date.now();
       let timeString = `ETA: ${ns.tFormat(time)}`
-      if (time < 0) {
+      if (Date.now() > tEnd) {
         // Negative time, something is wrong
         time = Date.now() - tEnd;
         let timeString = `Overage: ${ns.tFormat(time)}`

@@ -99,7 +99,7 @@ class ContinuousBatcher {
 			const job = this.#schedule.shift();
 			job.end += this.#metrics.delay;
 			const jobPid = this.#ns.exec(SCRIPTS[job.type], job.server, { threads: job.threads, temporary: true }, JSON.stringify(job));
-			if (!jobPid) throw new Error(`Unable to deploy ${job.type}`);
+			if (!jobPid) throw new Error(`Unable to deploy ${job.type} on ${job.server} x${job.threads}`);
 			const tPort = this.#ns.getPortHandle(jobPid);
 
 			// We save the pid for later.
