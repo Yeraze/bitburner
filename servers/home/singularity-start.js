@@ -71,8 +71,6 @@ export async function main(ns) {
       }
       if(ns.getHackingLevel() - playerLevel < 10) 
         trigger = true
-      if (ns.singularity.getCurrentWork()?.type == "GRAFTING") 
-        trigger = false
       if (augsPurchased == 0) 
         trigger = false
 
@@ -82,13 +80,16 @@ export async function main(ns) {
         if(resetCount >= 3) {
           if(ns.fileExists("extend.txt", "home")) {
             db.dbLogf(ns, "WARN: Run extended: extend.txt flag found")    
+          } else if (ns.singularity.getCurrentWork()?.type == "GRAFTING") {
+            db.dbLogf(ns, "WARN: Run extended: Graft underway")    
           } else {
             ns.toast("RESETTING!!!", "warning", null)
             ns.spawn("reset.js", 1)
           }
-        }  
+        }  else {
+          await manageGraft(ns)
+        }
       } else {
-        await manageGraft(ns)
         resetCount = 0
       }
       
