@@ -6,7 +6,8 @@ export async function main(ns) {
     // Only bother with grafting if we have cash
     const cash = ns.getServerMoneyAvailable("home")
 
-    const priorityAugs = ['violet', 'QLink', 'CashRoot', 'Neuroreceptor']
+    var priorityAugs = ['violet', 'CashRoot', 'Neuroreceptor']
+    var priorityOnly = false
     // If we're already grafting then don't bother
     if(ns.singularity.getCurrentWork()?.type == "GRAFTING") {
         ns.printf("EXITING: Already grafting")
@@ -16,10 +17,15 @@ export async function main(ns) {
     var faction = db.dbRead(ns, "faction") 
     if(faction) {
       if(faction.faction =="Daedalus") {
-        ns.printf("Aborting graft to grind Daedalus")
-        db.dbLogf(ns, "GRAFT: Grinding Daedalus")
-        return
+        priorityOnly = true
       }   
+    }
+    // Only both with QLink if we haven't found Daedalus yet
+    // This should let us graft it if
+    //. - We haven't joined Daedalus yet, so we need the HL
+    //. - We've finished with Daedalus, and need the HL for WD
+    if(!priorityOnly) {
+      priorityAugs.push('QLink')
     }
 
     var factionAugs = []
@@ -99,10 +105,20 @@ export async function main(ns) {
     var augToGraft = interestedAugs[0]
     
     // doubleCheck for priority augs in the list
+    var foundPriority = false
     for(var aug of interestedAugs){
       for(var P of priorityAugs) {
-        if(aug.aug.includes(P))
+        if(aug.aug.includes(P)) {
           augToGraft = aug
+          foundPriority = true
+        }
+      }
+    }
+    if(priorityOnly) {
+      if(!foundPriority) {
+        ns.printf("Aborting graft of %s to grind Daedalus", augToGraft.aug)
+        db.dbLogf(ns, "GRAFT: Ignoring graft of %s for Daedalus", augToGraft.aug)
+        return
       }
     }
 
