@@ -33,6 +33,13 @@ export function dbLogf(ns, format, ...args) {
     dbLog(ns, "start", ns.sprintf(format, ...args))
 }
 
+export function dbGlobalLogf(ns, format, ...args) {
+  var msgLine = ns.sprintf(format, ...args)
+  var logLine = ns.sprintf("[%s] %s\n",
+        formatTime(ns, Date.now() - ns.getResetInfo().lastAugReset), msgLine)
+  ns.write("runlog.txt", logLine, "a")
+}
+
 /** @param {NS} ns */
 export function dbLog(ns, table, line) {
     var filename = `db/log_${table}.txt`

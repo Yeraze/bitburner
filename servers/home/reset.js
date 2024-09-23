@@ -13,6 +13,7 @@ export async function main(ns) {
     var globalRecord = db.dbRead(ns, "resets", "global") ?? {}
 
     globalRecord.resets = globalRecord?.resets + 1
+    db.dbGlobalLogf(ns, "Node reset %i", globalRecord.resets)
 
     db.dbWrite(ns, "resets", globalRecord, "global")
     

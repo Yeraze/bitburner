@@ -4,7 +4,7 @@ import * as db from 'database.js'
 function writeCmdFile(ns, filename, command) {
   if (ns.fileExists(filename))
     ns.clear(filename)
-  ns.printf("Executing '%s'", command)
+  //ns.printf("Executing '%s'", command)
   ns.write(filename, "export async function main(ns) {\n", "a")
   ns.write(filename, `  const port = ns.getPortHandle(ns.pid)\n`, "a")
   ns.write(filename, `  var result = ""\n`, "a")
@@ -58,7 +58,7 @@ export async function doCommand(ns, command, reqthreads = 1) {
 
   var pid = ns.exec(filename, "home", {temporary: true, threads: threads})
   if(pid == 0) {
-    ns.printf("Failed to launch %s over %i threads", filename, threads)
+    //ns.printf("Failed to launch %s over %i threads", filename, threads)
     ns.rm(filename)
     return null
   }
@@ -68,7 +68,7 @@ export async function doCommand(ns, command, reqthreads = 1) {
   let data = port.read()
   //await execAndWait(ns, filename, "home", {temporary: true, threads: 1})
   try {
-    ns.printf("-> Returning %s", data)
+    //ns.printf("-> Returning %s", data)
     return JSON.parse(data)
   } catch {
     return null
