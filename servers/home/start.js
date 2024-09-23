@@ -29,7 +29,7 @@ export async function main(ns) {
       await execAndWait(ns, "stanek-bootstrap.js", "home", {temporary: true, threads:1}, "--load")
 
       db.dbLogf(ns, "Initializing Stanek's gift")
-      await execAndWait(ns, "singularity-stanek.js", "home", {temporary: true, threads:1}, "--cycles", 20)
+      await execAndWait(ns, "singularity-stanek.js", "home", {temporary: true, threads:1}, "--cycles", 10)
     }
     ns.exec("singularity-stanek.js", "home", {temporary:true}, "--cycles", "5000", "--trickle")
   }
