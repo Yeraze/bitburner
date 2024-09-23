@@ -79,8 +79,8 @@ export async function main(ns) {
         hashes -= ns.formulas.hacknetServers.hashUpgradeCost("Improve Studying", lvlStudying+levels)
         levels++
       }
-      
-      hashUpgrades.push({name: "STUDY", amount: levels -1})
+      if (levels> 3)      
+        hashUpgrades.push({name: "STUDY", amount: levels -1})
     }
 
     // See if we can boost the situation around our Hacking Target
@@ -94,7 +94,7 @@ export async function main(ns) {
         hashes -= ns.formulas.hacknetServers.hashUpgradeCost("Reduce Minimum Security", lvlMinSec+levels)
         levels++
       }
-      if(levels > 1)
+      if(levels > 3)
         hashUpgrades.push({name: "SECURITY", amount:  levels -1})
       
       
@@ -105,7 +105,7 @@ export async function main(ns) {
         hashes -= ns.formulas.hacknetServers.hashUpgradeCost("Increase Maximum Money", lvlMaxMoney+levels)
         levels++
       }
-      if(levels > 1)
+      if(levels > 3)
         hashUpgrades.push({name: "MONEY", amount: levels -1 })
     }
 
