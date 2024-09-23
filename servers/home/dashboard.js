@@ -97,6 +97,11 @@ export async function main(ns) {
                     (batcher.status.includes("Active") ? 
                         ((cycle % 6 < 3) ? `$${batcher.rate}/s` : batcher.greed) :
                         batcher.status))
+            ns.printf("Security: %s/%s\t\tMoney $%s/$%s",
+                      ns.formatNumber(ns.getServerSecurityLevel(batcher.target)),
+                      ns.formatNumber(ns.getServerMinSecurityLevel(batcher.target)),
+                      ns.formatNumber(ns.getServerMoneyAvailable(batcher.target)),
+                      ns.formatNumber(ns.getServerMaxMoney(batcher.target)))
         } else {
             ns.printf("Target: <unknown>")
         }
