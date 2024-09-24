@@ -35,8 +35,11 @@ export function dbLogf(ns, format, ...args) {
 
 export function dbGlobalLogf(ns, format, ...args) {
   var msgLine = ns.sprintf(format, ...args)
-  var logLine = ns.sprintf("[%s] %s\n",
-        formatTime(ns, Date.now() - ns.getResetInfo().lastAugReset), msgLine)
+  var logLine = ns.sprintf("[HL:%i] [%s] [%s] %s\n",
+        ns.getPlayer().skills.hacking,
+        formatTime(ns, Date.now() - ns.getResetInfo().lastNodeReset),
+        formatTime(ns, Date.now() - ns.getResetInfo().lastAugReset),
+         msgLine)
   ns.write("runlog.txt", logLine, "a")
 }
 

@@ -18,6 +18,7 @@ export async function main(ns) {
                 ns.getResetInfo().currentNode, level,
                 db.formatTime(ns, Date.now() - ns.getResetInfo().lastNodeReset),
                 resetCount)
+    db.dbGlobalLogf(ns, "###################################################")
     db.dbWrite(ns, "resets", {resets: 0}, "global")
     ns.singularity.destroyW0r1dD43m0n(12, "start.js")
   }
