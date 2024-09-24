@@ -353,8 +353,9 @@ class Metrics {
 			const hThreads = Math.max(Math.floor(ns.hackAnalyzeThreads(server, amount)), 1);
 			const tGreed = hPercent * hThreads;
 			const gThreads = Math.ceil(ns.growthAnalyze(server, maxMoney / (maxMoney - maxMoney * tGreed)) * 1.01);
-			this.threads.weaken1 = Math.max(Math.ceil(hThreads * 0.002 / 0.05), 1);
-			this.threads.weaken2 = Math.max(Math.ceil(gThreads * 0.004 / 0.05), 1);
+      const wImpact = ns.weakenAnalyze(1)
+			this.threads.weaken1 = Math.max(Math.ceil(hThreads * 0.002 / wImpact), 1);
+			this.threads.weaken2 = Math.max(Math.ceil(gThreads * 0.004 / wImpact), 1);
 			this.threads.hack = hThreads;
 			this.threads.grow = gThreads;
 			this.chance = ns.hackAnalyzeChance(server);
@@ -499,8 +500,9 @@ function optimizePeriodic(ns, metrics, ramNet) {
 		const tGreed = hPercent * hThreads;
 		const gThreads = Math.ceil(ns.growthAnalyze(metrics.target, maxMoney / (maxMoney - maxMoney * tGreed)) * 1.01);
 		if (Math.max(hThreads, gThreads) <= maxThreads) {
-			const wThreads1 = Math.max(Math.ceil(hThreads * 0.002 / 0.05), 1);
-			const wThreads2 = Math.max(Math.ceil(gThreads * 0.004 / 0.05), 1);
+      const wImpact = ns.weakenAnalyze(1)
+			const wThreads1 = Math.max(Math.ceil(hThreads * 0.002 / wImpact), 1);
+			const wThreads2 = Math.max(Math.ceil(gThreads * 0.004 / wImpact), 1);
 
 			const threadCosts = [hThreads * 1.7, wThreads1 * 1.75, gThreads * 1.75, wThreads2 * 1.75];
 
