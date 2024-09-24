@@ -223,6 +223,10 @@ export async function main(ns) {
 	ns.disableLog("ALL");
 	// ns.tail();
 
+  if(ns.args[0] == "--suicide") {
+    ns.scriptKill("batcher/controller.js", "home")
+    return // A bit unnecessary, but hey.
+  }
 	/*
 	This commented out code is for a debugging tool that centralizes logs from the worker scripts into one place.
 	It's main advantage is the ability to write txt logs to file, which can be perused later to track down errors.
@@ -247,7 +251,11 @@ export async function main(ns) {
 		const servers = getServers(ns, (server) => {
 			if (!ns.args[0]) target = checkTarget(ns, server, target, ns.fileExists("Formulas.exe", "home"));
 			copyScripts(ns, server, WORKERS, true);
-      if(server.startsWith("hacknet-server"))
+      if(!ns.args.includes("--use-hacknet") && server.startsWith("hacknet-server"))
+        return false
+      if(ns.args.includes("--nohome") && server.startsWith("home"))
+        return false
+      if(ns.args.includes("--onlyhome") && !server.startsWith("home"))
         return false
 			return ns.hasRootAccess(server);
 		});
