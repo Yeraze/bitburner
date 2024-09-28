@@ -1,4 +1,5 @@
 import * as db from 'database.js'
+import {execAndWait} from 'reh.js'
 /** @param {NS} ns */
 export async function main(ns) {
     if(ns.fileExists("extend.txt","home")) {
@@ -10,6 +11,7 @@ export async function main(ns) {
     }
     ns.rm("extend.txt", "home")
 
+    execAndWait(ns, "singularity-purchaseall.js", "home") 
     var globalRecord = db.dbRead(ns, "resets", "global") ?? {}
 
     globalRecord.resets = globalRecord?.resets + 1
