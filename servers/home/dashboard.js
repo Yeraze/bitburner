@@ -38,7 +38,7 @@ export async function main(ns) {
             (partial, a) => (partial +a), 0 ) / avgMoneyIncrease.length
         
 
-        let level = ns.getResetInfo().ownedSF.get(ns.getResetInfo().currentNode)
+        let level = ns.getResetInfo().ownedSF.get(ns.getResetInfo().currentNode) ?? 0
         var nodeString = ns.sprintf("%i.%i",
             ns.getResetInfo().currentNode, level)
         var resetCount = db.dbRead(ns, "resets", "global").resets
