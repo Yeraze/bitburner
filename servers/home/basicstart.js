@@ -140,7 +140,7 @@ async function hackUntilTarget(ns, target, stopAtTarget) {
   ns.scriptKill("batcher/controller.js", "home")
 
   // and START
-  ns.exec("batcher/controller.js", "home", {threads:1, temporary:true}, target)
+  ns.exec("batcher/controller.js", "home", {threads:1, temporary:true}, target, "--use-hacknet")
   var spokenRam = totalRam
   var keepGoing =true 
 
@@ -200,7 +200,7 @@ async function hackUntilTarget(ns, target, stopAtTarget) {
       if(augList.includes("Stanek's Gift - Serenity") == false)
         await execAndWait(ns, "singularity-stanek.js", "home", 
               {temporary: true, threads:1}, "--cycles", 10)
-      ns.exec("batcher/controller.js", "home", 1, target)
+      ns.exec("batcher/controller.js", "home", 1, target, "--use-hacknet")
 
       totalRam = totalRamNow
     }
