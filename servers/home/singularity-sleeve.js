@@ -120,13 +120,13 @@ export async function main(ns) {
             if (fac) {
                 // Prioritize reputation grind for any other joined factions
                 var work = ""
-                if(ns.singularity.getFactionWorkTypes(fac.name).includes("hacking"))
-                    work = "hacking"               
                 // Prefer combat-stat work over Hacking, if available
                 if(ns.singularity.getFactionWorkTypes(fac.name).includes("security"))
                     work = "security"
                 if(ns.singularity.getFactionWorkTypes(fac.name).includes("field"))
                     work = "field"
+                if(ns.singularity.getFactionWorkTypes(fac.name).includes("hacking"))
+                    work = "hacking"               
                 if(work == "") 
                     await doCrime(ns, sleeveNum, univCourse)
                 else
@@ -192,7 +192,7 @@ export async function main(ns) {
             continue
         // Purchase any augments
         for(var aug of ns.sleeve.getSleevePurchasableAugs(sleeveNum)) {
-            if((aug.cost < ns.getServerMoneyAvailable("home")) && (aug.name != "Z.O.Ë.")) {
+            if((aug.cost < ns.getServerMoneyAvailable("home")) && (aug.name != "Z.O.ï¿½.")) {
                 if(await doCommand(ns, `ns.sleeve.purchaseSleeveAug(${sleeveNum}, "${aug.name}")`)) {
                     ns.toast(ns.sprintf("[SLEEVE:%i] Buying augment %s", sleeveNum, aug.name), "info")
                     db.dbLogf(ns, "[SLEEVE:%i] Buying augment %s", sleeveNum, aug.name)
