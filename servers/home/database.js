@@ -1,3 +1,4 @@
+import {pushover}  from 'pushover.js'
 /** @param {NS} ns */
 export function dbWrite(ns, table, object, root = "db") {
     var filename = `${root}/${table}.txt`
@@ -33,7 +34,7 @@ export function dbLogf(ns, format, ...args) {
     dbLog(ns, "start", ns.sprintf(format, ...args))
 }
 
-export function dbGlobalLogf(ns, format, ...args) {
+export async function dbGlobalLogf(ns, format, ...args) {
   var msgLine = ns.sprintf(format, ...args)
   var logLine = ns.sprintf("[HL:%i] [%s] [%s] %s\n",
         ns.getPlayer().skills.hacking,
@@ -41,7 +42,9 @@ export function dbGlobalLogf(ns, format, ...args) {
         formatTime(ns, Date.now() - ns.getResetInfo().lastAugReset),
          msgLine)
   ns.write("runlog.txt", logLine, "a")
+  await pushover(logLine)
 }
+
 
 /** @param {NS} ns */
 export function dbLog(ns, table, line) {
