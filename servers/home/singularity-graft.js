@@ -6,8 +6,8 @@ export async function main(ns) {
     // Only bother with grafting if we have cash
     const cash = ns.getServerMoneyAvailable("home")
 
-    var priorityAugs = ['violet', 'CashRoot', 'Neuroreceptor']
-    var priorityOnly = false
+    var priorityAugs = ['violet', 'CashRoot', 'OmniTek', 'Neuroreceptor']
+    var priorityOnly = true
     // If we're already grafting then don't bother
     if(ns.singularity.getCurrentWork()?.type == "GRAFTING") {
         ns.printf("EXITING: Already grafting")
@@ -130,7 +130,7 @@ export async function main(ns) {
         if(ns.grafting.graftAugmentation(augToGraft.aug)) {
             db.dbLogf(ns, "GRAFT: Starting graft for %s",augToGraft.aug)
             ns.write("/tmp/grafted.txt", augToGraft.aug, "w")
-            db.dbGlobalLogf(ns, "Starting graft of %s", augToGraft.aug)
+            await db.dbGlobalLogf(ns, "Starting graft of %s", augToGraft.aug)
         } else {
             db.dbLogf(ns, "GRAFT: Failed to start graft of %s", augToGraft.aug)
         }

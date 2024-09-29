@@ -64,7 +64,7 @@ export async function main(ns) {
     ns.printf("-> Attempting %s", aug.augment)
     if(ns.singularity.purchaseAugmentation(aug.faction, aug.augment)) {
       var msg = ns.sprintf("Installed augment %s", aug.augment)
-      db.dbGlobalLogf(ns, msg)
+      await db.dbGlobalLogf(ns, msg)
       ns.toast(msg, "info")
     }
   }
@@ -83,7 +83,7 @@ export async function main(ns) {
   }
   if(nfgCount > 0) {
     var msg = ns.sprintf("Installed %i NFG's",nfgCount)
-    db.dbGlobalLogf(ns, msg)
+    await db.dbGlobalLogf(ns, msg)
     ns.toast(msg, "info")
   }
 

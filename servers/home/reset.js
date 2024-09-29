@@ -11,11 +11,11 @@ export async function main(ns) {
     }
     ns.rm("extend.txt", "home")
 
-    execAndWait(ns, "singularity-purchaseall.js", "home") 
+    await execAndWait(ns, "singularity-purchaseall.js", "home") 
     var globalRecord = db.dbRead(ns, "resets", "global") ?? {}
 
     globalRecord.resets = globalRecord?.resets + 1
-    db.dbGlobalLogf(ns, "Node reset %i", globalRecord.resets)
+    await db.dbGlobalLogf(ns, "Node reset %i", globalRecord.resets)
 
     db.dbWrite(ns, "resets", globalRecord, "global")
     

@@ -76,8 +76,8 @@ export async function main(ns) {
 
       if(trigger) {
         resetCount++
-        ns.toast(ns.sprintf("CONSIDERING RESET: %i of 3", resetCount), "warning", 60000)
-        if(resetCount >= 12) {
+        ns.toast(ns.sprintf("CONSIDERING RESET: %i of 6", resetCount), "warning", 60000)
+        if(resetCount >= 6) {
           if(ns.fileExists("extend.txt", "home")) {
             db.dbLogf(ns, "WARN: Run extended: extend.txt flag found")    
           } else if (ns.singularity.getCurrentWork()?.type == "GRAFTING") {

@@ -10,7 +10,7 @@ export async function main(ns) {
         //rehprintf(ns, "Purchased %s from %s", aug, faction)
         setConfig(ns, "buynfg", 1)
         db.dbLogf(ns, "Purchased %s from %s", aug, faction)
-        db.dbGlobalLogf(ns, "Purchased %s from %s", aug, faction)
+        await db.dbGlobalLogf(ns, "Purchased %s from %s", aug, faction)
         ns.toast(ns.sprintf("Purchased %s", aug), "success", null)
         if(aug == "NeuroFlux Governor") {
             var record = db.dbRead(ns, "nfg")
@@ -46,7 +46,7 @@ export async function main(ns) {
                 boughtIt = true
                 rehprintf(ns, "-> Donations enabled purchasing %s from %s", aug, faction)
                 if(await doCommand(ns, `ns.singularity.purchaseAugmentation("${faction}", "${aug}")`)) {
-                    db.dbGlobalLogf(ns, "Purchased %s from %s", aug, faction)
+                    await db.dbGlobalLogf(ns, "Purchased %s from %s", aug, faction)
                     setConfig(ns, "buynfg", 1)
                     ns.toast(ns.sprintf("Purchased %s", aug), "success", null)
                     db.dbLogf(ns, "Purchased %s from %s", aug, faction)
@@ -73,7 +73,7 @@ export async function main(ns) {
                     db.dbLogf(ns, "WARN: Donations could be enabled for %s, but awaiting Graft", faction)
                 } else {
                     ns.toast(ns.sprintf("Restarting to enable DONATIONS for %s", faction), "info")
-                    db.dbGlobalLogf(ns, "Restarting to enable donations for %s", faction)
+                    await db.dbGlobalLogf(ns, "Restarting to enable donations for %s", faction)
                     ns.spawn("reset.js")
                 }
             }

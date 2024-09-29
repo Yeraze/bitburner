@@ -14,11 +14,10 @@ export async function main(ns) {
     // ENDGAME!
     let level = ns.getResetInfo().ownedSF.get(ns.getResetInfo().currentNode)
     ns.printf("Currently in BN%i.%i", ns.getResetInfo().currentNode, level)
-    db.dbGlobalLogf(ns, "BitNode %i.%i destroyed after %s (%s resets)",
+    await db.dbGlobalLogf(ns, "BitNode %i.%i destroyed after %s (%s resets)",
                 ns.getResetInfo().currentNode, level,
                 db.formatTime(ns, Date.now() - ns.getResetInfo().lastNodeReset),
                 resetCount)
-    db.dbGlobalLogf(ns, "###################################################")
     db.dbWrite(ns, "resets", {resets: 0}, "global")
     ns.singularity.destroyW0r1dD43m0n(12, "start.js")
   }

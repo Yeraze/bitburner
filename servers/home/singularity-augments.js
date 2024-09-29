@@ -170,7 +170,6 @@ export async function main(ns) {
       continue; // we already have it
     for(var _fac of augsFromFaction) {
       fac = _fac.faction
-      //var fData jkubnh= factionData.find((A) => (A.name == fac))
       if(_fac.augments.includes(aug)) {
         ns.printf("Found priority aug %s at %s", aug, fac)
         if(ns.args.includes("--slow"))
@@ -180,34 +179,6 @@ export async function main(ns) {
     }
   }
 
-  // Alright, nothing left to do but grind..
-  // So check the NFG's
-
-  if(getConfig(ns, "buynfg", 0) == 1) {
-    ns.printf("Evaluating NFG's")
-    if(ns.args.includes("--slow"))
-      await ns.sleep(1000)
-    const NFG = "NeuroFlux Governor"
-    var nfgCost = augCosts.find((A) => (A.augment == NFG))
-    if((nfgCost) && (nfgCost.cost < ns.getServerMoneyAvailable("home"))) {
-      for(var _fac of augsFromFaction) {
-        var fac = _fac.faction
-        var fData = factionData.find((A) => (A.name == fac))
-
-        if(_fac.augments.includes(NFG)) {
-          if (fData.rep > nfgCost.rep) {
-            var line = ns.sprintf("Buying NFG from %s (%s rep, $%s)", fac, 
-              ns.formatNumber(nfgCost.rep), ns.formatNumber(nfgCost.cost))
-            db.dbLogf(ns, line)
-            ns.print(line)
-            if(ns.args.includes("--slow"))
-              await ns.sleep(1000)
-            ns.spawn("singularity-augpurchase.js", {spawnDelay: 0}, fac, NFG)
-          }
-        }
-      }
-    }
-  }
   ns.printf("End of main loop")
   if(ns.args.includes("--slow"))
     await ns.sleep(1000)
