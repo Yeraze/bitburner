@@ -201,6 +201,8 @@ export async function main(ns) {
             }
             oldFactionList = factionList
         }
+        factionList.sort((A,B) => (factionRates.find((_A) => (_A.name == A.name))?.rate - 
+                                  factionRates.find((_B) => (_B.name == B.name))?.rate)).reverse()
         for(var fac of factionList.filter((A) => (A.status))) {
             var rateEntry = factionRates.find((A) => (A.name == fac.name))
             var rate = 0
