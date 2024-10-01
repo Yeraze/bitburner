@@ -130,17 +130,30 @@ export async function main(ns) {
             }
         }
 
-        ns.printf("=== Home computer ============================================")
         if (home) {
-            ns.printf(" * CPU Cores: %i  \t\t($%s to upgrade)", home.cores,
-                ns.formatNumber(home.coreUpgrade))
-            var percFree = (home.ram - home.ramUsed) / home.ram
-            ns.printf(" * RAM: %s %s(%s free)%s\t($%s to upgrade)", 
-                ns.formatRam(home.ram),
-                (percFree < .1) ? color.fgRed : "",
-                ns.formatPercent(percFree, 0),
-                color.reset,
-                ns.formatNumber(home.ramUpgrade))
+          ns.printf("=== Home computer ============================================")
+          ns.printf(" * CPU Cores: %i  \t\t($%s to upgrade)", home.cores,
+              ns.formatNumber(home.coreUpgrade))
+          var percFree = (home.ram - home.ramUsed) / home.ram
+          ns.printf(" * RAM: %s %s(%s free)%s\t($%s to upgrade)", 
+              ns.formatRam(home.ram),
+              (percFree < .1) ? color.fgRed : "",
+              ns.formatPercent(percFree, 0),
+              color.reset,
+              ns.formatNumber(home.ramUpgrade))
+          ns.printf("=== Networking =================")
+          ns.printf("PSERV\tCount: %i\tRAM: %s",
+                home.pserv_count,
+                ns.formatRam(home.pserv_ram)) 
+            
+          ns.printf("HACKNET\tCount: %i\tRAM: %s\tCORES: %i",
+                home.hnet_count,
+                ns.formatRam(home.hnet_ram),
+                home.hnet_cores) 
+          ns.printf("OTHER\tCount: %i\tRAM: %s\tCORES: %i", 
+                home.network_count,
+                ns.formatRam(home.network_ram), 
+                home.network_cores)
             
         } else {
             ns.printf("-> <unknown>")
