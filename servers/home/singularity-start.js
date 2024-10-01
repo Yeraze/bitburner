@@ -35,6 +35,9 @@ export async function main(ns) {
       await manageAugments(ns)
       await manageSleeves(ns)
     }
+    if (counter % 45 == 0) {
+      await manageStanek(ns)
+    }
 
     // every 5 minutes or so (300 cycles)
     if (counter % 300 == 0) {
@@ -115,6 +118,18 @@ async function manageGraft(ns) {
   }
 
   ns.exec("singularity-graft.js", "home", {temporary: true, threads: 1})
+
+}
+
+/** @param {NS} ns */
+async function manageStanek(ns) {
+  var maxRam = ns.getServerMaxRam("home")
+  var usedRam = ns.getServerUsedRam("home")
+  var percentUsed = usedRam / maxRam
+  if (percentUsed < 0.2) {
+    ns.exec("singularity-stanek.js", "home", 
+      1, "--cycles", "3")
+  }
 
 }
 
