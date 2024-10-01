@@ -146,17 +146,20 @@ async function hackUntilTarget(ns, target, stopAtTarget) {
 
   var pservRunning = ns.scriptRunning("pservs.js", "home")
 
+  var cycleCount = 0
   while (keepGoing) {
     // See if we've hit the proper target level
     //  General rule of thumb is 3x the required Hacking level
     if(stopAtTarget != "FOREVER") 
       if(ns.getHackingLevel() > ns.getServerRequiredHackingLevel(stopAtTarget)*3) {
         if(ns.hasRootAccess(stopAtTarget)) {
-          keepGoing= false
+          if(cycleCount > 300) 
+            keepGoing= false
         }
       }
 
     await ns.sleep(5000);
+    cycleCount += 5
     counter++
     ns.printf("Monitoring hack on %s: %i", target, counter)
     await checkForBreaches(ns)
@@ -169,11 +172,6 @@ async function hackUntilTarget(ns, target, stopAtTarget) {
       db.dbLogf(ns, "%s-> Looks like batcher crashed..", CONST.fgRed);
     }
 
-    if(ns.scriptRunning("pservs.js","home") != pservRunning) {
-      var pservRunning = ns.scriptRunning("pservs.js", "home")
-      rekick = true
-      db.dbLogf(ns, "Looks like pservs.js has changed state.")
-    }
 
     // Now look and see if we have new resources
     //  If we have doubled in available RAM since we started the batcher
@@ -186,8 +184,15 @@ async function hackUntilTarget(ns, target, stopAtTarget) {
         ns.formatPercent( (totalRamNow / totalRam) - 1.0)) 
       spokenRam= totalRamNow
     }
-    if (totalRamNow > totalRam * 2.0) {
-      rekick = true
+    if (cycleCount > 300) {
+      if(ns.scriptRunning("pservs.js","home") != pservRunning) {
+        var pservRunning = ns.scriptRunning("pservs.js", "home")
+        rekick = true
+        db.dbLogf(ns, "Looks like pservs.js has changed state.")
+      }
+      if (totalRamNow > totalRam * 2.0) {
+        rekick = true
+      }
     }
 
     if (rekick) {
