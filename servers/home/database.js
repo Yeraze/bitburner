@@ -1,5 +1,26 @@
 import {pushover}  from 'pushover.js'
 /** @param {NS} ns */
+export function setConfig(ns, prop, value) {
+  var record = dbRead(ns, "config")
+  if (record === null) {
+    record = {}
+  }
+  record[prop] = value
+  dbWrite(ns, "config", record)
+}
+
+/** @param {NS} ns */
+export function getConfig(ns, prop, defaultValue) {
+  var record = dbRead(ns, "config")
+  if(record != null) {
+    if (record.hasOwnProperty(prop)) {
+      return record[prop]
+    }
+  }
+  return defaultValue
+}
+
+/** @param {NS} ns */
 export function dbWrite(ns, table, object, root = "db") {
     var filename = `${root}/${table}.txt`
     ns.write(filename, JSON.stringify(object), "w")
@@ -42,7 +63,8 @@ export async function dbGlobalLogf(ns, format, ...args) {
         formatTime(ns, Date.now() - ns.getResetInfo().lastAugReset),
          msgLine)
   ns.write("runlog.txt", logLine, "a")
-  await pushover(logLine)
+  if(getConfig(ns, "pushover", false) == true)
+    await pushover(logLine)
 }
 
 

@@ -1,4 +1,4 @@
-import {getConfig, rehprintf, qualifyAugment, doCommand} from 'reh.js'
+import {rehprintf, qualifyAugment, doCommand} from 'reh.js'
 import * as CONST from 'reh-constants.js'
 import * as db from 'database.js'
 /** @param {NS} ns */

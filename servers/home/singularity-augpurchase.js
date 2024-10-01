@@ -1,4 +1,4 @@
-import {setConfig, doCommand, rehprintf} from 'reh.js'
+import {doCommand, rehprintf} from 'reh.js'
 import * as db from 'database.js'
 /** @param {NS} ns */
 export async function main(ns) {
@@ -8,7 +8,7 @@ export async function main(ns) {
 
     if (await doCommand(ns, `ns.singularity.purchaseAugmentation("${faction}", "${aug}")`)) {
         //rehprintf(ns, "Purchased %s from %s", aug, faction)
-        setConfig(ns, "buynfg", 1)
+        db.setConfig(ns, "buynfg", 1)
         db.dbLogf(ns, "Purchased %s from %s", aug, faction)
         await db.dbGlobalLogf(ns, "Purchased %s from %s", aug, faction)
         ns.toast(ns.sprintf("Purchased %s", aug), "success", null)
@@ -47,7 +47,7 @@ export async function main(ns) {
                 rehprintf(ns, "-> Donations enabled purchasing %s from %s", aug, faction)
                 if(await doCommand(ns, `ns.singularity.purchaseAugmentation("${faction}", "${aug}")`)) {
                     await db.dbGlobalLogf(ns, "Purchased %s from %s", aug, faction)
-                    setConfig(ns, "buynfg", 1)
+                    db.setConfig(ns, "buynfg", 1)
                     ns.toast(ns.sprintf("Purchased %s", aug), "success", null)
                     db.dbLogf(ns, "Purchased %s from %s", aug, faction)
                 }

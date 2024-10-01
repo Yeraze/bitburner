@@ -1,6 +1,5 @@
 /** @param {NS} ns */
 import * as db from 'database.js'
-import {getConfig} from 'reh.js'
 export async function main(ns) {
   ns.disableLog('ALL')
 
@@ -25,7 +24,7 @@ export async function main(ns) {
         record[prop] = value
         break
       case 'get':
-        ns.tprintf("[%s] = %s", prop, getConfig(ns, prop, "<UNSET>")) 
+        ns.tprintf("[%s] = %s", prop, db.getConfig(ns, prop, "<UNSET>")) 
         return
       default:
         ns.tprint('Invalid operation')
