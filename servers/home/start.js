@@ -5,7 +5,8 @@ import * as db from 'database.js'
 /** @param {NS} ns */
 export async function main(ns) {
   for(var file of ns.ls("home", "/db/")) 
-    ns.clear(file)
+    if(!file.endsWith("config.txt"))
+      ns.clear(file)
   for(var file of ns.ls("home", "/tmp/"))
     ns.rm(file)
 
