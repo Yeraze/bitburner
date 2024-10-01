@@ -1,4 +1,5 @@
 import * as db from 'database.js'
+import {doCommand} from 'reh.js'
 export function autocomplete(data, args) {
     return [...data.servers]; // This script autocompletes the list of servers.
 }
@@ -19,7 +20,7 @@ export async function main(ns) {
                 db.formatTime(ns, Date.now() - ns.getResetInfo().lastNodeReset),
                 resetCount)
     db.dbWrite(ns, "resets", {resets: 0}, "global")
-    ns.singularity.destroyW0r1dD43m0n(12, "start.js")
+    await doCommand(ns, 'ns.singularity.destroyW0r1dD43m0n(12, "start.js")')
   }
   var path = []
   path.push(target)
