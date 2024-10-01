@@ -404,7 +404,10 @@ export async function prep(ns, values, ramNet) {
       if (Date.now() > tEnd) {
         // Negative time, something is wrong
         time = Date.now() - tEnd;
-        let timeString = `Overage: ${ns.tFormat(time)}`
+        timeString = `Overage: ${ns.tFormat(time)}`
+        if(time > 5000) {
+          throw new Error("Negatime!")
+        }
       }
 			ns.print(timeString);
 			ns.print(`~${batchCount} ${(batchCount === 1) ? "batch" : "batches"}.`);
