@@ -406,7 +406,8 @@ export async function prep(ns, values, ramNet) {
         time = Date.now() - tEnd;
         timeString = `Overage: ${ns.tFormat(time)}`
         if(time > 5000) {
-          throw new Error("Negatime!")
+          // Suicide
+          ns.kill(ns.pid)
         }
       }
 			ns.print(timeString);
