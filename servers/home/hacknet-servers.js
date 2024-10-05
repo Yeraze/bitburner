@@ -56,7 +56,7 @@ export async function main(ns) {
     }
     // We only really want to do this if we would get some benefit from it..
     // Which means either the Player is studying, or a Sleeve
-    var someoneIsStudying = false
+    var someoneIsStudying = db.getConfig(ns, "univonly", false)
 
     if(ns.singularity.getCurrentWork()?.type == "CLASS")
       someoneIsStudying = true
@@ -84,29 +84,31 @@ export async function main(ns) {
     }
 
     // See if we can boost the situation around our Hacking Target
-    var batcher = db.dbRead(ns, "batcher")
-    if (batcher) {
-      var target = batcher.target
-      var lvlMinSec = ns.hacknet.getHashUpgradeLevel("Reduce Minimum Security")
-      var levels = 1
-      var hashes = ns.hacknet.numHashes()
-      while(ns.formulas.hacknetServers.hashUpgradeCost("Reduce Minimum Security", lvlMinSec+levels) < hashes) {
-        hashes -= ns.formulas.hacknetServers.hashUpgradeCost("Reduce Minimum Security", lvlMinSec+levels)
-        levels++
+    if (db.getConfig(ns, "univonly", false) == false) {
+      var batcher = db.dbRead(ns, "batcher")
+      if (batcher ) {
+        var target = batcher.target
+        var lvlMinSec = ns.hacknet.getHashUpgradeLevel("Reduce Minimum Security")
+        var levels = 1
+        var hashes = ns.hacknet.numHashes()
+        while(ns.formulas.hacknetServers.hashUpgradeCost("Reduce Minimum Security", lvlMinSec+levels) < hashes) {
+          hashes -= ns.formulas.hacknetServers.hashUpgradeCost("Reduce Minimum Security", lvlMinSec+levels)
+          levels++
+        }
+        if(levels > 3)
+          hashUpgrades.push({name: "SECURITY", amount:  levels -1})
+        
+        
+        var lvlMaxMoney = ns.hacknet.getHashUpgradeLevel("Increase Maximum Money")
+        var levels = 1
+        var hashes = ns.hacknet.numHashes()
+        while(ns.formulas.hacknetServers.hashUpgradeCost("Increase Maximum Money", lvlMaxMoney+levels) < hashes) {
+          hashes -= ns.formulas.hacknetServers.hashUpgradeCost("Increase Maximum Money", lvlMaxMoney+levels)
+          levels++
+        }
+        if(levels > 3)
+          hashUpgrades.push({name: "MONEY", amount: levels -1 })
       }
-      if(levels > 3)
-        hashUpgrades.push({name: "SECURITY", amount:  levels -1})
-      
-      
-      var lvlMaxMoney = ns.hacknet.getHashUpgradeLevel("Increase Maximum Money")
-      var levels = 1
-      var hashes = ns.hacknet.numHashes()
-      while(ns.formulas.hacknetServers.hashUpgradeCost("Increase Maximum Money", lvlMaxMoney+levels) < hashes) {
-        hashes -= ns.formulas.hacknetServers.hashUpgradeCost("Increase Maximum Money", lvlMaxMoney+levels)
-        levels++
-      }
-      if(levels > 3)
-        hashUpgrades.push({name: "MONEY", amount: levels -1 })
     }
 
     if (hashUpgrades.length > 0) {
@@ -115,7 +117,7 @@ export async function main(ns) {
       ns.printf(" Chosen upgrade: %s +%i", chosenUpgrade.name, chosenUpgrade.amount)
       switch (chosenUpgrade.name) {
       case "STUDY":
-        if(ns.hacknet.spendHashes("Improve Studying", "", chosenUpgrade.count)) {
+        if(ns.hacknet.spendHashes("Improve Studying", "", chosenUpgrade.amount)) {
           db.dbLogf(ns, "Upgrading studying to %s (%i level)",
             ns.formatPercent(ns.hacknet.getStudyMult()), chosenUpgrade.amount)
         } else {
