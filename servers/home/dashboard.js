@@ -202,13 +202,14 @@ export async function main(ns) {
             // Ok, there was an update
             factionListTimes[1] = factionListTimes[0]
             factionListTimes[0] = Date.now()
+            var elapsedSeconds = 
+                        (factionListTimes[0] - factionListTimes[1]) / 1000
             factionRates = [] // nuke it
             for(var fac of factionList) {
                 var prev = oldFactionList.find((A) => (A.name == fac.name))
                 var rate = 0
                 if (prev) { 
-                     rate = (fac.rep - prev.rep) / 
-                        ((factionListTimes[0] - factionListTimes[1]) / 1000)
+                     rate = (fac.rep - prev.rep) / elapsedSeconds
                 }
                 factionRates.push( { name: fac.name, rate: rate})
             }
