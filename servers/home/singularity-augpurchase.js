@@ -67,13 +67,24 @@ export async function main(ns) {
             // See if a reset to convert Rep->Favor would be enough to
             // enable donations on the next run.
             var convFavor = ns.singularity.getFactionFavorGain(faction)
+            var trigger = false
+            for(var breakpoint of [ns.getFavorToDonate() * 0.33, 
+                               ns.getFavorToDonate() * 0.66,
+                               ns.getFavorToDonate()]) {
 
-            if(favor + convFavor > ns.getFavorToDonate()) {
+              if (favor < breakpoint) {
+                if (favor + convFavor > breakpoint) {
+                  trigger = true;
+                }
+              }
+            }
+            
+            if(trigger) {
                 if(await doCommand(ns, `ns.singularity.getCurrentWork().type`) == "GRAFTING") {
-                    db.dbLogf(ns, "WARN: Donations could be enabled for %s, but awaiting Graft", faction)
+                    ns.printf("WARN: Ready for %s, but awaiting Graft", faction)
                 } else {
-                    ns.toast(ns.sprintf("Restarting to enable DONATIONS for %s", faction), "info")
-                    await db.dbGlobalLogf(ns, "Restarting to enable donations for %s", faction)
+                    ns.toast(ns.sprintf("Restarting to accelerate faction for %s", faction), "info")
+                    await db.dbGlobalLogf(ns, "Restarting to accelerate %s", faction)
                     ns.spawn("reset.js")
                 }
             }
